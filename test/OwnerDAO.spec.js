@@ -72,7 +72,7 @@ describe("OwnerDAO", function(){
         var list = await od.getAll()
         assert(list.length == 2)
 
-        od.delete(ownerA)
+        await od.delete(ownerA)
         list = await od.getAll()
         assert(list.length == 1)
 
