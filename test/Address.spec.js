@@ -5,6 +5,7 @@ var chai = require('chai');
 const AddressDAO = require("../src/dao/AddressDAO");
 var assert = chai.assert;
 
+
 describe("AddressDAO", function() {
     let dm = DatabaseManager.getInstance()
     let ad = AddressDAO.getInstance()
