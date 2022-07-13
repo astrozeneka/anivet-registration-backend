@@ -10,7 +10,7 @@ chai.use(chaiHttp)
 describe('/GET /', () => {
     it('shouldn\'t be any error', (done) => {
         chai.request(server)
-            .get('/api/v2/')
+            .get('/api/v1/')
             .end((err, res) => {
                 assert(err == null)
                 done()

@@ -1,5 +1,6 @@
 const BaseController = require("./BaseController");
 var path = require("path")
+const BreedController = require("./BreedController");
 
 class APIController extends BaseController {
     static instance = null;
@@ -13,14 +14,18 @@ class APIController extends BaseController {
         this.instance = null;
     }
 
-    prefix = "/api/v2"
+    prefix = ""
 
     constructor (){
         super();
 
     }
 
-    register(app){
+    register(app, prefix){
+        if(prefix != undefined) this.prefix = prefix
+
+        BreedController.getInstance().register(app, path.join(prefix, "breed"))
+
         app.get(path.join(this.prefix, "/"), (req, res)=>{
             res.send("Hello world from the api")
         })
