@@ -26,9 +26,6 @@ class BreedController extends BaseController{
     register(app, prefix){
         super.register(app, prefix)
 
-        /**
-         * LIST
-         */
         app.get(path.join(this.prefix, "/"), async (req, res)=>{
             let list = await this.bd.getAll()
             let output = []
