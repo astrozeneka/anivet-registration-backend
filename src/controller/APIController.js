@@ -2,6 +2,7 @@ const BaseController = require("./BaseController");
 var path = require("path")
 const BreedController = require("./BreedController");
 const TestSampleController = require("./TestSampleController");
+const TestOrderController = require("./TestOrderController");
 
 class APIController extends BaseController {
     static instance = null;
@@ -31,6 +32,8 @@ class APIController extends BaseController {
         // Test sample
         TestSampleController.getInstance().register(app, path.join(prefix, "testSample"))
 
+        // Test order
+        TestOrderController.getInstance().register(app, path.join(prefix, "testOrder"))
 
         app.get(path.join(this.prefix, "/"), (req, res)=>{
             res.send("Hello world from the api")

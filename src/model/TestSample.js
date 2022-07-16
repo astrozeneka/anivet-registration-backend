@@ -9,6 +9,7 @@ class TestSample{
     #test = null
     #sampleType = null
     #image = null  // An ID
+    #testOrderId = null
 
     get id() {
         return this.#id;
@@ -74,6 +75,15 @@ class TestSample{
         this.#image = value;
     }
 
+
+    get testOrderId() {
+        return this.#testOrderId;
+    }
+
+    set testOrderId(value) {
+        this.#testOrderId = value;
+    }
+
     serialize(){
         return {
             id: this.id,
@@ -83,7 +93,8 @@ class TestSample{
             petSpecie: this.petSpecie,
             test: this.test,
             sampleType: this.sampleType,
-            image: this.image
+            image: this.image,
+            testOrderId: this.testOrderId
         }
     }
 }

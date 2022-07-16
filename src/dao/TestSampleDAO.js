@@ -39,7 +39,10 @@ class TestSampleDAO extends BaseDAO{
                 "   testSample_petSpecie VARCHAR(255)," + // Combine with pet
                 "   testSample_test VARCHAR(255)," +
                 "   testSample_sampleType VARCHAR(255)," +
-                "   testSample_image int(6)" +
+                "   testSample_image int(6)," +
+                "   testSample_testOrderId int(6) UNSIGNED," +
+                "   CONSTRAINT `fk_testOrderId` FOREIGN KEY (testSample_testOrderId) REFERENCES testOrder (testOrder_id)" +
+                "       ON DELETE CASCADE" +
                 ");",
                 function(err, res){
                     if(err){
@@ -70,8 +73,8 @@ class TestSampleDAO extends BaseDAO{
     async add(entity) {
         return new Promise((resolve, reject)=>{
             this.connection.query("INSERT INTO `testSample` (testSample_animal, testSample_type, testSample_petId, " +
-                "testSample_petSpecie, testSample_test, testSample_sampleType, testSample_image) VALUES (?, ?, ?, ?, ?, ?, ?)", [
-                entity.animal, entity.type, entity.petId, entity.petSPecie, entity.test, entity.sampleType, entity.image
+                "testSample_petSpecie, testSample_test, testSample_sampleType, testSample_image, testSample_testOrderId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [
+                entity.animal, entity.type, entity.petId, entity.petSpecie, entity.test, entity.sampleType, entity.image, entity.testOrderId
             ], function (err, res){
                 if(err){
                     throw err;
@@ -106,7 +109,22 @@ class TestSampleDAO extends BaseDAO{
                     reject(err)
                 }
                 if(res.length == 0) resolve(null)
-                resolve(this.fromResultSet(res[0]))
+                else resolve(this.fromResultSet(res[0]))
+            })
+        })
+    }
+
+    async getAllByTestOrderId(testOrderId){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT * FROM `testSample` WHERE testSample_testOrderId=?", [testOrderId], (err, res)=>{
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                let output = []
+                for(let rdp of res)
+                    output.push(this.fromResultSet(rdp))
+                resolve(output)
             })
         })
     }
@@ -121,10 +139,11 @@ class TestSampleDAO extends BaseDAO{
                 "   testSample_petSpecie=?," +
                 "   testSample_test=?," +
                 "   testSample_sampleType=?," +
-                "   testSample_image=?" +
+                "   testSample_image=?," +
+                "   testSample_testOrderId=?" +
                 " WHERE testSample_id=?",
                 [entity.animal, entity.type, entity.petId, entity.petSpecie, entity.test, entity.sampleType, entity.image,
-                entity.id],
+                entity.testOrderId, entity.id],
                 function(err, res){
                     if(err){
                         throw err;
