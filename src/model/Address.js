@@ -9,6 +9,8 @@ class Address {
     #tambon = null
     #postcode = null
 
+    #ownerId = null
+
     get id() {
         return this.#id;
     }
@@ -63,6 +65,14 @@ class Address {
 
     set postcode(value) {
         this.#postcode = value;
+    }
+
+    get ownerId() {
+        return this.#ownerId;
+    }
+
+    set ownerId(value) {
+        this.#ownerId = value;
     }
 }
 

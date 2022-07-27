@@ -24,6 +24,8 @@ class AddressDAO extends BaseDAO {
         o.tambon = r.address_tambon
         o.postcode = r.address_postcode
 
+        o.ownerId = r.address_ownerId
+
         return o
     }
 
@@ -37,7 +39,10 @@ class AddressDAO extends BaseDAO {
                 "   address_changwat VARCHAR(255)," +
                 "   address_amphoe VARCHAR(255)," +
                 "   address_tambon VARCHAR(255)," +
-                "   address_postcode VARCHAR(255)" +
+                "   address_postcode VARCHAR(255)," +
+                "" +
+                "   address_ownerId INT(6) UNSIGNED," +
+                "   CONSTRAINT `fk_ownerId` FOREIGN KEY (address_ownerId) REFERENCES owner (owner_id) ON DELETE CASCADE" + // If it is address of a owner
                 ");",
                 function(err, res){
                     if(err){
@@ -68,9 +73,11 @@ class AddressDAO extends BaseDAO {
     async add(entity) {
         return new Promise((resolve, reject)=>{
             this.connection.query("INSERT INTO `address` (" +
-                "address_address1, address_country, address_changwat, address_amphoe, address_tambon, address_postcode)" +
-                " VALUES (?, ?, ?, ?, ?, ?)", [
-                entity.address1, entity.country, entity.changwat, entity.amphoe, entity.tambon, entity.postcode
+                "address_address1, address_country, address_changwat, address_amphoe, address_tambon, address_postcode," +
+                "address_ownerId)" +
+                " VALUES (?, ?, ?, ?, ?, ?, ?)", [
+                entity.address1, entity.country, entity.changwat, entity.amphoe, entity.tambon, entity.postcode,
+                entity.ownerId
             ], function (err, res){
                 if(err){
                     throw err;
@@ -119,9 +126,11 @@ class AddressDAO extends BaseDAO {
                 "   address_changwat=?," +
                 "   address_amphoe=?," +
                 "   address_tambon=?," +
-                "   address_postcode=?" +
+                "   address_postcode=?," +
+                "   address_ownerId=?" +
                 " WHERE address_id=?",
-                [entity.address1, entity.country, entity.changwat, entity.amphoe, entity.tambon, entity.postcode, entity.id],
+                [entity.address1, entity.country, entity.changwat, entity.amphoe, entity.tambon, entity.postcode,
+                entity.ownerId, entity.id],
                 function(err, res){
                     if(err){
                         throw err;

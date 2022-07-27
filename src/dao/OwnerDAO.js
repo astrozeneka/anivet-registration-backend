@@ -1,6 +1,7 @@
 
 const BaseMemberDAO = require("./BaseMemberDAO")
 const Owner = require("../model/Owner");
+const AddressDAO = require("./AddressDAO");
 
 class OwnerDAO extends BaseMemberDAO{
     static instance = null;
@@ -26,6 +27,8 @@ class OwnerDAO extends BaseMemberDAO{
         o.name2 = r.owner_name2
         o.phone = r.owner_phone
         o.email = r.owner_email
+        // Very important thing for the methodology of DAO using relationship between tables
+        o.address = AddressDAO.getInstance().fromResultSet(r)
 
         return o
     }
@@ -71,7 +74,8 @@ class OwnerDAO extends BaseMemberDAO{
     }
 
     async add(entity) {
-        return new Promise((resolve, reject)=>{
+
+        await (()=>new Promise((resolve, reject)=>{
             this.connection.query("INSERT INTO `owner` (owner_username, owner_password, owner_website, owner_subscribe," +
                 "owner_name1, owner_name2, owner_phone, owner_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [
                 entity.username, entity.password, entity.website, entity.subscribe,
@@ -84,12 +88,15 @@ class OwnerDAO extends BaseMemberDAO{
                 entity.id = res.insertId
                 resolve(res)
             })
-        })
+        }))()
+
+        entity.address.ownerId = entity.id // Is also worked for One-to-many relationship
+        await AddressDAO.getInstance().add(entity.address)
     }
 
     async getAll(){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `owner`", (err, res)=>{
+            this.connection.query("SELECT * FROM `owner` INNER JOIN `address` ON address_ownerId=owner_id", (err, res)=>{
                 if(err){
                     throw err;
                     reject(err)
@@ -104,7 +111,7 @@ class OwnerDAO extends BaseMemberDAO{
 
     async getById(id){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `owner` WHERE owner_id=?", [id], (err, res)=>{
+            this.connection.query("SELECT * FROM `owner` INNER JOIN `address` ON address_ownerId=owner_id WHERE owner_id=?", [id], (err, res)=>{
                 if(err){
                     throw err;
                     reject(err)
@@ -116,7 +123,7 @@ class OwnerDAO extends BaseMemberDAO{
     }
 
     async update(entity){
-        return new Promise((resolve, reject)=>{
+        await (()=>new Promise((resolve, reject)=>{
             this.connection.query("" +
                 "UPDATE `owner` SET" +
                 "   owner_username=?," +
@@ -137,7 +144,9 @@ class OwnerDAO extends BaseMemberDAO{
                 }
                 resolve(res)
             })
-        })
+        }))()
+
+        await AddressDAO.getInstance().update(entity.address) // Also used for one-to-many relationships
     }
 
     async delete(entity){
