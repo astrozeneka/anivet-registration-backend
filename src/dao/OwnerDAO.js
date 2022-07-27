@@ -22,6 +22,10 @@ class OwnerDAO extends BaseMemberDAO{
         o.password = r.owner_password
         o.website = r.owner_website
         o.subscribe = r.owner_subscribe
+        o.name1 = r.owner_name1
+        o.name2 = r.owner_name2
+        o.phone = r.owner_phone
+        o.email = r.owner_email
 
         return o
     }
@@ -34,7 +38,11 @@ class OwnerDAO extends BaseMemberDAO{
                 "   owner_username VARCHAR(255)," +
                 "   owner_password VARCHAR(255)," +
                 "   owner_website VARCHAR(255)," +
-                "   owner_subscribe VARCHAR(255)" +
+                "   owner_subscribe VARCHAR(255)," +
+                "   owner_name1 VARCHAR(255)," +
+                "   owner_name2 VARCHAR(255)," +
+                "   owner_phone VARCHAR(255)," +
+                "   owner_email VARCHAR(255)" +
                 ");",
                 function(err, res){
                     if(err){
@@ -64,8 +72,10 @@ class OwnerDAO extends BaseMemberDAO{
 
     async add(entity) {
         return new Promise((resolve, reject)=>{
-            this.connection.query("INSERT INTO `owner` (owner_username, owner_password, owner_website, owner_subscribe) VALUES (?, ?, ?, ?)", [
-                entity.username, entity.password, entity.website, entity.subscribe
+            this.connection.query("INSERT INTO `owner` (owner_username, owner_password, owner_website, owner_subscribe," +
+                "owner_name1, owner_name2, owner_phone, owner_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [
+                entity.username, entity.password, entity.website, entity.subscribe,
+                entity.name1, entity.name2, entity.phone, entity.email
             ], function (err, res){
                 if(err){
                     throw err;
@@ -112,9 +122,14 @@ class OwnerDAO extends BaseMemberDAO{
                 "   owner_username=?," +
                 "   owner_password=?," +
                 "   owner_website=?," +
-                "   owner_subscribe=?" +
+                "   owner_subscribe=?," +
+                "   owner_name1=?," +
+                "   owner_name2=?," +
+                "   owner_phone=?," +
+                "   owner_email=?" +
                 " WHERE owner_id=?",
-            [entity.username, entity.password, entity.website, entity.subscribe, entity.id],
+            [entity.username, entity.password, entity.website, entity.subscribe,
+            entity.name1, entity.name1, entity.phone, entity.email, entity.id],
             function(err, res){
                 if(err){
                     throw err;

@@ -23,13 +23,20 @@ describe("OwnerDAO", function(){
         ownerA.password = "pass"
         ownerA.website = "bob.com"
         ownerA.subscribe = true
-
+        ownerA.name1 = "BOB"
+        ownerA.name2 = "BOB"
+        ownerA.phone = "123456789"
+        ownerA.email = "bob@gmail.com"
 
         ownerB = new Owner()
         ownerB.username = "Bob"
         ownerB.password = "pass"
         ownerB.website = "bob.com"
         ownerB.subscribe = true
+        ownerB.name1 = "B"
+        ownerB.name2 = "b"
+        ownerB.phone = "65443567"
+        ownerB.email = "bob@gmail.com"
     })
 
     it("Should destroy and create table", async function(){
@@ -53,16 +60,19 @@ describe("OwnerDAO", function(){
 
         let _o = await od.getById(ownerB.id)
         assert(_o.id == ownerB.id)
+        assert(_o.name1 == "B")
     })
 
     it("Should update", async function(){
         await od.add(ownerA)
 
         ownerA.username = "jane"
+        ownerA.name1 = "J"
         await od.update(ownerA)
 
         let _ownerA = await od.getById(ownerA.id)
         assert(_ownerA.username == "jane")
+        assert(_ownerA.name1 == "J")
     })
 
     it("Should delete", async function(){
