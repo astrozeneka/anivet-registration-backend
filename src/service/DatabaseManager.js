@@ -22,12 +22,14 @@ class DatabaseManager{
                 password: '2dc05f71',
                 database: "heroku_5cd29d26d91768f"
             });
+            /*
             this.#connection.connect(function(err){
                 if(err){
                     reject(err)
                 }
                 resolve()
             })
+             */
         }))
     }
 
