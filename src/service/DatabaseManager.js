@@ -17,10 +17,10 @@ class DatabaseManager{
     async init(){
         return new Promise(((resolve, reject)=>{
             this.#connection = mysql.createConnection({
-                host: 'localhost',
-                user: 'root',
-                password: '',
-                database: "backend-registration"
+                host: 'us-cdbr-east-06.cleardb.net',
+                user: 'b0d4addb6803a3',
+                password: '2dc05f71',
+                database: "heroku_5cd29d26d91768f"
             });
             this.#connection.connect(function(err){
                 if(err){
