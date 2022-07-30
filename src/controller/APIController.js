@@ -3,6 +3,7 @@ var path = require("path")
 const BreedController = require("./BreedController");
 const TestSampleController = require("./TestSampleController");
 const TestOrderController = require("./TestOrderController");
+const InstallationController = require("./InstallationController");
 
 class APIController extends BaseController {
     static instance = null;
@@ -25,6 +26,9 @@ class APIController extends BaseController {
 
     register(app, prefix){
         if(prefix != undefined) this.prefix = prefix
+
+        // Installation
+        InstallationController.getInstance().register(app, path.join(prefix, "install"))
 
         // Breed
         BreedController.getInstance().register(app, path.join(prefix, "breed"))
