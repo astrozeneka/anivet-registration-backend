@@ -17,11 +17,19 @@ class DatabaseManager{
     async init(){
         return new Promise(((resolve, reject)=>{
             this.#connection = mysql.createPool({
+                host: process.env.DATABASE_HOST || 'localhost',
+                user: process.env.DATABASE_USER || 'root',
+                password: process.env.DATABASE_PASSWORD || '',
+                database: process.env.DATABASE_NAME || 'backend-registration'
+            })
+            /*
+            this.#connection = mysql.createPool({
                 host: 'us-cdbr-east-06.cleardb.net',
                 user: 'b0d4addb6803a3',
                 password: '2dc05f71',
                 database: "heroku_5cd29d26d91768f"
             });
+            */
             /*
             this.#connection.connect(function(err){
                 if(err){
