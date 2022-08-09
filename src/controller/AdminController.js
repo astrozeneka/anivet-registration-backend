@@ -3,6 +3,29 @@ const path = require("path")
 const BaseController = require("./BaseController");
 const Admin = require("../model/Admin");
 
+/*
+const jwt = require("express-jwt");
+const jwksRsa = require('jwks-rsa');
+const checkJwt = jwt({
+    secret: jwksRsa.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: `https://<AUTH0_DOMAIN>/.well-known/jwks.json`
+    }),
+
+    // Validate the audience and the issuer.
+    audience: 'anivet-api',
+    issuer: `https://localhost/`,
+    algorithms: ['RS256']
+});
+ */
+
+const jwt = require('jsonwebtoken')
+const dotenv = require('dotenv')
+dotenv.config()
+
+
 class AdminController extends BaseController{
     add = null
     static instance = null;
@@ -69,6 +92,25 @@ class AdminController extends BaseController{
             await this.add.delete(admin)
             res.setHeader('Content-Type', 'application/json')
             res.send(null)
+        })
+
+        /**
+         * The login method return authentication token to the client-side application
+         */
+        app.post(path.join(this.prefix, "/login"), async(req, res)=>{
+            let d = req.body
+            let username = d.username
+            let password = d.password
+            let u = await this.add.authenticate(username, password)
+            res.setHeader('Content-Type', 'application/json')
+            if(u == null){
+                res.send(JSON.stringify(null))
+            }else {
+                let accessToken = jwt.sign(u.serialize(), process.env.TOKEN_SECRET, {expiresIn: 1800})
+                res.send(JSON.stringify({
+                    accessToken: accessToken
+                }))
+            }
         })
     }
 }
