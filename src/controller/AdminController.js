@@ -108,7 +108,8 @@ class AdminController extends BaseController{
             }else {
                 let accessToken = jwt.sign(u.serialize(), process.env.TOKEN_SECRET, {expiresIn: 1800})
                 res.send(JSON.stringify({
-                    accessToken: accessToken
+                    accessToken: accessToken,
+                    userId: u.id
                 }))
             }
         })
