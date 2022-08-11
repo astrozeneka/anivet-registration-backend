@@ -179,12 +179,9 @@ class BreederDAO extends BaseMemberDAO{
     }
 
     async getAll(){
-        /**
-         * Select all breeder
-         */
         let breeders = await (()=>{
             return new Promise((resolve, reject)=>{
-                this.connection.query("SELECT * FROM `breeder` INNER JOIN `address` WHERE address_breederId = breeder_id", async (err, res) => {
+                this.connection.query("SELECT * FROM `breeder` INNER JOIN `address` ON address_breederId = breeder_id", async (err, res) => {
                     if (err) {
                         throw err;
                         reject(err)
@@ -200,6 +197,98 @@ class BreederDAO extends BaseMemberDAO{
             })
         })()
         return breeders;
+    }
+
+    async getById(id){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT * FROM `breeder` INNER JOIN `address` ON address_breederId = breeder_id WHERE breeder_id = ?",
+                [id], async (err, res) => {
+                if (err) {
+                    throw err;
+                    reject(err)
+                }
+
+                if(res.length == 0) resolve(null)
+                let breeder = this.fromResultSet(res[0])
+                breeder.breeds = await BreedDAO.getInstance().getAllByBreeder(breeder.id);
+                resolve(breeder);
+            })
+        })
+    }
+
+    async update(entity){
+
+        /**
+         * Update the main table
+         */
+        await(()=>{
+            return new Promise((resolve, reject)=>{
+                this.connection.query("" +
+                    "UPDATE `breeder` SET" +
+                    "   breeder_username=?," +
+                    "   breeder_password=?," +
+                    "   breeder_subscribe=?," +
+                    "   breeder_name1=?," +
+                    "   breeder_name2=?," +
+                    "   breeder_phone=?," +
+                    "   breeder_email=?" +
+                    " WHERE breeder_id=?",
+                    [entity.username, entity.password, entity.subscribe, entity.name1, entity.name2, entity.phone, entity.email,
+                    entity.id],
+                    function(err, res){
+                        if(err){
+                            throw err;
+                            reject(err)
+                        }
+                        resolve(res)
+                    })
+            })
+        })()
+
+        /**
+         * Update address
+         */
+        await AddressDAO.getInstance().update(entity.address)
+
+        /**
+         * Update cool
+         */
+        for(let breed of entity.breeds)
+            await BreedDAO.getInstance().update(breed)
+
+    }
+
+    async delete(entity){
+
+        /**
+         * DELETE ENTITY
+         */
+        await (()=>new Promise((resolve, reject)=>{
+            this.connection.query("" +
+                "DELETE FROM `breeder` WHERE breeder_id=?", [entity.id],
+                function(err, res){
+                    if(err){
+                        throw err;
+                        reject(err)
+                    }
+                    resolve()
+                })
+        }))()
+
+        /**
+         * DELETE ASSOCIATION
+         */
+        await (()=>new Promise((resolve, reject)=>{
+            this.connection.query("" +
+                "DELETE FROM `assoc_breeder_breed` WHERE abb_breederId=?", [entity.id],
+                function(err, res){
+                    if(err){
+                        throw err;
+                        reject(err)
+                    }
+                    resolve()
+                })
+        }))()
     }
 }
 

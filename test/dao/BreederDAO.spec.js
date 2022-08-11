@@ -110,6 +110,73 @@ describe("BreederDAO", function(){
         assert(adList.length == 2);
     })
 
+    it("Shouldn't insert breed if it has been already inserted", async()=>{
+        breederA.breeds = [breedA]
+        breederB.breeds = [breedA, breedB]
+        await brd.add(breederA)
+        await brd.add(breederB)
+
+        let bdList = await bd.getAll();
+        assert(bdList.length == 2);
+    })
+
+    it("Shouldn't insert breed if it has been already inserted (2)", async()=>{
+        breederA.breeds = [breedA]
+        await brd.add(breederA);
+
+        breederB.breeds = [breedA, breedB]
+        await brd.add(breederB);
+
+        let bdList = await bd.getAll();
+        assert(bdList.length == 2);
+    })
+
+    it("Should fetch breeder by id", async()=>{
+        await brd.add(breederA)
+        await brd.add(breederB)
+
+        let _o = await brd.getById(breederA.id)
+        assert(_o.name1 == breederA.name1)
+        assert(_o.breeds.length == breederA.breeds.length)
+
+        _o = await brd.getById(breederB.id)
+        assert(_o.id == breederB.id)
+        assert(_o.breeds.length == breederB.breeds.length)
+    })
+
+    it("Should update the database", async()=>{
+        await brd.add(breederA)
+        await brd.add(breederB)
+
+        breederA.name2 = "Obama"
+        breederA.breeds[0].name = "CHIHUAHUA"
+        await brd.update(breederA)
+
+        let _o = await brd.getById(breederA.id)
+        assert(_o.name2 = "Obama")
+        assert(_o.breeds[0].name == "CHIHUAHUA")
+
+        let _b = await bd.getById(breederA.breeds[0].id)
+        assert(_b.name == "CHIHUAHUA")
+    })
+
+    it("Should delete from the database", async()=>{
+        await brd.add(breederA)
+        await brd.add(breederB);
+
+        let brdList = await brd.getAll();
+        let adList = await ad.getAll();
+        let bdList = await bd.getAll();
+        assert(brdList.length == 2)
+        assert(adList.length == 2)
+        assert(bdList.length == 4)
+
+        await brd.delete(breederB)
+        brdList = await brd.getAll();
+        adList = await ad.getAll();
+        assert(brdList.length == 1);
+        assert(adList.length == 1);
+    })
 
 
     // IMPORTANT : check if the breed has already added

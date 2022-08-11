@@ -60,6 +60,10 @@ class BreedDAO extends BaseDAO{
     }
 
     async add(entity) {
+        // TODO: Apply the same algorithm for all entity
+        if(entity.id != null)
+            return entity;
+
         return new Promise((resolve, reject)=>{
             this.connection.query("INSERT INTO `breed` (breed_type, breed_name) VALUES (?, ?)", [
                 entity.type, entity.name
