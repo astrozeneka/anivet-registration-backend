@@ -25,6 +25,8 @@ class AddressDAO extends BaseDAO {
         o.postcode = r.address_postcode
 
         o.ownerId = r.address_ownerId
+        o.breederId = r.address_breederId
+        o.vetId = r.address_breederId
 
         return o
     }
@@ -42,8 +44,15 @@ class AddressDAO extends BaseDAO {
                 "   address_postcode VARCHAR(255)," +
                 "" +
                 "   address_ownerId INT(6) UNSIGNED," +
-                "   CONSTRAINT `fk_ownerId` FOREIGN KEY (address_ownerId) REFERENCES owner (owner_id) ON DELETE CASCADE" + // If it is address of a owner
-                ");",
+                "   address_breederId INT(6) UNSIGNED," +
+                "   address_vetId INT(6) UNSIGNED," +
+                "" +
+                "   CONSTRAINT `fk_ownerId` FOREIGN KEY (address_ownerId) REFERENCES owner (owner_id) ON DELETE CASCADE," +
+                "   CONSTRAINT `fk_breederId` FOREIGN KEY (address_breederId) REFERENCES breeder (breeder_id) ON DELETE CASCADE" +
+                "" +
+                "" + // If it is address of a owner
+                ") " +
+                "ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;",
                 function(err, res){
                     if(err){
                         reject(err)
@@ -74,10 +83,10 @@ class AddressDAO extends BaseDAO {
         return new Promise((resolve, reject)=>{
             this.connection.query("INSERT INTO `address` (" +
                 "address_address1, address_country, address_changwat, address_amphoe, address_tambon, address_postcode," +
-                "address_ownerId)" +
-                " VALUES (?, ?, ?, ?, ?, ?, ?)", [
+                "address_ownerId, address_breederId, address_vetId)" +
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [
                 entity.address1, entity.country, entity.changwat, entity.amphoe, entity.tambon, entity.postcode,
-                entity.ownerId
+                entity.ownerId, entity.breederId, entity.vetId
             ], function (err, res){
                 if(err){
                     throw err;
@@ -127,10 +136,12 @@ class AddressDAO extends BaseDAO {
                 "   address_amphoe=?," +
                 "   address_tambon=?," +
                 "   address_postcode=?," +
-                "   address_ownerId=?" +
+                "   address_ownerId=?," +
+                "   address_breederId=?," +
+                "   address_vetId=?" +
                 " WHERE address_id=?",
                 [entity.address1, entity.country, entity.changwat, entity.amphoe, entity.tambon, entity.postcode,
-                entity.ownerId, entity.id],
+                entity.ownerId, entity.breederId, entity.vetId, entity.id],
                 function(err, res){
                     if(err){
                         throw err;

@@ -102,6 +102,24 @@ class BreedDAO extends BaseDAO{
         })
     }
 
+    async getAllByBreeder(breederId){
+        /**
+         * Here the association table will be used
+         */
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT * FROM `breed` INNER JOIN `assoc_breeder_breed` ON abb_breedId = breed_id WHERE abb_breederId = ?", [breederId], (err, res)=>{
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                let output = []
+                for(let rdp of res)
+                    output.push(this.fromResultSet(rdp))
+                resolve(output)
+            })
+        })
+    }
+
     async update(entity){
         return new Promise((resolve, reject)=>{
             this.connection.query("" +

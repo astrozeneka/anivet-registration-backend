@@ -10,6 +10,8 @@ class Address {
     #postcode = null
 
     #ownerId = null
+    #breederId = null
+    #vetId = null
 
     get id() {
         return this.#id;
@@ -73,6 +75,22 @@ class Address {
 
     set ownerId(value) {
         this.#ownerId = value;
+    }
+
+    get breederId() {
+        return this.#breederId;
+    }
+
+    set breederId(value) {
+        this.#breederId = value;
+    }
+
+    get vetId() {
+        return this.#vetId;
+    }
+
+    set vetId(value) {
+        this.#vetId = value;
     }
 }
 
