@@ -13,6 +13,18 @@ class Address {
     #breederId = null
     #vetId = null
 
+    serialize(){
+        return {
+            id: this.id,
+            address1: this.address1,
+            country: this.country,
+            changwat: this.changwat,
+            amphoe: this.amphoe,
+            tambon: this.tambon,
+            postcode: this.postcode
+        }
+    }
+
     get id() {
         return this.#id;
     }

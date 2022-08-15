@@ -261,6 +261,11 @@ class BreederDAO extends BaseMemberDAO{
     async delete(entity){
 
         /**
+         * Firstly, we should load data of the entity
+         */
+        entity = await this.getById(entity.id)
+
+        /**
          * DELETE ENTITY
          */
         await (()=>new Promise((resolve, reject)=>{

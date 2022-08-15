@@ -85,5 +85,19 @@ class BaseMember extends BaseUser{
     set email(value) {
         this.#email = value;
     }
+
+    serialize(){
+        return {
+            id: this.id,
+            username: this.username,
+            password: this.password,
+            website: this.website,
+            subscribe: this.subscribe,
+            name1: this.name1,
+            name2: this.name2,
+            phone: this.phone,
+            email: this.email
+        }
+    }
 }
 module.exports = BaseMember
