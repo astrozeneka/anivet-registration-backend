@@ -53,13 +53,21 @@ class BreederController extends BaseController{
             breeder.website = d.website;
             breeder.subscribe = d.subscribe;
 
-            breeder.address = new Address();
-            breeder.address.address1 = d.address.address1;
-            breeder.address.country = d.address.country;
-            breeder.address.changwat = d.address.changwat;
-            breeder.address.amphoe = d.address.amphoe;
-            breeder.address.tambon = d.address.tambon;
-            breeder.address.postcode = d.address.postcode;
+            if(breeder.address == null) {
+                breeder.address = new Address();
+            } else {
+                breeder.address = new Address();
+                breeder.address.address1 = d.address.address1;
+                breeder.address.country = d.address.country;
+                breeder.address.changwat = d.address.changwat;
+                breeder.address.amphoe = d.address.amphoe;
+                breeder.address.tambon = d.address.tambon;
+                breeder.address.postcode = d.address.postcode;
+            }
+
+            if(d.breeds == null){
+                d.breeds = []
+            }
 
             breeder.breeds = []
             for(const _b of d.breeds){

@@ -5,6 +5,7 @@ const OwnerDAO = require("../dao/OwnerDAO");
 const TestOrderDAO = require("../dao/TestOrderDAO");
 const TestSampleDAO = require("../dao/TestSampleDAO");
 const path = require("path");
+const BreederDAO = require("../dao/BreederDAO");
 
 
 class InstallationController extends BaseController{
@@ -30,6 +31,7 @@ class InstallationController extends BaseController{
         this.od = OwnerDAO.getInstance()
         this.tod = TestOrderDAO.getInstance()
         this.tsd = TestSampleDAO.getInstance()
+        this.brd = BreederDAO.getInstance()
     }
 
     register(app, prefix){
@@ -41,9 +43,11 @@ class InstallationController extends BaseController{
             await this.od.destroyTable()
             await this.tsd.destroyTable()
             await this.tod.destroyTable()
+            await this.brd.destroyTable()
             await this.bd.destroyTable()
 
             await this.bd.buildTable() // Breed Table
+            await this.brd.buildTable() // Breeder Table
             await this.tod.buildTable() // TestOrder Table
             await this.tsd.buildTable() // TestSample Table
             await this.od.buildTable() // Owner Table

@@ -7,6 +7,7 @@ class BaseController {
     od = null
     tod = null
     tsd = null
+    brd = null
 
     prefix = ""
 
