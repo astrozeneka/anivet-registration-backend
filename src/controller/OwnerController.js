@@ -70,6 +70,38 @@ class OwnerController extends BaseController{
             res.send(JSON.stringify(owner.serialize()))
 
         })
+
+        app.put(join(this.prefix, "/"), async(req, res)=>{
+            let d = req.body
+            let owner = new Owner()
+            owner.id = d.id
+            let _owner = await this.od.getById(owner.id)
+
+            owner.name1 = d.name1 || _owner.name1
+            owner.name2 = d.name2 || _owner.name2
+            owner.phone = d.phone || _owner.phone
+            owner.email = d.email || _owner.email
+            owner.username = d.username || _owner.username
+            owner.password = d.password || _owner.password
+            owner.website = d.website || _owner.website
+            owner.address = d.address || _owner.address
+
+            await this.od.update(owner)
+            let output = await this.od.getById(owner.id)
+
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(output.serialize()))
+        })
+
+        app.delete(join(this.prefix, "/"), async (req, res)=>{
+            let d = req.body;
+            let owner = new Owner();
+            owner.id = d.id;
+            await this.od.delete(owner);
+
+            res.setHeader('Content-Type', 'application/json')
+            res.send(null)
+        })
     }
 }
 module.exports = OwnerController

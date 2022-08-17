@@ -118,4 +118,33 @@ describe("OwnerController /api/v1/owner/", ()=>{
                 done()
             })
     })
+
+    it("Should update pet owner details", (done)=>{
+        let obj = {
+            "id": 1,
+            "name1": "Bill"
+        }
+        chai.request(server)
+            .put("/api/v1/owner")
+            .send(obj)
+            .end(async(err, res)=> {
+                let owner = await od.getById(1)
+                assert(owner.name1 == "Bill")
+                done()
+            })
+    })
+
+    it("Should delete in list", (done)=>{
+        let obj = {
+            "id": 1
+        }
+        chai.request(server)
+            .delete("/api/v1/owner")
+            .send(obj)
+            .end(async(err, res)=>{
+                let list = await od.getAll()
+                assert(list.length == 1)
+                done()
+            })
+    })
 })
