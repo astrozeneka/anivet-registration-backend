@@ -6,10 +6,12 @@ const Breed = require("../../src/model/Breed");
 const Address = require("../../src/model/Address");
 const Breeder = require("../../src/model/Breeder");
 const chai = require("chai");
+const BaseMemberDAO = require("../../src/dao/BaseMemberDAO");
 var assert = chai.assert;
 
 describe("BreederDAO", function(){
     let dm = DatabaseManager.getInstance()
+    let bmd = BaseMemberDAO.getInstance()
     let brd = BreederDAO.getInstance()
     let ad = AddressDAO.getInstance()
     let bd = BreedDAO.getInstance()
@@ -25,11 +27,14 @@ describe("BreederDAO", function(){
 
     beforeEach(async function(){
         dm.init()
+
         await ad.destroyTable();
         await brd.destroyTable();
+        await bmd.destroyTable();
         await bd.destroyTable();
 
         await bd.buildTable();
+        await bmd.buildTable();
         await brd.buildTable();
         await ad.buildTable();
 

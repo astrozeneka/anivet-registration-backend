@@ -47,8 +47,10 @@ class AddressDAO extends BaseDAO {
                 "   address_breederId INT(6) UNSIGNED," +
                 "   address_vetId INT(6) UNSIGNED," +
                 "" +
-                "   CONSTRAINT `fk_ownerId` FOREIGN KEY (address_ownerId) REFERENCES owner (owner_id) ON DELETE CASCADE," +
-                "   CONSTRAINT `fk_breederId` FOREIGN KEY (address_breederId) REFERENCES breeder (breeder_id) ON DELETE CASCADE" +
+                "   address_baseMemberId INT(6) UNSIGNED," +
+                "   CONSTRAINT `fk_baseMemberId` FOREIGN KEY (address_baseMemberId) REFERENCES baseMember (baseMember_id) ON DELETE CASCADE" +
+                //"   CONSTRAINT `fk_ownerId` FOREIGN KEY (address_ownerId) REFERENCES owner (owner_id) ON DELETE CASCADE," +
+                //"   CONSTRAINT `fk_breederId` FOREIGN KEY (address_breederId) REFERENCES breeder (breeder_id) ON DELETE CASCADE" +
                 "" +
                 "" + // If it is address of a owner
                 ") " +
@@ -83,10 +85,10 @@ class AddressDAO extends BaseDAO {
         return new Promise((resolve, reject)=>{
             this.connection.query("INSERT INTO `address` (" +
                 "address_address1, address_country, address_changwat, address_amphoe, address_tambon, address_postcode," +
-                "address_ownerId, address_breederId, address_vetId)" +
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+                "address_ownerId, address_breederId, address_vetId, address_baseMemberId)" +
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
                 entity.address1, entity.country, entity.changwat, entity.amphoe, entity.tambon, entity.postcode,
-                entity.ownerId, entity.breederId, entity.vetId
+                entity.ownerId, entity.breederId, entity.vetId, entity.baseMemberId
             ], function (err, res){
                 if(err){
                     throw err;

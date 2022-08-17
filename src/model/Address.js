@@ -12,6 +12,7 @@ class Address {
     #ownerId = null
     #breederId = null
     #vetId = null
+    #baseMemberId = null
 
     serialize(){
         return {

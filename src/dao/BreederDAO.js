@@ -19,15 +19,15 @@ class BreederDAO extends BaseMemberDAO{
     fromResultSet(r){
         let o = new Breeder()
 
-        o.id = r.breeder_id
-        o.username = r.breeder_username
-        o.password = r.breeder_password
-        o.website = r.breeder_website
-        o.subscribe = r.breeder_subscribe
-        o.name1 = r.breeder_name1
-        o.name2 = r.breeder_name2
-        o.phone = r.breeder_phone
-        o.email = r.breeder_email
+        o.id = r.baseMember_id
+        o.username = r.baseMember_username
+        o.password = r.baseMember_password
+        o.website = r.baseMember_website
+        o.subscribe = r.baseMember_subscribe
+        o.name1 = r.baseMember_name1
+        o.name2 = r.baseMember_name2
+        o.phone = r.baseMember_phone
+        o.email = r.baseMember_email
 
         // One to One
         o.address = AddressDAO.getInstance().fromResultSet(r)
@@ -40,7 +40,7 @@ class BreederDAO extends BaseMemberDAO{
     }
 
     async buildTable(){
-        await (()=>{
+        /*await (()=>{
             new Promise((resolve, reject)=>{
                 let o = this.connection.query("" +
                     "CREATE TABLE `breeder` (" +
@@ -62,6 +62,23 @@ class BreederDAO extends BaseMemberDAO{
                     }
                 )
             })
+        })()*/
+
+        await (()=>{
+            new Promise((resolve, reject)=>{
+                let o = this.connection.query("" +
+                    "CREATE VIEW breeder AS" +
+                    "   SELECT * FROM baseMember" +
+                    "   WHERE baseMember_type = 'breeder'",
+                    function(err, res){
+                        if(err){
+                            reject(err)
+                            throw(err)
+                        }
+                        resolve(res)
+                    }
+                )
+            })
         })()
         await (()=>{
             new Promise((resolve, reject)=>{
@@ -70,7 +87,7 @@ class BreederDAO extends BaseMemberDAO{
                     "   abb_breederId INT(6) UNSIGNED," +
                     "   abb_breedId INT(6) UNSIGNED," +
                     "" +
-                    "   CONSTRAINT `fk_abb_breeder` FOREIGN KEY (abb_breederId) REFERENCES breeder (breeder_id) ON DELETE CASCADE," +
+                    "   CONSTRAINT `fk_abb_breeder` FOREIGN KEY (abb_breederId) REFERENCES baseMember (baseMember_id) ON DELETE CASCADE," +
                     "   CONSTRAINT `fk_abb_breed` FOREIGN KEY (abb_breedId) REFERENCES breed (breed_id) ON DELETE CASCADE" +
                     ");",
                     function(err, res){
@@ -103,7 +120,7 @@ class BreederDAO extends BaseMemberDAO{
         await (()=>{
             return new Promise((resolve, reject)=>{
                 let o = this.connection.query("" +
-                    "DROP TABLE IF EXISTS `breeder`",
+                    "DROP VIEW IF EXISTS `breeder`",
                     function(err, res){
                         if(err){
                             reject(err)
@@ -124,10 +141,10 @@ class BreederDAO extends BaseMemberDAO{
         await (()=>{
             return new Promise((resolve, reject)=>{
                 this.connection.query("" +
-                    "INSERT INTO `breeder` (breeder_name1, breeder_name2, breeder_phone, breeder_email, breeder_username," +
-                    "breeder_password, breeder_subscribe) VALUES (?, ?, ?, ?, ?, ?, ?);",
-                    [entity.name1, entity.name2, entity.phone, entity.email, entity.username, entity.password,
-                    entity.subscribe],
+                    "INSERT INTO baseMember (baseMember_username, baseMember_password, " +
+                    "baseMember_subscribe, baseMember_name1, baseMember_name2, baseMember_phone, baseMember_email," +
+                    "baseMember_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    [entity.username, entity.password, entity.subscribe, entity.name1, entity.name2, entity.phone, entity.email, 'breeder'],
                     function(err, res){
                         if(err){
                             reject(err)
@@ -144,7 +161,8 @@ class BreederDAO extends BaseMemberDAO{
          * Insert address
          * Example of one-to-one relationship between class
          */
-        entity.address.breederId = entity.id;
+        //entity.address.breederId = entity.id;
+        entity.address.baseMemberId = entity.id;
         await AddressDAO.getInstance().add(entity.address)
 
         /**
@@ -181,7 +199,7 @@ class BreederDAO extends BaseMemberDAO{
     async getAll(){
         let breeders = await (()=>{
             return new Promise((resolve, reject)=>{
-                this.connection.query("SELECT * FROM `breeder` INNER JOIN `address` ON address_breederId = breeder_id", async (err, res) => {
+                this.connection.query("SELECT * FROM `breeder` INNER JOIN `address` ON address_baseMemberId = baseMember_id", async (err, res) => {
                     if (err) {
                         throw err;
                         reject(err)
@@ -201,7 +219,7 @@ class BreederDAO extends BaseMemberDAO{
 
     async getById(id){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `breeder` INNER JOIN `address` ON address_breederId = breeder_id WHERE breeder_id = ?",
+            this.connection.query("SELECT * FROM `breeder` INNER JOIN `address` ON address_baseMemberId = baseMember_id WHERE baseMember_id = ?",
                 [id], async (err, res) => {
                 if (err) {
                     throw err;
@@ -225,14 +243,14 @@ class BreederDAO extends BaseMemberDAO{
             return new Promise((resolve, reject)=>{
                 this.connection.query("" +
                     "UPDATE `breeder` SET" +
-                    "   breeder_username=?," +
-                    "   breeder_password=?," +
-                    "   breeder_subscribe=?," +
-                    "   breeder_name1=?," +
-                    "   breeder_name2=?," +
-                    "   breeder_phone=?," +
-                    "   breeder_email=?" +
-                    " WHERE breeder_id=?",
+                    "   baseMember_username=?," +
+                    "   baseMember_password=?," +
+                    "   baseMember_subscribe=?," +
+                    "   baseMember_name1=?," +
+                    "   baseMember_name2=?," +
+                    "   baseMember_phone=?," +
+                    "   baseMember_email=?" +
+                    " WHERE baseMember_id=?",
                     [entity.username, entity.password, entity.subscribe, entity.name1, entity.name2, entity.phone, entity.email,
                     entity.id],
                     function(err, res){
@@ -270,7 +288,7 @@ class BreederDAO extends BaseMemberDAO{
          */
         await (()=>new Promise((resolve, reject)=>{
             this.connection.query("" +
-                "DELETE FROM `breeder` WHERE breeder_id=?", [entity.id],
+                "DELETE FROM `baseMember` WHERE baseMember_id=?", [entity.id],
                 function(err, res){
                     if(err){
                         throw err;

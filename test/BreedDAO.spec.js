@@ -4,6 +4,7 @@ const Breed = require("../src/model/Breed")
 
 var chai = require('chai');
 const OwnerDAO = require("../src/dao/OwnerDAO");
+const resetDatabase = require("../src/utils/resetDatabase");
 var assert = chai.assert;
 
 describe("BreedDAO", function(){
@@ -15,8 +16,7 @@ describe("BreedDAO", function(){
 
     beforeEach(async function(){
         dm.init()
-        await bd.destroyTable()
-        await bd.buildTable()
+        await resetDatabase()
 
         breedA = new Breed()
         breedA.type = "Dog"

@@ -22,6 +22,7 @@ class DatabaseManager{
                 password: process.env.DATABASE_PASSWORD || '',
                 database: process.env.DATABASE_NAME || 'backend-registration'
             })
+            resolve(this.#connection)
             /*
             this.#connection = mysql.createPool({
                 host: 'us-cdbr-east-06.cleardb.net',

@@ -5,6 +5,7 @@ const TestSampleDAO = require("../../src/dao/TestSampleDAO");
 const TestSample = require("../../src/model/TestSample");
 const TestOrderDAO = require("../../src/dao/TestOrderDAO");
 const TestOrderWithSamples = require("../../src/model/TestOrderWithSamples");
+const resetDatabase = require("../../src/utils/resetDatabase");
 var assert = chai.assert;
 
 describe("TestOrderDAO", function(){
@@ -23,10 +24,12 @@ describe("TestOrderDAO", function(){
     beforeEach(async function(){
 
         await dm.init()
-        await tsd.destroyTable()
+        await resetDatabase()
+        /*await tsd.destroyTable()
         await tod.destroyTable()
         await tod.buildTable()
         await tsd.buildTable()
+         */
 
         sampleA = new TestSample()
         sampleA.animal = "Bird"
