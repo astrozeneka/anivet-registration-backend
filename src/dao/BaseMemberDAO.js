@@ -30,6 +30,7 @@ class BaseMemberDAO extends BaseUserDAO {
                     "   baseMember_name2 VARCHAR(255)," +
                     "   baseMember_phone VARCHAR(255)," +
                     "   baseMember_email VARCHAR(255)," +
+                    "   baseMember_corp VARCHAR(255)," +
                     "   baseMember_type ENUM('admin','breeder','owner','vet')" +
                     "" +
                     ");",

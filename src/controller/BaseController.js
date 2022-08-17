@@ -8,6 +8,7 @@ class BaseController {
     tod = null
     tsd = null
     brd = null
+    vd = null
 
     prefix = ""
 
