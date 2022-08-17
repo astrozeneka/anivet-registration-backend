@@ -17,10 +17,10 @@ class AdminDAO extends BaseMemberDAO{
     fromResultSet(r){
         let o = new Admin()
 
-        o.id = r.admin_id
-        o.username = r.admin_username
-        o.password = r.admin_password
-        o.website = r.admin_website
+        o.id = r.baseMember_id
+        o.username = r.baseMember_username
+        o.password = r.baseMember_password
+        o.website = r.baseMember_website
 
         return o
     }
@@ -28,12 +28,9 @@ class AdminDAO extends BaseMemberDAO{
     async buildTable(){
         return new Promise((resolve, reject)=>{
             let o = this.connection.query("" +
-                "CREATE TABLE `admin` (" +
-                "   admin_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY," +
-                "   admin_username VARCHAR(255)," +
-                "   admin_password VARCHAR(255)," +
-                "   admin_website VARCHAR(255)" +
-                ");",
+                "CREATE VIEW admin AS" +
+                "   SELECT * FROM baseMember" +
+                "   WHERE baseMember_type = 'admin'",
                 function(err, res){
                     if(err){
                         reject(err)
@@ -48,7 +45,7 @@ class AdminDAO extends BaseMemberDAO{
     async destroyTable(){
         return new Promise((resolve, reject)=>{
             let o = this.connection.query("" +
-                "DROP TABLE IF EXISTS `admin`",
+                "DROP VIEW IF EXISTS `admin`",
                 function(err, res){
                     if(err){
                         reject(err)
@@ -62,8 +59,8 @@ class AdminDAO extends BaseMemberDAO{
 
     async add(entity) {
         await (()=>new Promise((resolve, reject)=>{
-            this.connection.query("INSERT INTO `admin` (admin_username, admin_password, admin_website) " +
-                "  VALUES (?, ?, ?)", [entity.username, entity.password, entity.website],
+            this.connection.query("INSERT INTO `baseMember` (baseMember_username, baseMember_password, baseMember_website, baseMember_type) " +
+                "  VALUES (?, ?, ?, ?)", [entity.username, entity.password, entity.website, 'admin'],
                 function (err, res){
                 if(err){
                     throw err;
@@ -92,7 +89,7 @@ class AdminDAO extends BaseMemberDAO{
 
     async getById(id){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `admin` WHERE admin_id=?", [id], (err, res)=>{
+            this.connection.query("SELECT * FROM `admin` WHERE baseMember_id=?", [id], (err, res)=>{
                 if(err){
                     throw err;
                     reject(err)
@@ -107,10 +104,10 @@ class AdminDAO extends BaseMemberDAO{
         return new Promise((resolve, reject)=>{
             this.connection.query("" +
                 "UPDATE `admin` SET" +
-                "   admin_username=?," +
-                "   admin_password=?," +
-                "   admin_website=?" +
-                " WHERE admin_id=?",
+                "   baseMember_username=?," +
+                "   baseMember_password=?,"+
+                "   baseMember_website=?" +
+                " WHERE baseMember_id=?",
                 [entity.username, entity.password, entity.website, entity.id],
                 function(err, res){
                     if(err){
@@ -125,7 +122,7 @@ class AdminDAO extends BaseMemberDAO{
     async delete(entity){
         return new Promise((resolve, reject)=>{
             this.connection.query("" +
-                "DELETE FROM `admin` WHERE admin_id=?", [entity.id],
+                "DELETE FROM `baseMember` WHERE baseMember_id=?", [entity.id],
                 function(err, res){
                     if(err){
                         throw err;

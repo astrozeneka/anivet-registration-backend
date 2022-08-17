@@ -3,6 +3,7 @@ const DatabaseManager = require("../../src/service/DatabaseManager")
 var chai = require('chai');
 const AdminDAO = require("../../src/dao/AdminDAO");
 const Admin = require("../../src/model/Admin");
+const resetDatabase = require("../../src/utils/resetDatabase");
 var assert = chai.assert;
 
 describe("AdminDAO", function(){
@@ -12,9 +13,8 @@ describe("AdminDAO", function(){
     let adminB = null
 
     beforeEach(async function(){
-        dm.init()
-        await add.destroyTable();
-        await add.buildTable();
+        await dm.init()
+        await resetDatabase()
 
         adminA = new Admin();
         adminA.username = "john";

@@ -24,6 +24,7 @@ class BaseMemberDAO extends BaseUserDAO {
                     "   baseMember_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY," +
                     "   baseMember_username VARCHAR(255)," +
                     "   baseMember_password VARCHAR(255)," +
+                    "   baseMember_website VARCHAR(255)," +
                     "   baseMember_subscribe BOOLEAN," +
                     "   baseMember_name1 VARCHAR(255)," +
                     "   baseMember_name2 VARCHAR(255)," +
