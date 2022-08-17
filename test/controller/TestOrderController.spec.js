@@ -8,6 +8,7 @@ const TestOrderDAO = require("../../src/dao/TestOrderDAO");
 const TestSampleDAO = require("../../src/dao/TestSampleDAO");
 const TestSample = require("../../src/model/TestSample");
 const TestOrderWithSamples = require("../../src/model/TestOrderWithSamples");
+const resetDatabase = require("../../src/utils/resetDatabase");
 
 chai.use(chaiHttp)
 
@@ -27,10 +28,7 @@ describe("TestOrder /api/v1/testOrder", ()=>{
     beforeEach(async function(){
 
         await dm.init()
-        await tsd.destroyTable()
-        await tod.destroyTable()
-        await tod.buildTable()
-        await tsd.buildTable()
+        await resetDatabase()
 
         sampleA = new TestSample()
         sampleA.animal = "Bird"

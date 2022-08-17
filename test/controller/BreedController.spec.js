@@ -5,6 +5,7 @@ var assert = chai.assert;
 var server = require("../../src/main")
 const BreedDAO = require("../../src/dao/BreedDAO");
 const Breed = require("../../src/model/Breed");
+const resetDatabase = require("../../src/utils/resetDatabase");
 
 chai.use(chaiHttp)
 
@@ -16,9 +17,8 @@ describe("BreedController /api/v1/breed/", ()=>{
     let breedB = null
 
     beforeEach(async()=>{
-        dm.init()
-        await bd.destroyTable()
-        await bd.buildTable()
+        await dm.init()
+        await resetDatabase()
 
         breedA = new Breed()
         breedA.type = "Dog"

@@ -5,6 +5,7 @@ var assert = chai.assert;
 var server = require("../../src/main")
 const AdminDAO = require("../../src/dao/AdminDAO");
 const Admin = require("../../src/model/Admin");
+const resetDatabase = require("../../src/utils/resetDatabase");
 
 chai.use(chaiHttp)
 
@@ -15,9 +16,8 @@ describe("AdminController /api/v1/breed/", ()=>{
     let adminB = null
 
     beforeEach(async()=>{
-        dm.init()
-        await add.destroyTable()
-        await add.buildTable()
+        await dm.init()
+        await resetDatabase()
 
         adminA = new Admin();
         adminA.username = "john";

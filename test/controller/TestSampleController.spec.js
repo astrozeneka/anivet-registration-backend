@@ -5,6 +5,7 @@ var assert = chai.assert;
 var server = require("../../src/main")
 const TestSampleDAO = require("../../src/dao/TestSampleDAO");
 const TestSample = require("../../src/model/TestSample");
+const resetDatabase = require("../../src/utils/resetDatabase");
 
 chai.use(chaiHttp)
 
@@ -17,8 +18,7 @@ describe("TestSample /api/v1/testSample/", ()=>{
 
     beforeEach(async()=>{
         await dm.init()
-        await tsd.destroyTable()
-        await tsd.buildTable()
+        await resetDatabase()
 
         sampleA = new TestSample()
         sampleA.animal = "Bird"

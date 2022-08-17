@@ -11,6 +11,7 @@ const BreedDAO = require("../../src/dao/BreedDAO");
 const Breeder = require("../../src/model/Breeder");
 const Address = require("../../src/model/Address");
 const Breed = require("../../src/model/Breed");
+const resetDatabase = require("../../src/utils/resetDatabase");
 
 chai.use(chaiHttp)
 
@@ -30,14 +31,8 @@ describe("Test Breeder Controller", ()=>{
     let breederB = null;
 
     beforeEach(async function(){
-        dm.init()
-        await ad.destroyTable();
-        await brd.destroyTable();
-        await bd.destroyTable();
-
-        await bd.buildTable();
-        await brd.buildTable();
-        await ad.buildTable();
+        await dm.init()
+        await resetDatabase()
 
         breedA = new Breed();
         breedA.type = "Dog";
