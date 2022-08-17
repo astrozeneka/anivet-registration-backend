@@ -5,6 +5,7 @@ const Owner = require("../src/model/Owner")
 var chai = require('chai');
 const AddressDAO = require("../src/dao/AddressDAO");
 const Address = require("../src/model/Address");
+const resetDatabase = require("../src/utils/resetDatabase");
 var assert = chai.assert;
 
 describe("OwnerDAO", function(){
@@ -18,11 +19,8 @@ describe("OwnerDAO", function(){
     let addressB = null
 
     beforeEach(async function(){
-        dm.init()
-        await ad.destroyTable()
-        await od.destroyTable()
-        await od.buildTable()
-        await ad.buildTable()
+        await dm.init()
+        await resetDatabase()
 
         addressA = new Address()
         addressA.address1 = "192 Marlebyone Av"

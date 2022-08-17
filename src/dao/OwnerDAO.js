@@ -18,15 +18,17 @@ class OwnerDAO extends BaseMemberDAO{
     fromResultSet(r){
         let o = new Owner()
 
-        o.id = r.owner_id
-        o.username = r.owner_username
-        o.password = r.owner_password
-        o.website = r.owner_website
-        o.subscribe = r.owner_subscribe
-        o.name1 = r.owner_name1
-        o.name2 = r.owner_name2
-        o.phone = r.owner_phone
-        o.email = r.owner_email
+        o.id = r.baseMember_id
+        o.username = r.baseMember_username
+        o.password = r.baseMember_password
+        o.website = r.baseMember_website
+        o.subscribe = r.baseMember_subscribe
+        o.name1 = r.baseMember_name1
+        o.name2 = r.baseMember_name2
+        o.phone = r.baseMember_phone
+        o.email = r.baseMember_phone
+
+
         // Very important thing for the methodology of DAO using relationship between tables
         o.address = AddressDAO.getInstance().fromResultSet(r)
 
@@ -34,6 +36,7 @@ class OwnerDAO extends BaseMemberDAO{
     }
 
     async buildTable(){
+        /*
         return new Promise((resolve, reject)=>{
             let o = this.connection.query("" +
                 "CREATE TABLE `owner` (" +
@@ -56,12 +59,30 @@ class OwnerDAO extends BaseMemberDAO{
                 }
             )
         })
+
+         */
+        await (()=>{
+            new Promise((resolve, reject)=>{
+                let o = this.connection.query("" +
+                    "CREATE VIEW owner AS" +
+                    "   SELECT * FROM baseMember" +
+                    "   WHERE baseMember_type = 'owner'",
+                    function(err, res){
+                        if(err){
+                            reject(err)
+                            throw(err)
+                        }
+                        resolve(res)
+                    }
+                )
+            })
+        })()
     }
 
     async destroyTable(){
         return new Promise((resolve, reject)=>{
             let o = this.connection.query("" +
-                "DROP TABLE IF EXISTS `owner`",
+                "DROP VIEW IF EXISTS `owner`",
                 function(err, res){
                     if(err){
                         reject(err)
@@ -76,10 +97,12 @@ class OwnerDAO extends BaseMemberDAO{
     async add(entity) {
 
         await (()=>new Promise((resolve, reject)=>{
-            this.connection.query("INSERT INTO `owner` (owner_username, owner_password, owner_website, owner_subscribe," +
-                "owner_name1, owner_name2, owner_phone, owner_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [
+            this.connection.query(/*"INSERT INTO `owner` (owner_username, owner_password, owner_website, owner_subscribe," +
+                "owner_name1, owner_name2, owner_phone, owner_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",*/
+                "INSERT INTO `baseMember` (baseMember_username, baseMember_password, baseMember_website, baseMember_subscribe," +
+                "baseMember_name1, baseMember_name2, baseMember_phone, baseMember_email, baseMember_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [
                 entity.username, entity.password, entity.website, entity.subscribe,
-                entity.name1, entity.name2, entity.phone, entity.email
+                entity.name1, entity.name2, entity.phone, entity.email, 'owner'
             ], function (err, res){
                 if(err){
                     throw err;
@@ -90,13 +113,13 @@ class OwnerDAO extends BaseMemberDAO{
             })
         }))()
 
-        entity.address.ownerId = entity.id // Is also worked for One-to-many relationship
+        entity.address.baseMemberId = entity.id // Is also worked for One-to-many relationship
         await AddressDAO.getInstance().add(entity.address)
     }
 
     async getAll(){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `owner` INNER JOIN `address` ON address_ownerId=owner_id", (err, res)=>{
+            this.connection.query("SELECT * FROM `owner` INNER JOIN `address` ON address_baseMemberId=baseMember_id", (err, res)=>{
                 if(err){
                     throw err;
                     reject(err)
@@ -111,7 +134,7 @@ class OwnerDAO extends BaseMemberDAO{
 
     async getById(id){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `owner` INNER JOIN `address` ON address_ownerId=owner_id WHERE owner_id=?", [id], (err, res)=>{
+            this.connection.query("SELECT * FROM `owner` INNER JOIN `address` ON address_baseMemberId=baseMember_id WHERE baseMember_id=? AND baseMember_type='owner'", [id], (err, res)=>{
                 if(err){
                     throw err;
                     reject(err)
@@ -125,16 +148,16 @@ class OwnerDAO extends BaseMemberDAO{
     async update(entity){
         await (()=>new Promise((resolve, reject)=>{
             this.connection.query("" +
-                "UPDATE `owner` SET" +
-                "   owner_username=?," +
-                "   owner_password=?," +
-                "   owner_website=?," +
-                "   owner_subscribe=?," +
-                "   owner_name1=?," +
-                "   owner_name2=?," +
-                "   owner_phone=?," +
-                "   owner_email=?" +
-                " WHERE owner_id=?",
+                "UPDATE `baseMember` SET" +
+                "   baseMember_username=?," +
+                "   baseMember_password=?," +
+                "   baseMember_website=?," +
+                "   baseMember_subscribe=?," +
+                "   baseMember_name1=?," +
+                "   baseMember_name2=?," +
+                "   baseMember_phone=?," +
+                "   baseMember_email=?" +
+                " WHERE baseMember_id=?",
             [entity.username, entity.password, entity.website, entity.subscribe,
             entity.name1, entity.name1, entity.phone, entity.email, entity.id],
             function(err, res){
@@ -152,7 +175,7 @@ class OwnerDAO extends BaseMemberDAO{
     async delete(entity){
         return new Promise((resolve, reject)=>{
             this.connection.query("" +
-                "DELETE FROM `owner` WHERE owner_id=?", [entity.id],
+                "DELETE FROM `baseMember` WHERE baseMember_id=?", [entity.id],
             function(err, res){
                 if(err){
                     throw err;
