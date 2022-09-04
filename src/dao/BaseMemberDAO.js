@@ -61,5 +61,13 @@ class BaseMemberDAO extends BaseUserDAO {
         })
     }
 
+    async doesUsernameExists(username){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT * FROM baseMember WHERE baseMember_username=?",
+                [username,], async (err, res)=>{
+                resolve(res.length > 0)
+            })
+        })
+    }
 }
 module.exports = BaseMemberDAO
