@@ -6,7 +6,7 @@ var server = require("../../src/main")
 const AdminDAO = require("../../src/dao/AdminDAO");
 const Admin = require("../../src/model/Admin");
 const resetDatabase = require("../../src/utils/resetDatabase");
-
+const _ = require("lodash")
 chai.use(chaiHttp)
 
 describe("AdminController /api/v1/breed/", ()=>{
@@ -100,6 +100,86 @@ describe("AdminController /api/v1/breed/", ()=>{
             .end(async(err, res)=>{
                 let list = await add.getAll()
                 assert(list.length == 1)
+                done()
+            })
+    })
+
+    it("Should return EMPTY_USERNAME error", (done)=>{
+        let obj = {
+            "username": "",
+            "password": "pass"
+        }
+        chai.request(server)
+            .post("/api/v1/admin/login")
+            .send(obj)
+            .end(async(err, res)=>{
+                let data = JSON.parse(res.text)
+                assert(data.errors.username == "EMPTY_USERNAME")
+                done()
+            })
+    })
+
+    it("Should return EMPTY_PASSWORD error", (done)=>{
+        let obj = {
+            "username": "john",
+            "password": ""
+        }
+        chai.request(server)
+            .post("/api/v1/admin/login")
+            .send(obj)
+            .end(async(err, res)=>{
+                let data = JSON.parse(res.text)
+                assert(Object.keys(data.errors).length == 1)
+                assert(data.errors.password == "EMPTY_PASSWORD")
+                done()
+            })
+    })
+
+    it("Should return EMPTY_USERNAME and EMPTY_PASSWORD errors", (done)=>{
+        let obj = {
+            "username": "",
+            "password": ""
+        }
+        chai.request(server)
+            .post("/api/v1/admin/login")
+            .send(obj)
+            .end(async(err, res)=>{
+                let data = JSON.parse(res.text)
+                assert(Object.keys(data.errors).length == 2)
+                assert(data.errors.username == "EMPTY_USERNAME")
+                assert(data.errors.password == "EMPTY_PASSWORD")
+                done()
+            })
+    })
+
+    it("Should return INVALID_CREDENTIALS", (done)=>{
+        let obj = {
+            "username": "john",
+            "password": "john"
+        }
+        chai.request(server)
+            .post("/api/v1/admin/login")
+            .send(obj)
+            .end(async(err, res)=>{
+                let data = JSON.parse(res.text)
+                assert(Object.keys(data.errors).length == 1)
+                assert(data.errors.form == "INVALID_CREDENTIALS")
+                done()
+            })
+    })
+
+    it("Should send webtoken if no error has been detected", (done)=>{
+        let obj = {
+            "username": "john",
+            "password": "john-password"
+        }
+        chai.request(server)
+            .post("/api/v1/admin/login")
+            .send(obj)
+            .end(async(err, res)=>{
+                let data = JSON.parse(res.text)
+                assert(data.accessToken != null)
+                assert(data.userId != null)
                 done()
             })
     })

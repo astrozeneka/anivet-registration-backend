@@ -2,6 +2,8 @@ const AdminDAO = require("../dao/AdminDAO");
 const path = require("path")
 const BaseController = require("./BaseController");
 const Admin = require("../model/Admin");
+const isValidUrl = require("../utils/isValidUrl");
+let _ = require("lodash");
 
 /*
 const jwt = require("express-jwt");
@@ -23,6 +25,7 @@ const checkJwt = jwt({
 
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
+const AuthenticationBL = require("../businessLogic/AuthenticationBL");
 dotenv.config()
 
 
@@ -68,9 +71,29 @@ class AdminController extends BaseController{
             admin.username = d.username
             admin.password = d.password
             admin.website = d.website
-            await this.add.add(admin)
-            res.setHeader('Content-Type', 'application/json')
-            res.send(JSON.stringify(admin.serialize()))
+
+            /****************
+             * WE ARE HERE
+             * Check the conformity of the URL
+             * Check the validity of the password
+             * Check the availability of the username
+             * ***************/
+            let errors = {}
+            errors["password"] = "PASSWORD_TOO_SHORT"
+            errors["passwordConfirm"] = "PASSWORD_MISMATCHED"
+            if(!isValidUrl(admin.website))
+                errors["website"] = "INVALID_URL"
+            if(_.isEmpty(errors)){
+                await this.add.add(admin)
+                res.setHeader('Content-Type', 'application/json')
+                res.send(JSON.stringify(admin.serialize()))
+            }else{
+                res.send(JSON.stringify(
+                    {
+                        "errors": errors
+                    }
+                ))
+            }
         })
 
         app.put(path.join(this.prefix, "/"), async(req, res)=>{
@@ -101,11 +124,25 @@ class AdminController extends BaseController{
             let d = req.body
             let username = d.username
             let password = d.password
-            let u = await this.add.authenticate(username, password)
+            //let u = await this.add.authenticate(username, password)
+            /*let u = await AuthenticationBL.getInstance().authenticate(username, password)
             res.setHeader('Content-Type', 'application/json')
             if(u == null){
                 res.send(JSON.stringify(null))
             }else {
+                let accessToken = jwt.sign(u.serialize(), process.env.TOKEN_SECRET, {expiresIn: 1800})
+                res.send(JSON.stringify({
+                    accessToken: accessToken,
+                    userId: u.id
+                }))
+            }*/
+
+
+            let u = await AuthenticationBL.getInstance().authenticateAdmin(username, password)
+            res.setHeader('Content-Type', 'application/json')
+            if(!(u instanceof Admin)){
+                res.send(u) // Return exception to the user
+            }else{
                 let accessToken = jwt.sign(u.serialize(), process.env.TOKEN_SECRET, {expiresIn: 1800})
                 res.send(JSON.stringify({
                     accessToken: accessToken,
