@@ -66,7 +66,7 @@ class RegistrationBL extends BaseBL {
             errors["password"] = "INVALID_PASSWORD"
         if(passwordCheck != password)
             errors["passwordCheck"] = "MISMATCHED_PASSWORD"
-        if(!isValidUrl(website))
+        if(website != "" && !isValidUrl(website))
             errors["website"] = "INVALID_WEBSITE"
         if(!_.isEmpty(errors))
             return {"errors": errors}
