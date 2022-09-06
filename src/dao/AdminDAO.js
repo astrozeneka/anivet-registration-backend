@@ -1,7 +1,6 @@
 const BaseMemberDAO = require("./BaseMemberDAO");
 const Admin = require("../model/Admin");
 
-
 class AdminDAO extends BaseMemberDAO{
     static instance = null;
     static getInstance(){

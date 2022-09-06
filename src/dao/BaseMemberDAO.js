@@ -1,5 +1,9 @@
 const BaseUserDAO = require("./BaseUserDAO");
 const BaseMember = require("../model/BaseMember");
+const Vet = require("../model/Vet");
+const Admin = require("../model/Admin");
+const Owner = require("../model/Owner");
+const Breeder = require("../model/Breeder");
 class BaseMemberDAO extends BaseUserDAO {
     static instance = null;
     static getInstance(){
@@ -10,6 +14,35 @@ class BaseMemberDAO extends BaseUserDAO {
     }
     static tearDown(){
         this.instance = null;
+    }
+
+    fromResultSet(r){
+        let dao = this.getTypeDAO(r.baseMember_type)
+        return dao.fromResultSet(r)
+    }
+
+    getTypeDAO(type){
+        if(type == "admin")
+            return require("./AdminDAO").getInstance()
+        if(type == "owner")
+            return require("./OwnerDAO").getInstance()
+        if(type == "breeder")
+            return require("./BreederDAO").getInstance()
+        if(type == "vet")
+            return require("./VetDAO").getInstance()
+        throw("Entity is an unknown type")
+    }
+
+    getEntityDAO(entity){
+        if(entity instanceof Admin)
+            return require("./AdminDAO").getInstance()
+        if(entity instanceof Owner)
+            return require("./OwnerDAO").getInstance()
+        if(entity instanceof Breeder)
+            return require("./BreedDAO").getInstance()
+        if(entity instanceof Vet)
+            return require("./VetDAO").getInstance()
+        throw("Entity is an unknown class")
     }
 
     // FromResultSet
@@ -69,5 +102,40 @@ class BaseMemberDAO extends BaseUserDAO {
             })
         })
     }
+
+    async add(entity){
+        let dao = this.getEntityDAO(entity)
+        await dao.add(entity)
+    }
+
+    async getAll(){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT * FROM `baseMember` LEFT JOIN `address` ON address_baseMemberId=baseMember_id", (err, res)=>{
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                let output = []
+                for(let rdp of res)
+                    output.push(this.fromResultSet(rdp))
+
+                resolve(output)
+            })
+        })
+    }
+
+    async getById(id){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT * FROM `baseMember` LEFT JOIN `address` ON address_baseMemberId=baseMember_id WHERE baseMember_id=?", [id], (err, res)=>{
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                if(res.length == 0) resolve(null)
+                resolve(this.fromResultSet(res[0]))
+            })
+        })
+    }
 }
 module.exports = BaseMemberDAO
+
