@@ -31,7 +31,8 @@ async function resetDatabase(){
     await bd.destroyTable()
 
     await bd.buildTable() // Breed Table
-    await bmd.buildTable() // Base Admin Table
+    await bmd.buildTable() // Base Member Table
+    await new Promise(r => setTimeout(r, 100)) // This code has been used in order to avoid some errors
     await vd.buildTable() // Vet Table
     await add.buildTable() // Admin Tabld
     await brd.buildTable() // Breeder Table

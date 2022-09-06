@@ -6,6 +6,7 @@ const TestOrderDAO = require("../dao/TestOrderDAO");
 const TestSampleDAO = require("../dao/TestSampleDAO");
 const path = require("path");
 const BreederDAO = require("../dao/BreederDAO");
+const InstallationBL = require("../businessLogic/InstallationBL");
 
 
 class InstallationController extends BaseController{
@@ -39,22 +40,11 @@ class InstallationController extends BaseController{
 
         app.get(path.join(this.prefix), async (req, res)=>{
 
-            await this.ad.destroyTable()
-            await this.od.destroyTable()
-            await this.tsd.destroyTable()
-            await this.tod.destroyTable()
-            await this.brd.destroyTable()
-            await this.bd.destroyTable()
+            await InstallationBL.getInstance().installDB()
 
-            await this.bd.buildTable() // Breed Table
-            await this.brd.buildTable() // Breeder Table
-            await this.tod.buildTable() // TestOrder Table
-            await this.tsd.buildTable() // TestSample Table
-            await this.od.buildTable() // Owner Table
-            await this.ad.buildTable() // Address Table
-
-            res.send("Installation completed")
-            console.log("Installation completed")
+            res.send({
+                object: ""
+            })
         })
     }
 
