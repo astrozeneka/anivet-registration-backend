@@ -26,7 +26,7 @@ class VetDAO extends BaseMemberDAO{
         o.name1 = r.baseMember_name1
         o.name2 = r.baseMember_name2
         o.phone = r.baseMember_phone
-        o.email = r.baseMember_phone
+        o.email = r.baseMember_email
         o.corp = r.baseMember_corp
 
         o.address = AddressDAO.getInstance().fromResultSet(r)

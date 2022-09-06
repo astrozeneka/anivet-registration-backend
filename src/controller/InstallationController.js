@@ -7,6 +7,7 @@ const TestSampleDAO = require("../dao/TestSampleDAO");
 const path = require("path");
 const BreederDAO = require("../dao/BreederDAO");
 const InstallationBL = require("../businessLogic/InstallationBL");
+const SeedBL = require("../businessLogic/SeedBL");
 
 
 class InstallationController extends BaseController{
@@ -41,7 +42,7 @@ class InstallationController extends BaseController{
         app.get(path.join(this.prefix), async (req, res)=>{
 
             await InstallationBL.getInstance().installDB()
-
+            await SeedBL.getInstance().initData()
             res.send({
                 object: ""
             })

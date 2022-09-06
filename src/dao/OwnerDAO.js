@@ -26,7 +26,7 @@ class OwnerDAO extends BaseMemberDAO{
         o.name1 = r.baseMember_name1
         o.name2 = r.baseMember_name2
         o.phone = r.baseMember_phone
-        o.email = r.baseMember_phone
+        o.email = r.baseMember_email
 
 
         // Very important thing for the methodology of DAO using relationship between tables
