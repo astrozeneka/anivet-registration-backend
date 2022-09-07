@@ -146,6 +146,14 @@ describe("MessageDAO", function(){
         list = await md.getAllSentBy(adminB.id)
         assert(list.length == 0)
     })
+
+    it("Should store date", async()=>{
+        messageA.date = new Date()
+        messageA.date.setMilliseconds(0)// The date of today
+        await md.add(messageA)
+        let _messageA = await md.getById(messageA.id)
+        assert(_messageA.date.getTime() == messageA.date.getTime())
+    })
 })
 
 

@@ -1,5 +1,6 @@
 const BaseDAO = require("./BaseDAO");
 const Message = require("../model/Message");
+require("../utils/date")
 
 class MessageDAO extends BaseDAO{
     static instance = null;
@@ -22,10 +23,9 @@ class MessageDAO extends BaseDAO{
         o.content = r.message_content
         o.senderId = r.message_senderId
         o.receiverId = r.message_receiverId
+        o.date = r.message_date
 
-        /**
-         * Should fetch sender and receiver object
-         */
+        return o
     }
 
     async buildTable(){
@@ -38,6 +38,7 @@ class MessageDAO extends BaseDAO{
                 "   message_content VARCHAR(255)," +
                 "   message_senderId INT(6) UNSIGNED," +
                 "   message_receiverId INT(6) UNSIGNED," +
+                "   message_date DATETIME," +
                 "" +
                 "   CONSTRAINT `fk_senderId` FOREIGN KEY (message_senderId) REFERENCES baseMember (baseMember_id) ON DELETE CASCADE" +
                 ")" +
@@ -71,9 +72,9 @@ class MessageDAO extends BaseDAO{
     async add(entity){
         return new Promise((resolve, reject)=>{
             this.connection.query("INSERT INTO `message` (" +
-                "message_tags, message_title, message_content, message_senderId, message_receiverId)" +
-                " VALUES (?, ?, ?, ?, ?)", [
-                entity.tags, entity.title, entity.content, entity.senderId, entity.receiverId
+                "message_tags, message_title, message_content, message_senderId, message_receiverId, message_date)" +
+                " VALUES (?, ?, ?, ?, ?, ?)", [
+                entity.tags, entity.title, entity.content, entity.senderId, entity.receiverId, entity.date.toMysqlFormat()
             ], function (err, res){
                 if(err){
                     throw err;
@@ -96,6 +97,19 @@ class MessageDAO extends BaseDAO{
                 for(let rdp of res)
                     output.push(this.fromResultSet(rdp))
                 resolve(output)
+            })
+        })
+    }
+
+    async getById(id){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT * FROM `message` WHERE message_id=?", [id], (err, res)=>{
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                if(res.length == 0) resolve(null)
+                resolve(this.fromResultSet(res[0]))
             })
         })
     }
