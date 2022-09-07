@@ -159,7 +159,7 @@ class OwnerDAO extends BaseMemberDAO{
                 "   baseMember_email=?" +
                 " WHERE baseMember_id=?",
             [entity.username, entity.password, entity.website, entity.subscribe,
-            entity.name1, entity.name1, entity.phone, entity.email, entity.id],
+            entity.name1, entity.name2, entity.phone, entity.email, entity.id],
             function(err, res){
                 if(err){
                     throw err;

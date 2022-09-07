@@ -33,7 +33,7 @@ class ProfileController extends BaseController {
             let username = d.username
             let password = d.password
 
-            let u = await AuthenticationBL.getInstance().authenticate(type, username, password)
+            let u = await AuthenticationBL.getInstance().authenticateUser(type, username, password)
             res.setHeader('Content-Type', 'application/json')
 
             if(!(u instanceof Owner) && !(u instanceof Breeder) && !(u instanceof Vet))
