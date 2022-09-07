@@ -39,7 +39,7 @@ class BaseMemberDAO extends BaseUserDAO {
         if(entity instanceof Owner)
             return require("./OwnerDAO").getInstance()
         if(entity instanceof Breeder)
-            return require("./BreedDAO").getInstance()
+            return require("./BreederDAO").getInstance()
         if(entity instanceof Vet)
             return require("./VetDAO").getInstance()
         throw("Entity is an unknown class")
@@ -133,6 +133,19 @@ class BaseMemberDAO extends BaseUserDAO {
                 }
                 if(res.length == 0) resolve(null)
                 resolve(this.fromResultSet(res[0]))
+            })
+        })
+    }
+
+    async authenticate(type, username, password){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT * FROM `baseMember` WHERE baseMember_username=? AND baseMember_password=? AND baseMember_type=?", [username, password, type], (err, res)=>{
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                if(res.length == 0) resolve(null)
+                else resolve(this.fromResultSet(res[0]))
             })
         })
     }

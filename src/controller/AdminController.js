@@ -124,19 +124,6 @@ class AdminController extends BaseController{
             let d = req.body
             let username = d.username
             let password = d.password
-            //let u = await this.add.authenticate(username, password)
-            /*let u = await AuthenticationBL.getInstance().authenticate(username, password)
-            res.setHeader('Content-Type', 'application/json')
-            if(u == null){
-                res.send(JSON.stringify(null))
-            }else {
-                let accessToken = jwt.sign(u.serialize(), process.env.TOKEN_SECRET, {expiresIn: 1800})
-                res.send(JSON.stringify({
-                    accessToken: accessToken,
-                    userId: u.id
-                }))
-            }*/
-
 
             let u = await AuthenticationBL.getInstance().authenticateAdmin(username, password)
             res.setHeader('Content-Type', 'application/json')

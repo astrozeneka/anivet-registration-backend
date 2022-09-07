@@ -9,6 +9,7 @@ const BreederController = require("./BreederController");
 const VetController = require("./VetController");
 const OwnerController = require("./OwnerController");
 const RegistrationController = require("./RegistrationController");
+const ProfileController = require("./ProfileController");
 
 class APIController extends BaseController {
     static instance = null;
@@ -58,6 +59,9 @@ class APIController extends BaseController {
 
         // Registration (Breeder+Vet+Owner)
         RegistrationController.getInstance().register(app, path.join(prefix, "registration"))
+
+        // Profile Controller
+        ProfileController.getInstance().register(app, path.join(prefix, "profile"))
 
         app.get(path.join(this.prefix, "/"), (req, res)=>{
             res.send("Hello world from the api")

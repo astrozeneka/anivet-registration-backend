@@ -2,6 +2,7 @@ const BaseBL = require("./BaseBL");
 const AdminDAO = require("../dao/AdminDAO");
 
 let _ = require("lodash");
+const BaseMemberDAO = require("../dao/BaseMemberDAO");
 
 class AuthenticationBL extends BaseBL {
     static instance = null;
@@ -16,10 +17,12 @@ class AuthenticationBL extends BaseBL {
     }
 
     add = null
+    bmd = null
 
     constructor(){
         super();
         this.add = AdminDAO.getInstance()
+        this.bmd = BaseMemberDAO.getInstance()
     }
 
     /**
@@ -37,6 +40,25 @@ class AuthenticationBL extends BaseBL {
         if(!_.isEmpty(errors))
             return {"errors":errors}
         let a = await this.add.authenticate(username, password)
+        if(a == null) {
+            errors["form"] = "INVALID_CREDENTIALS"
+            return {"errors":errors}
+        }
+        return a
+    }
+
+    async authenticateUser(type, username, password){
+        let errors = {}
+        if(!["owner", "breeder", "vet"].includes(type))
+            errors["type"] = "UNKNOWN_TYPE"
+        if(username == "")
+            errors["username"] = "EMPTY_USERNAME"
+        if(password == "")
+            errors["password"] = "EMPTY_PASSWORD"
+        if(!_.isEmpty(errors))
+            return {"errors": errors}
+
+        let a = await this.bmd.authenticate(type, username, password)
         if(a == null) {
             errors["form"] = "INVALID_CREDENTIALS"
             return {"errors":errors}
