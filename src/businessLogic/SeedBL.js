@@ -7,6 +7,8 @@ const Breed = require("../model/Breed");
 const BreederDAO = require("../dao/BreederDAO");
 const Vet = require("../model/Vet");
 const VetDAO = require("../dao/VetDAO");
+const Message = require("../model/Message");
+const MessageDAO = require("../dao/MessageDAO");
 
 class SeedBL extends BaseBL {
     static instance = null;
@@ -27,6 +29,8 @@ class SeedBL extends BaseBL {
     async _initOwners(){
         let addressA, addressB, addressC;
         let ownerA, ownerB, ownerC;
+        let welcomeA, welcomeB, welcomeC;
+        let customMessageFromAdmin;
 
         addressA = new Address();
         addressA.address1 = "124 Charles Ave"
@@ -89,6 +93,45 @@ class SeedBL extends BaseBL {
         await od.add(ownerA)
         await od.add(ownerB)
         await od.add(ownerC)
+
+
+        welcomeA = new Message()
+        welcomeA.title = "WELCOME"
+        welcomeA.content = "Welcome to the backoffice platform"
+        welcomeA.senderId = null
+        welcomeA.date = new Date()
+        welcomeA.read = false
+        welcomeA.receiverId = ownerA.id
+
+        welcomeB = new Message()
+        welcomeB.title = "WELCOME"
+        welcomeB.content = "Welcome to the backoffice platform"
+        welcomeB.senderId = null
+        welcomeB.date = new Date()
+        welcomeB.read = false
+        welcomeB.receiverId = ownerB.id
+
+        welcomeC = new Message()
+        welcomeC.title = "WELCOME"
+        welcomeC.content = "Welcome to the backoffice platform"
+        welcomeC.senderId = null
+        welcomeC.date = new Date()
+        welcomeC.read = false
+        welcomeC.receiverId = ownerC.id
+
+        let md = MessageDAO.getInstance()
+        await md.add(welcomeA)
+        await md.add(welcomeB)
+        await md.add(welcomeC)
+
+        customMessageFromAdmin = new Message()
+        customMessageFromAdmin.title = "HELLO"
+        customMessageFromAdmin.content = "Greetings from the system"
+        customMessageFromAdmin.senderId = ownerB.id
+        customMessageFromAdmin.receiverId = ownerA.id
+        customMessageFromAdmin.date = new Date()
+        customMessageFromAdmin.read = false
+        await md.add(customMessageFromAdmin)
 
     }
 

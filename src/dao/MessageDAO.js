@@ -24,6 +24,7 @@ class MessageDAO extends BaseDAO{
         o.senderId = r.message_senderId
         o.receiverId = r.message_receiverId
         o.date = r.message_date
+        o.read = r.message_read
 
         return o
     }
@@ -39,6 +40,7 @@ class MessageDAO extends BaseDAO{
                 "   message_senderId INT(6) UNSIGNED," +
                 "   message_receiverId INT(6) UNSIGNED," +
                 "   message_date DATETIME," +
+                "   message_read BOOLEAN," +
                 "" +
                 "   CONSTRAINT `fk_senderId` FOREIGN KEY (message_senderId) REFERENCES baseMember (baseMember_id) ON DELETE CASCADE" +
                 ")" +
@@ -70,11 +72,16 @@ class MessageDAO extends BaseDAO{
     }
 
     async add(entity){
+        let date = ""
+        if(entity.date == undefined || entity.date == null)
+            date = null
+        else
+            date = entity.date.toMysqlFormat()
         return new Promise((resolve, reject)=>{
             this.connection.query("INSERT INTO `message` (" +
-                "message_tags, message_title, message_content, message_senderId, message_receiverId, message_date)" +
-                " VALUES (?, ?, ?, ?, ?, ?)", [
-                entity.tags, entity.title, entity.content, entity.senderId, entity.receiverId, entity.date.toMysqlFormat()
+                "message_tags, message_title, message_content, message_senderId, message_receiverId, message_date, message_read)" +
+                " VALUES (?, ?, ?, ?, ?, ?, ?)", [
+                entity.tags, entity.title, entity.content, entity.senderId, entity.receiverId, date, entity.read
             ], function (err, res){
                 if(err){
                     throw err;
