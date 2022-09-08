@@ -45,6 +45,7 @@ class BaseMemberDAO extends BaseUserDAO {
         throw("Entity is an unknown class")
     }
 
+
     // FromResultSet
     // this method should be ovewritten by
     // child classes

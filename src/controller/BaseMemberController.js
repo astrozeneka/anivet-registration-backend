@@ -1,6 +1,9 @@
 const BaseController = require("./BaseController");
 const BaseMemberDAO = require("../dao/BaseMemberDAO");
 const path = require("path");
+const _ = require('lodash')
+const RegistrationController = require("./RegistrationController");
+const RegistrationBL = require("../businessLogic/RegistrationBL");
 
 class BaseMemberController extends BaseController {
     bmd = null
@@ -63,6 +66,23 @@ class BaseMemberController extends BaseController {
 
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(output.serialize()))
+        })
+
+        app.post(path.join(this.prefix, "/changePassword/:memberId"), async(req, res)=>{
+            let id = req.params.memberId
+
+            let d = req.body
+            d.memberId = id
+            let u = await RegistrationBL.getInstance().changePassword(d)
+            res.setHeader('Content-Type', 'application/json')
+            if(u.hasOwnProperty("errors")){
+                res.send(JSON.stringify(u))
+            }else{
+                res.send({
+                    "object": u.object.serialize()
+                })
+            }
+
         })
     }
 }

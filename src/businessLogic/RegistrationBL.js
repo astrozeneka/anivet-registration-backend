@@ -7,6 +7,11 @@ const _ = require('lodash')
 const Breeder = require("../model/Breeder");
 const Address = require("../model/Address");
 const BreederDAO = require("../dao/BreederDAO");
+const Owner = require("../model/Owner");
+const OwnerDAO = require("../dao/OwnerDAO");
+const VetDAO = require("../dao/VetDAO");
+const Vet = require("../model/Vet");
+const BaseMemberDAO = require("../dao/BaseMemberDAO");
 
 class RegistrationBL extends BaseBL {
     static instance = null;
@@ -38,6 +43,14 @@ class RegistrationBL extends BaseBL {
         if(type == "breeder") {
             model = new Breeder()
             dao = BreederDAO.getInstance()
+        }
+        if(type == "owner") {
+            model = new Owner()
+            dao = OwnerDAO.getInstance()
+        }
+        if(type == "vet") {
+            model = new Vet()
+            dao = VetDAO.getInstance()
         }
 
         /**
@@ -94,6 +107,39 @@ class RegistrationBL extends BaseBL {
         await dao.add(model)
         return {
             "object": model
+        }
+    }
+
+    async changePassword(
+        {
+            memberId,
+            password,
+            newPassword,
+            newPasswordCheck
+        }
+    ){
+        let errors = {}
+        if(password == "")
+            errors["password"] = "EMPTY_PASSWORD"
+        if(newPassword == "")
+            errors["newPassword"] = "EMPTY_PASSWORD"
+        if(newPasswordCheck != newPassword)
+            errors["newPasswordCheck"] = "PASSWORD_MISMATCHED"
+        if(!_.isEmpty(errors))
+            return {"errors": errors}
+
+        let bmd = BaseMemberDAO.getInstance()
+        let member = await bmd.getById(memberId)
+        let a = await bmd.authenticate(member.type, member.username, password)
+        if(a == null) {
+            errors["form"] = "INVALID_CREDENTIALS"
+            return {"errors":errors}
+        }
+
+        a.password = newPassword
+        await BaseMemberDAO.getInstance().update(a)
+        return {
+            "object": a
         }
     }
 }

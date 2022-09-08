@@ -4,6 +4,7 @@ const BaseMember = require("./BaseMember");
 class Vet extends BaseMember{
     #address = null
     #corp = null
+    #type = null
 
     get address() {
         return this.#address;
@@ -19,6 +20,10 @@ class Vet extends BaseMember{
 
     set corp(value) {
         this.#corp = value;
+    }
+
+    get type() {
+        return this.#type;
     }
 
     serialize(){
