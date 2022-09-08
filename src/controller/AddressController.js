@@ -1,14 +1,14 @@
 const BaseController = require("./BaseController");
-const BaseMemberDAO = require("../dao/BaseMemberDAO");
+const AddressDAO = require("../dao/AddressDAO");
 const path = require("path");
 
-class BaseMemberController extends BaseController {
-    bmd = null
 
+class AddressController extends BaseController{
+    ad = null
     static instance = null;
     static getInstance(){
         if(this.instance == null) {
-            this.instance = new BaseMemberController()
+            this.instance = new AddressController()
         }
         return this.instance
     }
@@ -17,24 +17,22 @@ class BaseMemberController extends BaseController {
     }
 
     constructor(){
-        super();
-        this.bmd = BaseMemberDAO.getInstance()
+        super()
+        this.ad = AddressDAO.getInstance()
     }
 
     register(app, prefix){
         super.register(app, prefix)
 
-        /*
-        TODO GetALL
-         */
-        app.get(path.join(this.prefix, "/:memberId"), async(req, res)=>{
-            let id = req.params.memberId
+        app.get(path.join(this.prefix, "/ofMember/:memberId"), async(req, res)=>{
+            let memberId = req.params.memberId
 
             if(!req.query.hasOwnProperty("token")){
                 res.status(403).send("Forbidden resources")
                 return
             }
-            let output = await this.bmd.getById(id)
+            let output = await this.ad.getByMemberId(memberId)
+            console.log()
             if(output == null) {
                 res.status(404).send("Not found")
             }else {
@@ -43,8 +41,8 @@ class BaseMemberController extends BaseController {
             }
         })
 
-        app.put(path.join(this.prefix, "/:memberId"), async(req, res)=>{
-            let id = req.params.memberId
+        app.put(path.join(this.prefix, "/:addressId"), async(req, res)=>{
+            let id = req.params.addressId
             let d = req.body
 
             if(!req.query.hasOwnProperty("token")){
@@ -53,17 +51,18 @@ class BaseMemberController extends BaseController {
                 return
             }
 
-            let e = await this.bmd.getById(id)
-            e.name1 = d.name1 || e.name1
-            e.name2 = d.name2 || e.name2
-            e.phone = d.phone || e.phone
-            e.email = d.email || e.email
-            await this.bmd.update(e)
-            let output = await this.bmd.getById(id)
+            let e = await this.ad.getById(id)
+            e.address1 = d.address1 || e.address1
+            e.country = d.country || e.country
+            e.changwat = d.changwat || e.country
+            e.amphoe = d.amphoe || e.amphoe
+            e.tambon = d.tambon || e.tambon
+            await this.ad.update(e)
+            let output = await this.ad.getById(id)
 
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(output.serialize()))
         })
     }
 }
-module.exports = BaseMemberController
+module.exports = AddressController

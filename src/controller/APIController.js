@@ -12,6 +12,7 @@ const RegistrationController = require("./RegistrationController");
 const ProfileController = require("./ProfileController");
 const BaseMemberController = require("./BaseMemberController");
 const MessageController = require("./MessageController");
+const AddressController = require("./AddressController");
 
 class APIController extends BaseController {
     static instance = null;
@@ -70,6 +71,9 @@ class APIController extends BaseController {
 
         // Message Controller
         MessageController.getInstance().register(app, path.join(prefix, "message"))
+
+        // Address
+        AddressController.getInstance().register(app, path.join(prefix, "address"))
 
         app.get(path.join(this.prefix, "/"), (req, res)=>{
             res.send("Hello world from the api")
