@@ -34,7 +34,6 @@ class BaseMemberController extends BaseController {
                 res.status(403).send("Forbidden resources")
                 return
             }
-            // TODO: Token verification should be done later
             let output = await this.bmd.getById(id)
             if(output == null) {
                 res.status(404).send("Not found")
