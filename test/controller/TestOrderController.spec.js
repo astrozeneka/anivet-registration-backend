@@ -126,4 +126,18 @@ describe("TestOrder /api/v1/testOrder", ()=>{
             })
     })
 
+    it("Should insert custom data 1", (done)=>{
+        let obj = {"name1":"Somchai","name2":"Lee","tests":[{"sampleId":"0002","animal":"Bird","type":"blood","petID":"","petSpecie":"Macao","image":"","petId":"3"},{"sampleId":"5","animal":"Dog","type":"Saliva","petID":"","petSpecie":"German shepherd","image":"","petId":"4"},{"sampleId":"6","animal":"งู","type":"blood","petID":"","petSpecie":"Anaconda","image":"","petId":"7"}]}
+        chai.request(server)
+            .post("/api/v1/testOrder")
+            .send(obj)
+            .end(async(err, res)=>{
+                let orderList = await tod.getAll()
+                assert(orderList.length == 3)
+                let sampleList = await tsd.getAll()
+                assert(sampleList.length == 6)
+                done()
+            })
+    })
+
 })

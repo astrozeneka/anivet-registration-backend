@@ -52,12 +52,12 @@ class TestOrderController extends BaseController{
             order.samples = []
             for(const _s of d.tests){
                 let sample = new TestSample()
-                sample.id = _s.sampleId
+                // sample.id = _s.sampleId
                 sample.animal = _s.animal
                 sample.type = _s.type
-                sample.petId = _s.petID
-                sample.petSpecie = _s.petSpecies
-                sample.test = _s.test
+                sample.petId = _s.petId
+                sample.petSpecie = _s.petSpecie
+                // sample.test = _s.test
                 sample.image = _s.image
                 sample.testOrderId = null
                 order.samples.push(sample)
