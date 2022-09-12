@@ -3,6 +3,7 @@ const MessageDAO = require("../dao/MessageDAO");
 const BaseMemberDAO = require("../dao/BaseMemberDAO");
 const MemberBL = require("../businessLogic/MemberBL");
 const path = require("path");
+const Message = require("../model/Message");
 
 
 class MessageController extends BaseController {
@@ -52,6 +53,32 @@ class MessageController extends BaseController {
             })
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(output))
+        })
+
+        app.post(path.join(this.prefix, "/"), async(req, res)=>{
+            let d = req.body;
+
+            if(!req.query.hasOwnProperty("token")){
+                // TODO: Token verification should be done later
+                res.status(403).send("Forbidden resources")
+                return
+            }
+
+            let message = new Message()
+            message.title = d.title
+            message.content = d.content
+            message.senderId = d.senderId
+            message.receiverId = d.receiverId
+            message.date = new Date()
+
+            let m = await this.mbl.submitMessage(message)
+            if(m.hasOwnProperty("errors")){
+                res.send(JSON.stringify(m))
+            }else{
+                res.send(JSON.stringify({
+                    "object": message.serialize()
+                }))
+            }
         })
     }
 }

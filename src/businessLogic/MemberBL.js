@@ -21,5 +21,9 @@ class MemberBL extends BaseBL {
         let output = await MessageDAO.getInstance().getAllReceivedBy(user.id)
         return output
     }
+
+    async submitMessage(message){
+        return await MessageDAO.getInstance().add(message)
+    }
 }
 module.exports = MemberBL
