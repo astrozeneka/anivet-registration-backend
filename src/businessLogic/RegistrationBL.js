@@ -12,6 +12,9 @@ const OwnerDAO = require("../dao/OwnerDAO");
 const VetDAO = require("../dao/VetDAO");
 const Vet = require("../model/Vet");
 const BaseMemberDAO = require("../dao/BaseMemberDAO");
+const AdminDAO = require("../dao/AdminDAO");
+const Message = require("../model/Message");
+const MessageDAO = require("../dao/MessageDAO");
 
 class RegistrationBL extends BaseBL {
     static instance = null;
@@ -105,6 +108,18 @@ class RegistrationBL extends BaseBL {
 
         // Calling the DataAccess method
         await dao.add(model)
+
+        // If everything is ok
+        // It should notify the admin that a new user has been registered
+        let admin = await AdminDAO.getInstance().getByUsername("admin")
+        let msg = new Message()
+        msg.title = "NEW MEMBER"
+        msg.content = "A new member has been registered"
+        msg.senderId = null
+        msg.receiverId = admin.id
+        msg.date = new Date()
+        await MessageDAO.getInstance().add(msg)
+
         return {
             "object": model
         }

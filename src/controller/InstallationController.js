@@ -40,7 +40,13 @@ class InstallationController extends BaseController{
         super.register(app, prefix)
 
         app.get(path.join(this.prefix), async (req, res)=>{
+            await InstallationBL.getInstance().installDB()
+            res.send({
+                object: ""
+            })
+        })
 
+        app.get(path.join(this.prefix, "seed"), async(req, res)=>{
             await InstallationBL.getInstance().installDB()
             await SeedBL.getInstance().initData()
             res.send({
