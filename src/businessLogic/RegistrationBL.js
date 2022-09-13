@@ -32,6 +32,26 @@ class RegistrationBL extends BaseBL {
         super();
     }
 
+    getModel(type){
+        if(type == "breeder")
+            return new Breeder()
+        if(type == "owner")
+            return new Owner()
+        if(type == "vet")
+            return new Vet()
+        throw("Unknown type")
+    }
+
+    getDAO(type){
+        if(type == "breeder")
+            return BreederDAO
+        if(type == "owner")
+            return OwnerDAO
+        if(type == "vet")
+            return VetDAO
+        throw("Unknown type")
+    }
+
     async register(
         {
             type,
@@ -155,6 +175,81 @@ class RegistrationBL extends BaseBL {
         await BaseMemberDAO.getInstance().update(a)
         return {
             "object": a
+        }
+    }
+
+    async updateUserBackoffice(
+        {
+            id,
+            name1, name2, phone, email,
+            address1, country, changwat, amphoe, tambon, postcode,
+            username, password, website, subscribe
+        }
+    ){
+        // The first step
+        let errors = {}
+
+        let model = await BaseMemberDAO.getInstance().getById(id)
+        if(model == null)
+            errors["forms"] = "UNHANDLED_ERROR"
+
+
+        if(name1 == "")
+            errors["name1"] = "EMPTY_NAME1"
+        if(name2 == "")
+            errors["name2"] = "EMPTY_NAME2"
+        if(!isValidPhone(phone))
+            errors["phone"] = "INVALID_PHONE"
+        if(!isValidEmail(email))
+            errors["email"] = "INVALID_EMAIL"
+
+        if(country == "")
+            errors["country"] = "EMPTY_COUNTRY"
+        if(address1 == "")
+            errors["address1"] = "EMPTY_ADDRESS"
+        if(changwat == "")
+            errors["changwat"] = "EMPTY_CHANGWAT"
+        if(!isValidPostcode(postcode))
+            errors["postcode"] = "INVALID_POSTCODE"
+        if(website != "" && !isValidUrl(website))
+            errors["website"] = "INVALID_WEBSITE"
+
+        if(username == "")
+            errors["username"] = "EMPTY_USERNAME"
+        if(password.length > 0 && password.length < 8)
+            errors["password"] = "INVALID_PASSWORD"
+
+        if(!_.isEmpty(errors))
+            return {"errors": errors}
+
+        // Only some variables has been changed
+        // Change the address also, update the form
+        model.name1 = name1
+        model.name2 = name2
+        model.phone = phone
+        model.email = email
+        model.username = username
+        model.password = password || model.pasword
+        model.website = website || model.website
+
+        model.address.address1 = address1
+        model.address.country = country
+        model.address.changwat = changwat
+        model.address.amphoe = amphoe
+        model.address.tambon = tambon
+        model.address.postcode = postcode
+
+        await BaseMemberDAO.getInstance().update(model)
+        return {
+            "object": model
+        }
+    }
+
+    async userDetails(id){
+        let model = await BaseMemberDAO.getInstance().getById(id)
+        // No error expected
+        return {
+            "object": model
         }
     }
 }

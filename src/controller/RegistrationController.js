@@ -35,6 +35,21 @@ class RegistrationController extends BaseController{
                 }))
             }
         })
+
+        app.put(join(this.prefix, '/:memberId'), async(req, res)=>{
+            let id = req.params.memberId
+            let d = req.body
+            d.id = id
+            let u = await RegistrationBL.getInstance().updateUserBackoffice(d)
+            res.setHeader('Content-Type', 'application/json')
+            if(u.hasOwnProperty("errors")){
+                res.send(JSON.stringify(u))
+            }else{
+                res.send(JSON.stringify({
+                    "object": u.object.serialize()
+                }))
+            }
+        })
     }
 }
 module.exports = RegistrationController

@@ -37,12 +37,15 @@ class BaseMemberController extends BaseController {
                 res.status(403).send("Forbidden resources")
                 return
             }
-            let output = await this.bmd.getById(id)
-            if(output == null) {
+            let u = await RegistrationBL.getInstance().userDetails(id)
+            u.object.password = "" // Never send password to the user
+            if(u == null) {
                 res.status(404).send("Not found")
             }else {
                 res.setHeader('Content-Type', 'application/json')
-                res.send(JSON.stringify(output.serialize()))
+                res.send(JSON.stringify(
+                    Object.assign({}, u.object.address.serialize(), u.object.serialize())
+                ))
             }
         })
 
