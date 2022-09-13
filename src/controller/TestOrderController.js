@@ -29,6 +29,13 @@ class TestOrderController extends BaseController{
         super.register(app, prefix)
 
         app.get(join(this.prefix, "/"), async (req, res)=>{
+
+            if(!req.query.hasOwnProperty("token")){
+                // TODO: Token verification should be done later
+                res.status(403).send("Forbidden resources")
+                return
+            }
+
             let list = await this.tod.getAll()
             let output = []
             list.forEach((item)=>output.push(item.serialize()))
@@ -49,6 +56,7 @@ class TestOrderController extends BaseController{
             order.name1 = d.name1
             order.name2 = d.name2
             order.website = d.website
+            order.email = d.email
             order.samples = []
             for(const _s of d.tests){
                 let sample = new TestSample()

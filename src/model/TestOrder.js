@@ -5,6 +5,7 @@ class TestOrder{
     #name1 = null
     #name2 = null
     #website = null
+    #email = null
 
     get id() {
         return this.#id;
@@ -38,11 +39,20 @@ class TestOrder{
         this.#website = value;
     }
 
+    get email() {
+        return this.#email;
+    }
+
+    set email(value) {
+        this.#email = value;
+    }
+
     serialize(){
         return {
             name1: this.name1,
             name2: this.name2,
-            website: this.website
+            website: this.website,
+            email: this.email
         }
     }
 }

@@ -22,6 +22,7 @@ class TestOrderDAO extends BaseDAO {
         o.name1 = r.testOrder_name1;
         o.name2 = r.testOrder_name2;
         o.website = r.testOrder_website;
+        o.email = r.testOrder_email;
 
         return o
     }
@@ -33,7 +34,8 @@ class TestOrderDAO extends BaseDAO {
                 "   testOrder_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY," +
                 "   testOrder_name1 VARCHAR(255)," +
                 "   testOrder_name2 VARCHAR(255)," +
-                "   testOrder_website VARCHAR(255)" +
+                "   testOrder_website VARCHAR(255)," +
+                "   testOrder_email VARCHAR(255)" +
                 ");",
                 function(err, res){
                     if(err){
@@ -68,8 +70,8 @@ class TestOrderDAO extends BaseDAO {
         await (()=>{
             return new Promise((resolve, reject)=>{
                 this.connection.query("" +
-                    "INSERT INTO `testOrder` (testOrder_name1, testOrder_name2, testOrder_website) VALUES (?, ?, ?)",
-                    [entity.name1, entity.name2, entity.website],
+                    "INSERT INTO `testOrder` (testOrder_name1, testOrder_name2, testOrder_website, testOrder_email) VALUES (?, ?, ?, ?)",
+                    [entity.name1, entity.name2, entity.website, entity.email],
                     function(err, res){
                         if(err){
                             reject(err)
@@ -144,9 +146,10 @@ class TestOrderDAO extends BaseDAO {
                     "UPDATE `testOrder` SET" +
                     "   testOrder_name1=?," +
                     "   testOrder_name2=?," +
-                    "   testOrder_website=?" +
+                    "   testOrder_website=?," +
+                    "   testOrder_email=?" +
                     " WHERE testOrder_id=?",
-                    [entity.name1, entity.name2, entity.website, entity.id],
+                    [entity.name1, entity.name2, entity.website, entity.email, entity.id],
                     function(err, res){
                         if(err){
                             throw err;
