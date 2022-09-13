@@ -84,6 +84,21 @@ class BaseMemberController extends BaseController {
             }
 
         })
+
+        app.delete(path.join(this.prefix, "/:memberId"), async(req, res)=>{
+            // Should use Business Logic
+            let id = req.params.memberId
+
+            if(!req.query.hasOwnProperty("token")){
+                res.status(403).send("Forbidden resources")
+                return
+            }
+            let entity = await this.bmd.getById(id)
+            await this.bmd.delete(entity)
+
+            res.setHeader('Content-Type', 'application/json')
+            res.status(200).send({})
+        })
     }
 }
 module.exports = BaseMemberController

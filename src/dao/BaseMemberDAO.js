@@ -130,6 +130,11 @@ class BaseMemberDAO extends BaseUserDAO {
         await dao.update(entity)
     }
 
+    async delete(entity){
+        let dao = this.getEntityDAO(entity)
+        return await dao.delete(entity)
+    }
+
     async getById(id){
         return new Promise((resolve, reject)=>{
             this.connection.query("SELECT * FROM `baseMember` LEFT JOIN `address` ON address_baseMemberId=baseMember_id WHERE baseMember_id=?", [id], (err, res)=>{
