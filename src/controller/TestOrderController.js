@@ -3,6 +3,7 @@ const TestOrderDAO = require("../dao/TestOrderDAO");
 const {join} = require("path");
 const TestOrderWithSamples = require("../model/TestOrderWithSamples");
 const TestSample = require("../model/TestSample");
+const TestOrderBL = require("../businessLogic/TestOrderBL");
 
 class TestOrderController extends BaseController{
 
@@ -35,7 +36,6 @@ class TestOrderController extends BaseController{
                 res.status(403).send("Forbidden resources")
                 return
             }
-
             let list = await this.tod.getAll()
             let output = []
             list.forEach((item)=>output.push(item.serialize()))
@@ -53,6 +53,18 @@ class TestOrderController extends BaseController{
         app.post(join(this.prefix, "/"), async (req, res)=>{
             let d = req.body
             let order = new TestOrderWithSamples()
+            let u = await TestOrderBL.getInstance().registerTest(d)
+
+            res.setHeader('Content-Type', 'application/json')
+            if(u.hasOwnProperty("errors")){
+                res.send(JSON.stringify(u))
+            }else{
+                res.send(JSON.stringify({
+                    "object": u.object.serialize()
+                }))
+            }
+
+            /*
             order.name1 = d.name1
             order.name2 = d.name2
             order.website = d.website
@@ -74,6 +86,7 @@ class TestOrderController extends BaseController{
             await this.tod.add(order)
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(order.serialize()))
+             */
 
         })
     }
