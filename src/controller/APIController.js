@@ -13,6 +13,7 @@ const ProfileController = require("./ProfileController");
 const BaseMemberController = require("./BaseMemberController");
 const MessageController = require("./MessageController");
 const AddressController = require("./AddressController");
+const FakeTimeController = require("./FakeTimeController");
 
 class APIController extends BaseController {
     static instance = null;
@@ -74,6 +75,9 @@ class APIController extends BaseController {
 
         // Address
         AddressController.getInstance().register(app, path.join(prefix, "address"))
+
+        // Fake time controller
+        FakeTimeController.getInstance().register(app, path.join(prefix, "fakeTime"))
 
         app.get(path.join(this.prefix, "/"), (req, res)=>{
             res.send("Hello world from the api")
