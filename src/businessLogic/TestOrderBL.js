@@ -89,7 +89,7 @@ class TestOrderBL extends BaseBL{
         let admin = await AdminDAO.getInstance().getByUsername("admin")
         let msg = new Message()
         msg.title = `A new order has purchased`
-        msg.content = `${name1} ${name2} &lt;${email}&gt; has been purchased`
+        msg.content = `${name1} ${name2} &lt;${email}&gt; has purchased`
         msg.senderId = null
         msg.receiverId = admin.id
         msg.tags = "NEW_ORDER"

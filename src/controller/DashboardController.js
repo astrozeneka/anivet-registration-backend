@@ -32,6 +32,17 @@ class DashboardController extends BaseController{
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(output))
         })
+
+        app.get(path.join(this.prefix, "/menu-badge"), async(req, res)=>{
+            if(!req.query.hasOwnProperty("token")){
+                // TODO: Token verification should be done later
+                res.status(403).send("Forbidden resources")
+                return
+            }
+            let output = await DashboardBL.getInstance().getMenuBadge()
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(output))
+        })
     }
 }
 module.exports = DashboardController

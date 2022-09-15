@@ -2,6 +2,9 @@ const BaseBL = require("./BaseBL");
 const BaseMemberDAO = require("../dao/BaseMemberDAO");
 const TestOrderDAO = require("../dao/TestOrderDAO");
 const TestSampleDAO = require("../dao/TestSampleDAO");
+const OwnerDAO = require("../dao/OwnerDAO");
+const BreederDAO = require("../dao/BreederDAO");
+const VetDAO = require("../dao/VetDAO");
 
 class DashboardBL extends BaseBL {
     static instance = null;
@@ -20,6 +23,15 @@ class DashboardBL extends BaseBL {
             "registeredUsers": await BaseMemberDAO.getInstance().count(),
             "testOrders": await TestOrderDAO.getInstance().count(),
             "testSamples": await TestSampleDAO.getInstance().count()
+        }
+    }
+
+    async getMenuBadge(){
+        return {
+            "testOrders": await TestOrderDAO.getInstance().count(),
+            "owners": await OwnerDAO.getInstance().count(),
+            "breeders": await BreederDAO.getInstance().count(),
+            "vets": await VetDAO.getInstance().count()
         }
     }
 }

@@ -185,5 +185,18 @@ class OwnerDAO extends BaseMemberDAO{
             })
         })
     }
+
+    async count(){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT COUNT(*) FROM `owner`", (err, res)=>{
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                if(res.length == 0) resolve(null)
+                resolve(res[0]['COUNT(*)'])
+            })
+        })
+    }
 }
 module.exports = OwnerDAO
