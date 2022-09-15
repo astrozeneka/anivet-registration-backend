@@ -4,6 +4,10 @@ const TestOrderWithSamples = require("../model/TestOrderWithSamples");
 const TestSample = require("../model/TestSample");
 const TestOrderDAO = require("../dao/TestOrderDAO");
 const isValidEmail = require("../utils/isValidEmail");
+const AdminDAO = require("../dao/AdminDAO");
+const MessageDAO = require("../dao/MessageDAO");
+const Message = require("../model/Message");
+const TimeBL = require("./TimeBL");
 
 class TestOrderBL extends BaseBL{
     static instance = null;
@@ -79,6 +83,24 @@ class TestOrderBL extends BaseBL{
             order.samples.push(sample)
         }
         await TestOrderDAO.getInstance().add(order)
+
+        // IF everything is OK
+        // We send a notification to the admin
+        let admin = await AdminDAO.getInstance().getByUsername("admin")
+        let msg = new Message()
+        msg.title = `A new order has purchased`
+        msg.content = `${name1} ${name2} &lt;${email}&gt; has been purchased`
+        msg.senderId = null
+        msg.receiverId = admin.id
+        msg.tags = "NEW_ORDER"
+
+        if(TimeBL.getInstance().time != null)
+            msg.date = TimeBL.getInstance().time
+        else
+            msg.date = new Date()
+
+        await MessageDAO.getInstance().add(msg)
+
         return {
             "object": order
         }
