@@ -167,6 +167,19 @@ class TestSampleDAO extends BaseDAO{
                 })
         })
     }
+
+    async count(){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT COUNT(*) FROM `testSample`", (err, res)=>{
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                if(res.length == 0) resolve(null)
+                resolve(res[0]['COUNT(*)'])
+            })
+        })
+    }
 }
 
 module.exports = TestSampleDAO

@@ -1,4 +1,7 @@
 const BaseBL = require("./BaseBL");
+const BaseMemberDAO = require("../dao/BaseMemberDAO");
+const TestOrderDAO = require("../dao/TestOrderDAO");
+const TestSampleDAO = require("../dao/TestSampleDAO");
 
 class DashboardBL extends BaseBL {
     static instance = null;
@@ -12,6 +15,12 @@ class DashboardBL extends BaseBL {
         this.instance = null;
     }
 
-
+    async getData(){
+        return {
+            "registeredUsers": await BaseMemberDAO.getInstance().count(),
+            "testOrders": await TestOrderDAO.getInstance().count(),
+            "testSamples": await TestSampleDAO.getInstance().count()
+        }
+    }
 }
 module.exports = DashboardBL

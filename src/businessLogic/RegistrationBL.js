@@ -15,6 +15,7 @@ const BaseMemberDAO = require("../dao/BaseMemberDAO");
 const AdminDAO = require("../dao/AdminDAO");
 const Message = require("../model/Message");
 const MessageDAO = require("../dao/MessageDAO");
+const TimeBL = require("./TimeBL");
 
 class RegistrationBL extends BaseBL {
     static instance = null;
@@ -133,11 +134,16 @@ class RegistrationBL extends BaseBL {
         // It should notify the admin that a new user has been registered
         let admin = await AdminDAO.getInstance().getByUsername("admin")
         let msg = new Message()
-        msg.title = "NEW MEMBER"
-        msg.content = "A new member has been registered"
+        msg.title = `A new <b>${type}</b> has been registered`
+        msg.content = `${name1} ${name2} &lt;${email}&gt; has registered a new account.`
         msg.senderId = null
         msg.receiverId = admin.id
-        msg.date = new Date()
+
+        if(TimeBL.getInstance().time != null)
+            msg.date = TimeBL.getInstance().time
+        else
+            msg.date = new Date()
+
         await MessageDAO.getInstance().add(msg)
 
         return {
