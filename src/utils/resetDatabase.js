@@ -8,6 +8,8 @@ const BaseMemberDAO = require("../dao/BaseMemberDAO");
 const AdminDAO = require("../dao/AdminDAO");
 const VetDAO = require("../dao/VetDAO");
 const MessageDAO = require("../dao/MessageDAO");
+const TrackingTypeDAO = require("../dao/TrackingTypeDAO");
+const SampleStatusDAO = require("../dao/SampleStatusDAO");
 
 async function resetDatabase(){
     let ad = AddressDAO.getInstance()
@@ -20,12 +22,16 @@ async function resetDatabase(){
     let add = AdminDAO.getInstance()
     let vd = VetDAO.getInstance()
     let md = MessageDAO.getInstance();
+    let ttd = TrackingTypeDAO.getInstance();
+    let ssd = SampleStatusDAO.getInstance();
 
     await md.destroyTable()
     await ad.destroyTable()
     await od.destroyTable()
     await tsd.destroyTable()
     await tod.destroyTable()
+    await ssd.destroyTable()
+    await ttd.destroyTable()
     await brd.destroyTable()
     await add.destroyTable()
     await vd.destroyTable()
@@ -38,11 +44,14 @@ async function resetDatabase(){
     await vd.buildTable() // Vet Table
     await add.buildTable() // Admin Tabld
     await brd.buildTable() // Breeder Table
+    await ttd.buildTable()
+    await ssd.buildTable()
     await tod.buildTable() // TestOrder Table
     await tsd.buildTable() // TestSample Table
     await od.buildTable() // Owner Table
     await ad.buildTable() // Address Table
     await md.buildTable() // Message table (includes notification)
+
 }
 
 module.exports = resetDatabase
