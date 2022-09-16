@@ -10,6 +10,8 @@ class TestSample{
     #sampleType = null
     #image = null  // An ID
     #testOrderId = null
+    #trackingTypeId = null
+    #progress = null
 
     get id() {
         return this.#id;
@@ -84,6 +86,22 @@ class TestSample{
         this.#testOrderId = value;
     }
 
+    get trackingTypeId() {
+        return this.#trackingTypeId;
+    }
+
+    set trackingTypeId(value) {
+        this.#trackingTypeId = value;
+    }
+
+    get progress() {
+        return this.#progress;
+    }
+
+    set progress(value) {
+        this.#progress = value;
+    }
+
     serialize(){
         return {
             id: this.id,
@@ -94,7 +112,8 @@ class TestSample{
             test: this.test,
             sampleType: this.sampleType,
             image: this.image,
-            testOrderId: this.testOrderId
+            testOrderId: this.testOrderId,
+            trackingTypeId: this.trackingTypeId
         }
     }
 }

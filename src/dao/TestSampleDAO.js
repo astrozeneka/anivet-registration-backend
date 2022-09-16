@@ -23,7 +23,9 @@ class TestSampleDAO extends BaseDAO{
         o.petSpecie = r.testSample_petSpecie
         o.test = r.testSample_test
         o.sampleType = r.testSample_sampleType
-        o.image = r.testSample_ipmage
+        o.image = r.testSample_image
+        o.progress = r.testSample_progress
+        o.trackingTypeId = r.testSample_trackingTypeId
 
         return o
     }
@@ -41,8 +43,10 @@ class TestSampleDAO extends BaseDAO{
                 "   testSample_sampleType VARCHAR(255)," +
                 "   testSample_image int(6)," +
                 "   testSample_testOrderId int(6) UNSIGNED," +
-                "   CONSTRAINT `fk_testOrderId` FOREIGN KEY (testSample_testOrderId) REFERENCES testOrder (testOrder_id)" +
-                "       ON DELETE CASCADE" +
+                "   testSample_trackingTypeId INT(6) UNSIGNED," +
+                "   testSample_progress INT(6) UNSIGNED,"+ // The step used for tracking
+                "   CONSTRAINT `fk_testOrderId` FOREIGN KEY (testSample_testOrderId) REFERENCES testOrder (testOrder_id) ON DELETE CASCADE," +
+                "   CONSTRAINT `fk_trackingTypeId_ts` FOREIGN KEY (testSample_trackingTypeId) REFERENCES trackingType (trackingType_id) ON DELETE CASCADE" +
                 ");",
                 function(err, res){
                     if(err){
