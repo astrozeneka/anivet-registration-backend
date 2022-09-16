@@ -110,7 +110,7 @@ class MessageDAO extends BaseDAO{
 
     async getById(id){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `message` WHERE message_id=? ORDER BY message_date DESC", [id], (err, res)=>{
+            this.connection.query("SELECT * FROM `message` WHERE message_id=? ORDER BY message_date ASC", [id], (err, res)=>{
                 if(err){
                     throw err;
                     reject(err)
@@ -123,7 +123,7 @@ class MessageDAO extends BaseDAO{
 
     async getAllSentBy(sender){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `message` WHERE message_senderId=? ORDER BY message_date DESC", [sender], (err, res)=>{
+            this.connection.query("SELECT * FROM `message` WHERE message_senderId=? ORDER BY message_date ASC", [sender], (err, res)=>{
                 if(err){
                     throw err;
                     reject(err)

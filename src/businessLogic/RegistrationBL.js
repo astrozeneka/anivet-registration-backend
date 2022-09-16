@@ -130,6 +130,8 @@ class RegistrationBL extends BaseBL {
         // Calling the DataAccess method
         await dao.add(model)
 
+
+        // ADMIN NOTIFICATION
         // If everything is ok
         // It should notify the admin that a new user has been registered
         let admin = await AdminDAO.getInstance().getByUsername("admin")
@@ -139,13 +141,23 @@ class RegistrationBL extends BaseBL {
         msg.senderId = null
         msg.receiverId = admin.id
         msg.tags = "NEW_MEMBER"
-
         if(TimeBL.getInstance().time != null)
             msg.date = TimeBL.getInstance().time
         else
             msg.date = new Date()
-
         await MessageDAO.getInstance().add(msg)
+
+        let welcome = new Message()
+        welcome.title = `Welcome to the Anivet backoffice new Application`
+        welcome.content = `Phasellus sit amet sapien ac urna ullamcorper finibus vel a ligula. Donec sed urna at <a href="/">odio bibendum blandit</a>. Nulla non tempus ipsum.`
+        welcome.senderId = null
+        welcome.receiverId = model.id
+        welcome.tags = "MESSAGE"
+        if(TimeBL.getInstance().time != null)
+            welcome.date = TimeBL.getInstance().time
+        else
+            welcome.date = new Date()
+        await MessageDAO.getInstance().add(welcome)
 
         return {
             "object": model
