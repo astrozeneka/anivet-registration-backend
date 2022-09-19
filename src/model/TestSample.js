@@ -114,7 +114,10 @@ class TestSample{
             image: this.image,
             testOrderId: this.testOrderId,
             trackingTypeId: this.trackingTypeId,
-            progress: this.progress
+            progress: this.progress,
+
+            // Related fields
+            testOrder_email: this.testOrder_email
         }
     }
 }

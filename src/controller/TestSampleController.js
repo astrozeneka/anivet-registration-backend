@@ -73,6 +73,16 @@ class TestSampleController extends BaseController{
             res.send(JSON.stringify(sample.serialize()))
         })
 
+        app.put(path.join(this.prefix, "/:sampleId/progress"), async (req, res)=>{
+            let d = req.body
+            let sampleId = req.params.sampleId
+            let sample = await this.tsd.getById(sampleId)
+            sample.progress = d.progress
+            await this.tsd.update(sample)
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(sample.serialize()))
+        })
+
         app.delete(path.join(this.prefix, "/"), async (req, res)=> {
             let d = req.body
             let sample = new TestSample()

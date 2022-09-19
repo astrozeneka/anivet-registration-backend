@@ -1,4 +1,5 @@
 const BaseDAO = require("./BaseDAO");
+const SampleStatus = require("../model/SampleStatus");
 
 class SampleStatusDAO extends BaseDAO{
     static instance = null;
@@ -10,6 +11,18 @@ class SampleStatusDAO extends BaseDAO{
     }
     static tearDown(){
         this.instance = null;
+    }
+
+    fromResultSet(r){
+        let o = new SampleStatus()
+
+        o.id = r.sampleStatus_id
+        o.step = r.sampleStatus_step
+        o.label = r.sampleStatus_label
+        o.trackingTypeId = r.trackingTypeId
+        o.trackingTypeLabel = r.trackingTypeLabel
+
+        return o
     }
 
     async buildTable(){
@@ -63,6 +76,23 @@ class SampleStatusDAO extends BaseDAO{
                 }
                 entity.id = res.insertId
                 resolve(res)
+            })
+        })
+    }
+
+    async getAllByTrackingId(trackingTypeId){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT * FROM `sampleStatus`\n" +
+                " INNER JOIN `trackingType` ON sampleStatus_trackingTypeId = trackingType_id" +
+                " WHERE trackingType_id = ?", [trackingTypeId, ], (err, res)=>{
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                let output = []
+                for(let rdp of res)
+                    output.push(this.fromResultSet(rdp))
+                resolve(output)
             })
         })
     }

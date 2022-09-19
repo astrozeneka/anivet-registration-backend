@@ -26,6 +26,11 @@ class TestSampleDAO extends BaseDAO{
         o.image = r.testSample_image
         o.progress = r.testSample_progress
         o.trackingTypeId = r.testSample_trackingTypeId
+        o.testOrderId = r.testSample_testOrderId
+
+        // Related fields
+        if(r.hasOwnProperty("testOrder_email"))
+            o.testOrder_email = r.testOrder_email
 
         return o
     }
@@ -92,7 +97,10 @@ class TestSampleDAO extends BaseDAO{
 
     async getAll(){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `testSample`", (err, res)=>{
+            this.connection.query("SELECT * FROM \n" +
+                "\t`testSample`\n" +
+                "    INNER JOIN `testOrder`\n" +
+                "    \tON testOrder_id = testSample_testOrderId", (err, res)=>{
                 if(err){
                     throw err;
                     reject(err)
@@ -107,7 +115,10 @@ class TestSampleDAO extends BaseDAO{
 
     async getById(id){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `testSample` WHERE testSample_id=?", [id], (err, res)=>{
+            this.connection.query("SELECT * FROM \n" +
+                "\t`testSample`\n" +
+                "    INNER JOIN `testOrder`\n" +
+                "    \tON testOrder_id = testSample_testOrderId WHERE testSample_id=?", [id], (err, res)=>{
                 if(err){
                     throw err;
                     reject(err)
@@ -144,10 +155,11 @@ class TestSampleDAO extends BaseDAO{
                 "   testSample_test=?," +
                 "   testSample_sampleType=?," +
                 "   testSample_image=?," +
-                "   testSample_testOrderId=?" +
+                "   testSample_testOrderId=?," +
+                "   testSample_progress=?" +
                 " WHERE testSample_id=?",
                 [entity.animal, entity.type, entity.petId, entity.petSpecie, entity.test, entity.sampleType, entity.image,
-                entity.testOrderId, entity.id],
+                entity.testOrderId, entity.progress, entity.id],
                 function(err, res){
                     if(err){
                         throw err;

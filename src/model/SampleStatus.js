@@ -42,7 +42,10 @@ class SampleStatus {
             id: this.id,
             step: this.step,
             label: this.label,
-            trackingTypeId: this.trackingTypeId
+            trackingTypeId: this.trackingTypeId,
+
+            // Related fields
+            trackingTypeLabel: this.trackingTypeLabel
         }
     }
 }
