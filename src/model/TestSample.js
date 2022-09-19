@@ -113,7 +113,8 @@ class TestSample{
             sampleType: this.sampleType,
             image: this.image,
             testOrderId: this.testOrderId,
-            trackingTypeId: this.trackingTypeId
+            trackingTypeId: this.trackingTypeId,
+            progress: this.progress
         }
     }
 }

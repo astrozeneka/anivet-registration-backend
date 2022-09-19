@@ -22,7 +22,7 @@ class TestOrderBL extends BaseBL{
     }
 
     async registerTest(
-        {name1, name2, email, tests}
+        {name1, name2, email, memberId, tests}
     ){
 
         // Remove unused sample data container
@@ -71,6 +71,7 @@ class TestOrderBL extends BaseBL{
         order.name1 = name1
         order.name2 = name2
         order.email = email
+        order.memberId = memberId
         order.samples = []
         for(const _s of filteredSamples){
             let sample = new TestSample()

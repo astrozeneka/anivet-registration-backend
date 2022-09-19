@@ -44,7 +44,7 @@ class TestSampleDAO extends BaseDAO{
                 "   testSample_image int(6)," +
                 "   testSample_testOrderId int(6) UNSIGNED," +
                 "   testSample_trackingTypeId INT(6) UNSIGNED," +
-                "   testSample_progress INT(6) UNSIGNED,"+ // The step used for tracking
+                "   testSample_progress INT(6) UNSIGNED DEFAULT 0,"+ // The step used for tracking
                 "   CONSTRAINT `fk_testOrderId` FOREIGN KEY (testSample_testOrderId) REFERENCES testOrder (testOrder_id) ON DELETE CASCADE," +
                 "   CONSTRAINT `fk_trackingTypeId_ts` FOREIGN KEY (testSample_trackingTypeId) REFERENCES trackingType (trackingType_id) ON DELETE CASCADE" +
                 ");",

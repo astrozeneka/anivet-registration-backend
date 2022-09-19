@@ -46,5 +46,23 @@ class TrackingTypeDAO extends BaseDAO{
             )
         })
     }
+
+    async add(entity) {
+        if(entity.id != null)
+            return entity;
+
+        return new Promise((resolve, reject)=>{
+            this.connection.query("INSERT INTO `trackingType` (trackingType_label) VALUES (?)", [
+                entity.label
+            ], function (err, res){
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                entity.id = res.insertId
+                resolve(res)
+            })
+        })
+    }
 }
 module.exports = TrackingTypeDAO

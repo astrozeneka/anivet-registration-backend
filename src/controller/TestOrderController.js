@@ -43,6 +43,20 @@ class TestOrderController extends BaseController{
             res.send(JSON.stringify(output))
         })
 
+        app.get(join(this.prefix, "/:userId"), async(req, res)=>{
+            if(!req.query.hasOwnProperty("token")){
+                // TODO: Token verification should be done later
+                res.status(403).send("Forbidden resources")
+                return
+            }
+            let id = req.params.userId
+            let list = await this.tod.getAllByUser(id)
+            let output = []
+            list.forEach((item)=>output.push(item.serialize()))
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(output))
+        })
+
         app.get(join(this.prefix, "/:testOrderId"), async (req, res)=>{
             let id = req.params.testOrderId
             let output = await this.tod.getById(id)

@@ -49,5 +49,22 @@ class SampleStatusDAO extends BaseDAO{
             )
         })
     }
+
+    async add(entity){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("INSERT INTO `sampleStatus` (" +
+                "sampleStatus_step, sampleStatus_label, sampleStatus_trackingTypeId)" +
+                " VALUES (?, ?, ?)", [
+                entity.step, entity.label, entity.trackingTypeId
+            ], function (err, res){
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                entity.id = res.insertId
+                resolve(res)
+            })
+        })
+    }
 }
 module.exports = SampleStatusDAO

@@ -23,6 +23,7 @@ class TestOrderDAO extends BaseDAO {
         o.name2 = r.testOrder_name2;
         o.website = r.testOrder_website;
         o.email = r.testOrder_email;
+        o.memberId = r.testOrder_memberId;
 
         return o
     }
@@ -35,7 +36,10 @@ class TestOrderDAO extends BaseDAO {
                 "   testOrder_name1 VARCHAR(255)," +
                 "   testOrder_name2 VARCHAR(255)," +
                 "   testOrder_website VARCHAR(255)," +
-                "   testOrder_email VARCHAR(255)" +
+                "   testOrder_email VARCHAR(255)," +
+                "   testOrder_memberId INT(6) UNSIGNED," + // NULLABLE
+                "" +
+                "   CONSTRAINT `fk_to_memberId` FOREIGN KEY (testOrder_memberId) REFERENCES baseMember (baseMember_id) ON DELETE CASCADE" +
                 ");",
                 function(err, res){
                     if(err){
@@ -70,8 +74,8 @@ class TestOrderDAO extends BaseDAO {
         await (()=>{
             return new Promise((resolve, reject)=>{
                 this.connection.query("" +
-                    "INSERT INTO `testOrder` (testOrder_name1, testOrder_name2, testOrder_website, testOrder_email) VALUES (?, ?, ?, ?)",
-                    [entity.name1, entity.name2, entity.website, entity.email],
+                    "INSERT INTO `testOrder` (testOrder_name1, testOrder_name2, testOrder_website, testOrder_email, testOrder_memberId) VALUES (?, ?, ?, ?, ?)",
+                    [entity.name1, entity.name2, entity.website, entity.email, entity.memberId],
                     function(err, res){
                         if(err){
                             reject(err)
@@ -99,6 +103,35 @@ class TestOrderDAO extends BaseDAO {
         let orders = await (()=>{
             return new Promise((resolve, reject)=>{
                 this.connection.query("SELECT * FROM `testOrder`", (err, res)=>{
+                    if(err){
+                        throw err;
+                        reject(err)
+                    }
+                    let output = []
+                    for(let rdp of res)
+                        output.push(this.fromResultSet(rdp))
+                    resolve(output)
+                })
+            })
+        })()
+
+        /**
+         * SELECT
+         */
+        for(const order of orders){
+            order.samples = await TestSampleDAO.getInstance().getAllByTestOrderId(order.id)
+        }
+
+        return orders
+    }
+
+    async getAllByUser(memberId){
+        /**
+         * SELECT ALL TEST ORDERS
+         */
+        let orders = await (()=>{
+            return new Promise((resolve, reject)=>{
+                this.connection.query("SELECT * FROM `testOrder` WHERE testOrder_memberId=?", [memberId], (err, res)=>{
                     if(err){
                         throw err;
                         reject(err)

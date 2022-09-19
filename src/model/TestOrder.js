@@ -6,6 +6,7 @@ class TestOrder{
     #name2 = null
     #website = null
     #email = null
+    #memberId = null
 
     get id() {
         return this.#id;
@@ -47,12 +48,21 @@ class TestOrder{
         this.#email = value;
     }
 
+    get memberId() {
+        return this.#memberId;
+    }
+
+    set memberId(value) {
+        this.#memberId = value;
+    }
+
     serialize(){
         return {
             name1: this.name1,
             name2: this.name2,
             website: this.website,
-            email: this.email
+            email: this.email,
+            memberId: this.memberId
         }
     }
 }
