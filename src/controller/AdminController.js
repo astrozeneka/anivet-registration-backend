@@ -135,7 +135,7 @@ class AdminController extends BaseController{
             if(!(u instanceof Admin)){
                 res.send(u) // Return exception to the user
             }else{
-                let accessToken = jwt.sign(u.serialize(), process.env.TOKEN_SECRET, {expiresIn: 1800})
+                let accessToken = jwt.sign(u.serialize(), process.env.TOKEN_SECRET, {expiresIn: 3600})
                 res.send(JSON.stringify({
                     accessToken: accessToken,
                     userId: u.id

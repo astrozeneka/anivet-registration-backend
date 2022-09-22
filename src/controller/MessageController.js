@@ -4,6 +4,8 @@ const BaseMemberDAO = require("../dao/BaseMemberDAO");
 const MemberBL = require("../businessLogic/MemberBL");
 const path = require("path");
 const Message = require("../model/Message");
+const express = require("express");
+const {isAdminToken} = require("../utils/token");
 
 
 class MessageController extends BaseController {
@@ -27,8 +29,35 @@ class MessageController extends BaseController {
         this.md = MessageDAO.getInstance()
         this.bmd = BaseMemberDAO.getInstance()
         this.mbl = MemberBL.getInstance()
+        this.app = express.Router()
+
+
+        this.app.get(path.join(this.prefix, "/to/:memberId"), async(req, res)=>{
+            let id = req.params.memberId
+            if(!await isAdminToken(req.decodedToken))
+                res.status(403).send("Unauthorized")
+            if(id != req.decodedToken.id)
+                res.status(403).send("Unauthorized")
+
+            let user = await this.bmd.getById(id)
+            if(user == null) {
+                res.status(403).send("Forbidden resources")
+                return
+            }
+
+            let messages = await this.mbl.messageList(user)
+            let output = []
+            messages.forEach((message)=>{
+                output.push(message.serialize())
+            })
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(output))
+        })
+
+
     }
 
+    /*
     register(app, prefix){
         super.register(app, prefix)
 
@@ -81,5 +110,6 @@ class MessageController extends BaseController {
             }
         })
     }
+    */
 }
 module.exports = MessageController

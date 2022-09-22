@@ -24,9 +24,9 @@ class DashboardController extends BaseController{
          * DEFAULT DATA LOADED
          */
         this.app.get(path.join(this.prefix, "/"), async (req, res)=>{
-            //if(!await isAdminToken(req.decodedToken)){
-            //    res.status(403).send("Unauthorized")
-            //}
+            if(!await isAdminToken(req.decodedToken)){
+                res.status(403).send("Unauthorized")
+            }
             let output = await DashboardBL.getInstance().getData()
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(output))
