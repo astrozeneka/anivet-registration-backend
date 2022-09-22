@@ -2,7 +2,7 @@ const BaseController = require("./BaseController");
 const DashboardBL = require("../businessLogic/DashboardBL");
 const path = require("path");
 const {isAdminToken} = require("../utils/token");
-
+const express = require("express");
 
 class DashboardController extends BaseController{
     static instance = null;
@@ -18,27 +18,28 @@ class DashboardController extends BaseController{
 
     constructor(){
         super();
-    }
+        this.app = express.Router()
 
-    register(app, prefix){
-        super.register(app, prefix)
-
-        app.get(path.join(this.prefix, "/"), async (req, res)=>{
-            if(!req.query.hasOwnProperty("token")){
-                // TODO: Token verification should be done later
-                res.status(403).send("Forbidden resources")
-                return
-            }
+        /**
+         * DEFAULT DATA LOADED
+         */
+        this.app.get(path.join(this.prefix, "/"), async (req, res)=>{
+            //if(!await isAdminToken(req.decodedToken)){
+            //    res.status(403).send("Unauthorized")
+            //}
             let output = await DashboardBL.getInstance().getData()
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(output))
         })
 
-        app.get(path.join(this.prefix, "/menu-badge"), async(req, res)=>{
+        /**
+         * MENU BADGE
+         */
+        this.app.get(path.join(this.prefix, "/menu-badge"), async(req, res)=>{
             if(!await isAdminToken(req.decodedToken)){
-                res.return(403).send("Unauthorized")
+                res.status(401).send("Unauthorized HTTP")
+                return
             }
-
             let output = await DashboardBL.getInstance().getMenuBadge()
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(output))

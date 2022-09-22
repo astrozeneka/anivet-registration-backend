@@ -26,6 +26,7 @@ const checkJwt = jwt({
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
 const AuthenticationBL = require("../businessLogic/AuthenticationBL");
+const express = require("express");
 dotenv.config()
 
 
@@ -45,11 +46,13 @@ class AdminController extends BaseController{
     constructor(){
         super();
         this.add = AdminDAO.getInstance();
+        this.app = express.Router();
     }
 
     register(app, prefix){
         super.register(app, prefix)
 
+        /*
         app.get(path.join(this.prefix, "/"), async(req, res)=>{
             let list = await this.add.getAll();
             let output = []
@@ -78,6 +81,7 @@ class AdminController extends BaseController{
              * Check the validity of the password
              * Check the availability of the username
              * ***************/
+        /*
             let errors = {}
             errors["password"] = "PASSWORD_TOO_SHORT"
             errors["passwordConfirm"] = "PASSWORD_MISMATCHED"
@@ -116,11 +120,12 @@ class AdminController extends BaseController{
             res.setHeader('Content-Type', 'application/json')
             res.send(null)
         })
+        */
 
         /**
          * The login method return authentication token to the client-side application
          */
-        app.post(path.join(this.prefix, "/login"), async(req, res)=>{
+        this.app.post("/login", async(req, res)=>{
             let d = req.body
             let username = d.username
             let password = d.password

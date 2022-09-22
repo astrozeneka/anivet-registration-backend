@@ -42,7 +42,7 @@ class APIController extends BaseController {
         if(prefix != undefined) this.prefix = prefix
 
         // Authentication middleware
-        app.use(auth)
+        //app.use(auth)
 
         // Installation
         InstallationController.getInstance().register(app, path.join(prefix, "install"))
@@ -57,7 +57,10 @@ class APIController extends BaseController {
         TestOrderController.getInstance().register(app, path.join(prefix, "testOrder"))
 
         // Admin
-        AdminController.getInstance().register(app, path.join(prefix, "admin"))
+        //AdminController.getInstance().register(app, path.join(prefix, "admin"))
+        AdminController.getInstance().register()
+        app.use("/api/v1/admin", AdminController.getInstance().app)
+        console.log()
 
         // Breeder
         BreederController.getInstance().register(app, path.join(prefix, "breeder"))
