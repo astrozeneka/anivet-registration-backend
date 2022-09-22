@@ -17,6 +17,8 @@ const FakeTimeController = require("./FakeTimeController");
 const DashboardController = require("./DashboardController");
 const SampleStatusController = require("./SampleStatusController");
 
+const auth = require("./middleware/auth")
+
 class APIController extends BaseController {
     static instance = null;
     static getInstance(){
@@ -38,6 +40,9 @@ class APIController extends BaseController {
 
     register(app, prefix){
         if(prefix != undefined) this.prefix = prefix
+
+        // Authentication middleware
+        app.use(auth)
 
         // Installation
         InstallationController.getInstance().register(app, path.join(prefix, "install"))
