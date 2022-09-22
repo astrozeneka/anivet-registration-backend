@@ -29,6 +29,7 @@ class DashboardBL extends BaseBL {
     async getMenuBadge(){
         return {
             "testOrders": await TestOrderDAO.getInstance().count(),
+            "testSamples": await TestSampleDAO.getInstance().count(),
             "owners": await OwnerDAO.getInstance().count(),
             "breeders": await BreederDAO.getInstance().count(),
             "vets": await VetDAO.getInstance().count()

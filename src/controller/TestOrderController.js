@@ -4,6 +4,8 @@ const {join} = require("path");
 const TestOrderWithSamples = require("../model/TestOrderWithSamples");
 const TestSample = require("../model/TestSample");
 const TestOrderBL = require("../businessLogic/TestOrderBL");
+const express = require("express");
+const {isAdminToken} = require("../utils/token");
 
 class TestOrderController extends BaseController{
 
@@ -22,10 +24,35 @@ class TestOrderController extends BaseController{
 
     constructor() {
         super();
-
         this.tod = TestOrderDAO.getInstance()
+        this.app = express.Router()
+
+        this.app.get("/", async (req, res)=>{
+            if(!await isAdminToken(req.decodedToken)){
+                res.status(401).send("Unauthorized HTTP")
+                return
+            }
+            let list = await this.tod.getAll()
+            let output = []
+            list.forEach((item)=>output.push(item.serialize()))
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(output))
+        })
+
+        this.app.get("/test", async (req, res)=>{
+            if(!await isAdminToken(req.decodedToken)){
+                res.status(401).send("Unauthorized HTTP")
+                return
+            }
+            let list = await this.tod.getAll()
+            let output = []
+            list.forEach((item)=>output.push(item.serialize()))
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(output))
+        })
     }
 
+    /*
     register(app, prefix){
         super.register(app, prefix)
 
@@ -100,10 +127,11 @@ class TestOrderController extends BaseController{
             await this.tod.add(order)
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(order.serialize()))
-             */
+             *//*
 
         })
     }
+    */
 }
 
 module.exports = TestOrderController
