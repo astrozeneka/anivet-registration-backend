@@ -4,6 +4,7 @@ const Vet = require("../model/Vet");
 const Admin = require("../model/Admin");
 const Owner = require("../model/Owner");
 const Breeder = require("../model/Breeder");
+const Scientist = require("../model/Scientist");
 class BaseMemberDAO extends BaseUserDAO {
     static instance = null;
     static getInstance(){
@@ -30,6 +31,8 @@ class BaseMemberDAO extends BaseUserDAO {
             return require("./BreederDAO").getInstance()
         if(type == "vet")
             return require("./VetDAO").getInstance()
+        if(type == "scientist")
+            return require("./ScientistDAO").getInstance()
         throw("Entity is an unknown type")
     }
 
@@ -42,6 +45,8 @@ class BaseMemberDAO extends BaseUserDAO {
             return require("./BreederDAO").getInstance()
         if(entity instanceof Vet)
             return require("./VetDAO").getInstance()
+        if(entity instanceof Scientist)
+            return require('./ScientistDAO').getInstance()
         throw("Entity is an unknown class")
     }
 
@@ -65,7 +70,7 @@ class BaseMemberDAO extends BaseUserDAO {
                     "   baseMember_phone VARCHAR(255)," +
                     "   baseMember_email VARCHAR(255)," +
                     "   baseMember_corp VARCHAR(255)," +
-                    "   baseMember_type ENUM('admin','breeder','owner','vet')" +
+                    "   baseMember_type ENUM('admin','breeder','owner','vet', 'scientist')" +
                     "" +
                     ");",
                     function(err, res){

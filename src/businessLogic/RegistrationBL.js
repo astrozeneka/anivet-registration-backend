@@ -16,6 +16,8 @@ const AdminDAO = require("../dao/AdminDAO");
 const Message = require("../model/Message");
 const MessageDAO = require("../dao/MessageDAO");
 const TimeBL = require("./TimeBL");
+const Scientist = require("../model/Scientist");
+const ScientistDAO = require("../dao/ScientistDAO");
 
 class RegistrationBL extends BaseBL {
     static instance = null;
@@ -75,6 +77,10 @@ class RegistrationBL extends BaseBL {
         if(type == "vet") {
             model = new Vet()
             dao = VetDAO.getInstance()
+        }
+        if(type == "scientist"){
+            model = new Scientist
+            dao = ScientistDAO.getInstance()
         }
 
         /**

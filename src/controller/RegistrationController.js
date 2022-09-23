@@ -1,6 +1,8 @@
 const BaseController = require("./BaseController");
 const {join} = require("path");
 const RegistrationBL = require("../businessLogic/RegistrationBL");
+const express = require("express");
+const {isAdminToken} = require("../utils/token");
 
 
 class RegistrationController extends BaseController{
@@ -18,12 +20,11 @@ class RegistrationController extends BaseController{
 
     constructor(){
         super()
-    }
+        this.app = express.Router()
 
-    register(app, prefix){
-        super.register(app, prefix);
-
-        app.post(join(this.prefix, '/'), async(req, res)=>{
+        this.app.post(join(this.prefix, '/'), async(req, res)=>{
+            if(!await isAdminToken(req.decodedToken)) // ANd not sample owner
+                res.status(403).send("Unauthorized")
             let d = req.body
             let u = await RegistrationBL.getInstance().register(d)
             res.setHeader('Content-Type', 'application/json')
@@ -35,6 +36,12 @@ class RegistrationController extends BaseController{
                 }))
             }
         })
+    }
+
+    register(app, prefix){
+        super.register(app, prefix);
+
+
 
         app.put(join(this.prefix, '/:memberId'), async(req, res)=>{
             let id = req.params.memberId

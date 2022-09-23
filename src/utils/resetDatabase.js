@@ -10,6 +10,7 @@ const VetDAO = require("../dao/VetDAO");
 const MessageDAO = require("../dao/MessageDAO");
 const TrackingTypeDAO = require("../dao/TrackingTypeDAO");
 const SampleStatusDAO = require("../dao/SampleStatusDAO");
+const ScientistDAO = require("../dao/ScientistDAO");
 
 async function resetDatabase(){
     let ad = AddressDAO.getInstance()
@@ -21,6 +22,7 @@ async function resetDatabase(){
     let bmd = BaseMemberDAO.getInstance()
     let add = AdminDAO.getInstance()
     let vd = VetDAO.getInstance()
+    let sd = ScientistDAO.getInstance()
     let md = MessageDAO.getInstance();
     let ttd = TrackingTypeDAO.getInstance();
     let ssd = SampleStatusDAO.getInstance();
@@ -34,6 +36,7 @@ async function resetDatabase(){
     await ttd.destroyTable()
     await brd.destroyTable()
     await add.destroyTable()
+    await sd.destroyTable()
     await vd.destroyTable()
     await bmd.destroyTable()
     await bd.destroyTable()
@@ -42,6 +45,7 @@ async function resetDatabase(){
     await bmd.buildTable() // Base Member Table
     await new Promise(r => setTimeout(r, 100)) // This code has been used in order to avoid some errors
     await vd.buildTable() // Vet Table
+    await sd.buildTable()
     await add.buildTable() // Admin Tabld
     await brd.buildTable() // Breeder Table
     await ttd.buildTable()

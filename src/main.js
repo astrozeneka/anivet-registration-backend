@@ -3,6 +3,7 @@ const APIController = require("./controller/APIController");
 const PublicController = require("./controller/PublicController");
 const cors = require('cors')
 const APIV1Controller = require("./controller/APIV1Controller");
+const InstallationController = require("./controller/InstallationController");
 const app = express()
 app.use(express.json());
 const port = process.env.PORT || 3001
@@ -38,6 +39,7 @@ app.use('/api/v1', APIV1Controller.getInstance().app)
 
 // Public sub-application
 app.use('/public', PublicController.getInstance().app)
+app.use('/install', InstallationController.getInstance().app)
 
 
 app.listen(port, () => {

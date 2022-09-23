@@ -8,6 +8,7 @@ const path = require("path");
 const BreederDAO = require("../dao/BreederDAO");
 const InstallationBL = require("../businessLogic/InstallationBL");
 const SeedBL = require("../businessLogic/SeedBL");
+const express = require("express");
 
 
 class InstallationController extends BaseController{
@@ -34,17 +35,20 @@ class InstallationController extends BaseController{
         this.tod = TestOrderDAO.getInstance()
         this.tsd = TestSampleDAO.getInstance()
         this.brd = BreederDAO.getInstance()
-    }
 
-    register(app, prefix){
-        super.register(app, prefix)
-
-        app.get(path.join(this.prefix), async (req, res)=>{
+        this.app = express.Router()
+        this.app.get("/", async (req, res)=>{
             await InstallationBL.getInstance().installDB()
             res.send({
                 object: ""
             })
         })
+    }
+
+    register(app, prefix){
+        super.register(app, prefix)
+
+
 
         app.get(path.join(this.prefix, "seed"), async(req, res)=>{
             await InstallationBL.getInstance().installDB()
