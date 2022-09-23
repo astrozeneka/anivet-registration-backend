@@ -4,6 +4,8 @@ const DashboardController = require("./DashboardController");
 const auth = require("./middleware/auth")
 const MessageController = require("./MessageController");
 const TestOrderController = require("./TestOrderController");
+const TestSampleController = require("./TestSampleController");
+const SampleStatusController = require("./SampleStatusController");
 
 class APIV1Controller extends BaseController{
     static instance = null;
@@ -25,6 +27,8 @@ class APIV1Controller extends BaseController{
         this.app.use("/dashboard", DashboardController.getInstance().app)
         this.app.use("/message", MessageController.getInstance().app)
         this.app.use("/testOrder", TestOrderController.getInstance().app)
+        this.app.use("/testSample", TestSampleController.getInstance().app)
+        this.app.use("/sampleStatus", SampleStatusController.getInstance().app)
     }
 
 }

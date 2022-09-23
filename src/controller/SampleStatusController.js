@@ -2,6 +2,8 @@ const BaseController = require("./BaseController");
 const BreederDAO = require("../dao/BreederDAO");
 const SampleStatusDAO = require("../dao/SampleStatusDAO");
 const {join} = require("path");
+const express = require("express");
+const {isAdminToken} = require("../utils/token");
 
 class SampleStatusController extends BaseController{
     static instance = null;
@@ -17,12 +19,13 @@ class SampleStatusController extends BaseController{
 
     constructor(){
         super();
-    }
+        this.app = express.Router()
 
-    register(app, prefix){
-        super.register(app, prefix);
 
-        app.get(join(this.prefix, "/:trackingTypeId"), async(req, res)=>{
+        this.app.get(join(this.prefix, "/:trackingTypeId"), async(req, res)=>{
+            if(!await isAdminToken(req.decodedToken)){ // ANd not sample owner
+                res.status(403).send("Unauthorized")
+            }
             let id = req.params.trackingTypeId
             let list = await SampleStatusDAO.getInstance().getAllByTrackingId(id)
             let output = []
@@ -30,6 +33,10 @@ class SampleStatusController extends BaseController{
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(output))
         })
+    }
+
+    register(app, prefix){
+
     }
 }
 module.exports = SampleStatusController
