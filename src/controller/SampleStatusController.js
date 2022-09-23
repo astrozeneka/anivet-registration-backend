@@ -23,9 +23,8 @@ class SampleStatusController extends BaseController{
 
 
         this.app.get(join(this.prefix, "/:trackingTypeId"), async(req, res)=>{
-            if(!await isAdminToken(req.decodedToken)){ // ANd not sample owner
+            if(!await isAdminToken(req.decodedToken)) // ANd not sample owner
                 res.status(403).send("Unauthorized")
-            }
             let id = req.params.trackingTypeId
             let list = await SampleStatusDAO.getInstance().getAllByTrackingId(id)
             let output = []

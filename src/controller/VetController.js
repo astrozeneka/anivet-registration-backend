@@ -3,6 +3,8 @@ const VetDAO = require("../dao/VetDAO");
 const {join} = require("path");
 const Vet = require("../model/Vet");
 const Address = require("../model/Address");
+const express = require("express");
+const {isAdminToken} = require("../utils/token");
 
 
 class VetController extends BaseController{
@@ -21,18 +23,23 @@ class VetController extends BaseController{
     constructor(){
         super()
         this.vd = VetDAO.getInstance()
-    }
+        this.app = express.Router()
 
-    register(app, prefix){
-        super.register(app, prefix)
-
-        app.get(join(this.prefix, "/"), async (req, res)=>{
+        this.app.get(join(this.prefix, "/"), async (req, res)=>{
+            if(!await isAdminToken(req.decodedToken))
+                res.status(403).send("Unauthorized")
             let list = await this.vd.getAll();
             let output = []
             list.forEach((item)=>output.push(item.serialize()))
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(output))
         })
+    }
+
+    register(app, prefix){
+        super.register(app, prefix)
+
+
 
         app.get(join(this.prefix, "/:vetId"), async(req, res)=>{
             let id = req.params.vetId

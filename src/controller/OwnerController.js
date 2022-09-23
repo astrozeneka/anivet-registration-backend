@@ -3,6 +3,8 @@ const OwnerDAO = require("../dao/OwnerDAO");
 const {join} = require("path");
 const Owner = require("../model/Owner");
 const Address = require("../model/Address");
+const express = require("express");
+const {isAdminToken} = require("../utils/token");
 
 class OwnerController extends BaseController{
 
@@ -20,6 +22,17 @@ class OwnerController extends BaseController{
     constructor(){
         super();
         this.od = OwnerDAO.getInstance()
+
+        this.app = express.Router()
+        this.app.get(join(this.prefix, "/"), async (req, res)=>{
+            if(!await isAdminToken(req.decodedToken))
+                res.status(403).send("Unauthorized")
+            let list = await this.od.getAll();
+            let output = []
+            list.forEach((item)=>output.push(item.serialize()))
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(output))
+        })
     }
 
     register(app, prefix){

@@ -4,6 +4,8 @@ const BaseController = require("./BaseController");
 const BreederDAO = require("../dao/BreederDAO");
 const Breeder = require("../model/Breeder");
 const Address = require("../model/Address");
+const express = require("express");
+const {isAdminToken} = require("../utils/token");
 
 class BreederController extends BaseController{
     brd = null
@@ -21,18 +23,24 @@ class BreederController extends BaseController{
     constructor(){
         super();
         this.brd = BreederDAO.getInstance();
-    }
 
-    register(app, prefix){
-        super.register(app, prefix);
-
-        app.get(join(this.prefix, "/"), async(req, res)=>{
+        this.app = express.Router()
+        this.app.get(join(this.prefix, "/"), async(req, res)=>{
+            if(!await isAdminToken(req.decodedToken))
+                res.status(403).send("Unauthorized")
             let list = await this.brd.getAll();
             let output = []
             list.forEach((item)=>{output.push(item.serialize())})
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(output))
         })
+
+    }
+
+    register(app, prefix){
+        super.register(app, prefix);
+
+
 
         app.get(join(this.prefix, "/:breederId"), async(req, res)=>{
             let id = req.params.breederId
