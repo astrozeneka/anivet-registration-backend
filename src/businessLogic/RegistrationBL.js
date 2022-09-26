@@ -18,6 +18,8 @@ const MessageDAO = require("../dao/MessageDAO");
 const TimeBL = require("./TimeBL");
 const Scientist = require("../model/Scientist");
 const ScientistDAO = require("../dao/ScientistDAO");
+const PaymentReceipt = require("../model/PaymentReceipt");
+const PaymentReceiptDAO = require("../dao/PaymentReceiptDAO");
 
 class RegistrationBL extends BaseBL {
     static instance = null;
@@ -273,6 +275,43 @@ class RegistrationBL extends BaseBL {
     async userDetails(id){
         let model = await BaseMemberDAO.getInstance().getById(id)
         // No error expected
+        return {
+            "object": model
+        }
+    }
+
+    async submitReceipt(
+        {
+            reference,
+            method,
+            linkReference,
+            file
+        }
+    ){
+
+        /**
+         * Handle exception
+         */
+        let errors = {}
+        if(reference == "")
+            errors["reference"] = "EMPTY_REFERENCE"
+        if(linkReference == "")
+            errors["linkReference"] = "EMPTY_LINK_REFERENCE"
+        if(file.length == 0)
+            errors["file"] = "EMPTY_FILE"
+        if(file.length > 1000000)
+            errors["file"] = "FILE_TOO_HEAVY"
+        if(!_.isEmpty(errors))
+            return {"errors": errors}
+
+
+        let model = new PaymentReceipt()
+        model.reference = reference
+        model.method = method
+        model.linkReference = linkReference
+        model.file = file
+        await PaymentReceiptDAO.getInstance().add(model)
+
         return {
             "object": model
         }

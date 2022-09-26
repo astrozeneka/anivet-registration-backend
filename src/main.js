@@ -5,6 +5,8 @@ const cors = require('cors')
 const APIV1Controller = require("./controller/APIV1Controller");
 const InstallationController = require("./controller/InstallationController");
 const app = express()
+let bodyParser = require("body-parser")
+app.use(bodyParser({limit: '50mb'}));
 app.use(express.json());
 const port = process.env.PORT || 3001
 

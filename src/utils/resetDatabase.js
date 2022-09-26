@@ -11,6 +11,8 @@ const MessageDAO = require("../dao/MessageDAO");
 const TrackingTypeDAO = require("../dao/TrackingTypeDAO");
 const SampleStatusDAO = require("../dao/SampleStatusDAO");
 const ScientistDAO = require("../dao/ScientistDAO");
+const PaymentReceipt = require("../model/PaymentReceipt");
+const PaymentReceiptDAO = require("../dao/PaymentReceiptDAO");
 
 async function resetDatabase(){
     let ad = AddressDAO.getInstance()
@@ -26,7 +28,9 @@ async function resetDatabase(){
     let md = MessageDAO.getInstance();
     let ttd = TrackingTypeDAO.getInstance();
     let ssd = SampleStatusDAO.getInstance();
+    let prd = PaymentReceiptDAO.getInstance()
 
+    await prd.destroyTable()
     await md.destroyTable()
     await ad.destroyTable()
     await od.destroyTable()
@@ -55,6 +59,7 @@ async function resetDatabase(){
     await od.buildTable() // Owner Table
     await ad.buildTable() // Address Table
     await md.buildTable() // Message table (includes notification)
+    await prd.buildTable() // Payment Receipt
 
 }
 

@@ -3,6 +3,7 @@ const AuthenticationBL = require("../businessLogic/AuthenticationBL");
 const Admin = require("../model/Admin");
 const jwt = require("jsonwebtoken");
 const express = require("express");
+const RegistrationBL = require("../businessLogic/RegistrationBL");
 
 /**
  * The public controller does not require authentication
@@ -36,6 +37,33 @@ class PublicController extends BaseController{
                 res.send(JSON.stringify({
                     accessToken: accessToken,
                     userId: u.id
+                }))
+            }
+        })
+
+        this.app.post('/register', async(req, res)=>{
+            let d = req.body
+            let u = await RegistrationBL.getInstance().register(d)
+            res.setHeader('Content-Type', 'application/json')
+            if(u.hasOwnProperty("errors")){
+                res.send(JSON.stringify(u))
+            }else{
+                res.send(JSON.stringify({
+                    "object": u.object.serialize()
+                }))
+            }
+        })
+
+        this.app.post("/submit-receipt", async(req, res)=>{
+            let d = req.body
+            console.log()
+            let u = await RegistrationBL.getInstance().submitReceipt(d)
+            res.setHeader('Content-Type', 'application/json')
+            if(u.hasOwnProperty("errors")){
+                res.send(JSON.stringify(u))
+            }else{
+                res.send(JSON.stringify({
+                    "object": u.object.serialize()
                 }))
             }
         })
