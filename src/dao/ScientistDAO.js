@@ -127,7 +127,7 @@ class ScientistDAO extends BaseMemberDAO{
                 "   baseMember_name1=?," +
                 "   baseMember_name2=?," +
                 "   baseMember_phone=?," +
-                "   baseMember_email=?," +
+                "   baseMember_email=?" +
                 " WHERE baseMember_id=?",
                 [entity.username, entity.password, entity.website, entity.subscribe,
                     entity.name1, entity.name2, entity.phone, entity.email, entity.id],
