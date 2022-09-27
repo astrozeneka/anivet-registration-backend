@@ -12,6 +12,7 @@ const BreederController = require("./BreederController");
 const ScientistController = require("./ScientistController");
 const RegistrationController = require("./RegistrationController");
 const BaseMemberController = require("./BaseMemberController");
+const PaymentReceiptController = require("./PaymentReceiptController");
 
 class APIV1Controller extends BaseController{
     static instance = null;
@@ -41,6 +42,7 @@ class APIV1Controller extends BaseController{
         this.app.use("/scientist", ScientistController.getInstance().app)
         this.app.use("/registration", RegistrationController.getInstance().app)
         this.app.use("/baseMember", BaseMemberController.getInstance().app)
+        this.app.use("/paymentReceipt", PaymentReceiptController.getInstance().app)
 
     }
 

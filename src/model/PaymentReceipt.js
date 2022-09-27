@@ -49,7 +49,7 @@ class PaymentReceipt {
 
     serialize(){
         return {
-            id: this.is,
+            id: this.id,
             reference: this.reference,
             method: this.method,
             linkReference: this.linkReference,

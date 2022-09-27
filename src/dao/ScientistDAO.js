@@ -105,7 +105,7 @@ class ScientistDAO extends BaseMemberDAO{
 
     async getById(id){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `scientist` INNER JOIN `address` ON address_baseMemberId=baseMember_id WHERE baseMember_id=? AND baseMember_type='vet'", [id], (err, res)=>{
+            this.connection.query("SELECT * FROM `scientist` INNER JOIN `address` ON address_baseMemberId=baseMember_id WHERE baseMember_id=?", [id], (err, res)=>{
                 if(err){
                     throw err;
                     reject(err)
