@@ -4,6 +4,9 @@ const Admin = require("../model/Admin");
 const jwt = require("jsonwebtoken");
 const express = require("express");
 const RegistrationBL = require("../businessLogic/RegistrationBL");
+const TestOrderWithSamples = require("../model/TestOrderWithSamples");
+const TestOrderBL = require("../businessLogic/TestOrderBL");
+const TestOrderDAO = require("../dao/TestOrderDAO");
 
 /**
  * The public controller does not require authentication
@@ -66,6 +69,28 @@ class PublicController extends BaseController{
                     "object": u.object.serialize()
                 }))
             }
+        })
+
+        this.app.post("/submit-orders", async(req, res)=>{
+            let d = req.body
+            let order = new TestOrderWithSamples()
+            let u = await TestOrderBL.getInstance().registerTest(d)
+
+            res.setHeader('Content-Type', 'application/json')
+            if(u.hasOwnProperty("errors")){
+                res.send(JSON.stringify(u))
+            }else{
+                res.send(JSON.stringify({
+                    "object": u.object.serialize()
+                }))
+            }
+        })
+
+        this.app.get("/order/:testOrderId", async(req, res)=>{
+            let id = req.params.testOrderId
+            let output = await TestOrderDAO.getInstance().getById(id)
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(output.serialize()))
         })
     }
 

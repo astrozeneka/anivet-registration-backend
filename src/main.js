@@ -12,6 +12,7 @@ const port = process.env.PORT || 3001
 
 var allowedOrigins = [
     'http://localhost:8080',
+    'http://anivet.local'
     //'http://yourapp.com'
 ];
 app.use(cors({
