@@ -22,7 +22,7 @@ class BaseMemberDAO extends BaseUserDAO {
         let dao = this.getTypeDAO(r.baseMember_type)
 
         let o = this.getTypeModel(r.baseMember_type)
-
+        o.type = r.baseMember_type
         // Entity-owned properties
         o.id = r.baseMember_id
         o.username = r.baseMember_username

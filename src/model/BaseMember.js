@@ -2,6 +2,8 @@ const BaseUser = require("./BaseUser");
 
 
 class BaseMember extends BaseUser{
+
+    #type = null
     #id = null
     #username = null
     #password = null
@@ -17,6 +19,15 @@ class BaseMember extends BaseUser{
     #validationNoteValidated = null
     #validationNoteMessage = null
     #validationNoteDate = null
+
+
+    get type() {
+        return this.#type;
+    }
+
+    set type(value) {
+        this.#type = value;
+    }
 
     get id() {
         return this.#id;
@@ -126,6 +137,8 @@ class BaseMember extends BaseUser{
     serialize(){
         return {
             id: this.id,
+
+            type: this.type,
             username: this.username,
             password: this.password,
             website: this.website,

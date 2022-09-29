@@ -4,7 +4,6 @@ const BaseMember = require("./BaseMember");
  * Owner is a Base Member with ONE address
  */
 class Owner extends BaseMember{
-    #type = "owner"
     #address = null
 
     get address() {
@@ -15,9 +14,9 @@ class Owner extends BaseMember{
         this.#address = value;
     }
 
-
-    get type() {
-        return this.#type;
+    constructor(){
+        super()
+        this.type = "owner"
     }
 }
 module.exports = Owner

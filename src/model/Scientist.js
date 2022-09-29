@@ -3,7 +3,11 @@ const BaseMember = require("./BaseMember");
 class Scientist extends BaseMember{
 
     #address = null
-    #type = "scientist"
+
+    constructor(){
+        super()
+        this.type = "scientist"
+    }
 
     serialize(){
         let output = super.serialize()

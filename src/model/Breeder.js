@@ -1,7 +1,6 @@
 const BaseMember = require("./BaseMember");
 
 class Breeder extends BaseMember{
-    #type = "breeder"
     #address = null
     #breeds = []
 
@@ -21,6 +20,11 @@ class Breeder extends BaseMember{
         this.#breeds = value;
     }
 
+    constructor() {
+        super();
+        this.type = "breeder"
+    }
+
     serialize(){
         let output = super.serialize()
         if(this.address != null)
@@ -29,11 +33,6 @@ class Breeder extends BaseMember{
         for(const breed of this.breeds)
             output.breeds.push(breed.serialize())
         return output
-    }
-
-
-    get type() {
-        return this.#type;
     }
 }
 module.exports = Breeder

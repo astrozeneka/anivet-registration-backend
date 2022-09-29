@@ -16,29 +16,6 @@ class BreederDAO extends BaseMemberDAO{
         this.instance = null;
     }
 
-    fromResultSet(r){
-        let o = new Breeder()
-
-        o.id = r.baseMember_id
-        o.username = r.baseMember_username
-        o.password = r.baseMember_password
-        o.website = r.baseMember_website
-        o.subscribe = r.baseMember_subscribe
-        o.name1 = r.baseMember_name1
-        o.name2 = r.baseMember_name2
-        o.phone = r.baseMember_phone
-        o.email = r.baseMember_email
-
-        // One to One
-        o.address = AddressDAO.getInstance().fromResultSet(r)
-
-        // Many to Many
-        // As if fromResultSet has beed defined to be a synchronous function,
-        o.breeds = []
-
-        return o
-    }
-
     async buildTable(){
 
         await (()=>{
@@ -174,24 +151,8 @@ class BreederDAO extends BaseMemberDAO{
     }
 
     async getAll(){
-        let breeders = await (()=>{
-            return new Promise((resolve, reject)=>{
-                this.connection.query("SELECT * FROM `breeder` INNER JOIN `address` ON address_baseMemberId = baseMember_id LEFT JOIN `validationNote` ON validationNote_id = baseMember_validationNoteId;", async (err, res) => {
-                    if (err) {
-                        throw err;
-                        reject(err)
-                    }
-                    let output = []
-                    for (let rdp of res) {
-                        let breeder = this.fromResultSet(rdp)
-                        breeder.breeds = await BreedDAO.getInstance().getAllByBreeder(breeder.id)
-                        output.push(breeder)
-                    }
-                    resolve(output)
-                })
-            })
-        })()
-        return breeders;
+        let output = await super.getAllByType('breeder')
+        return output
     }
 
     async getById(id){
