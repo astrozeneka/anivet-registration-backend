@@ -20,6 +20,8 @@ const Scientist = require("../model/Scientist");
 const ScientistDAO = require("../dao/ScientistDAO");
 const PaymentReceipt = require("../model/PaymentReceipt");
 const PaymentReceiptDAO = require("../dao/PaymentReceiptDAO");
+const ValidationNote = require("../model/ValidationNote");
+const ValidationNoteDAO = require("../dao/ValidationNoteDAO");
 
 class RegistrationBL extends BaseBL {
     static instance = null;
@@ -314,6 +316,54 @@ class RegistrationBL extends BaseBL {
 
         return {
             "object": model
+        }
+    }
+
+    async submitValidationInfo(
+        {validated, message, userId}
+    ){
+        // In case validated is false
+        // The admin has UNvalidated the user registration
+        // The message field can be empty if the user hasn't been validated
+        // If the user hasn't been validated (validate=false)
+        // The message field is required
+
+
+        // Validation
+        let errors = {}
+        if(!validated)
+            if(message.trim().length == 0)
+                errors["message"] = "EMPTY_MESSAGE_WHEN_NOT_VALIDATED"
+        if(!_.isEmpty(errors))
+            return {"errors": errors}
+
+        // Insert Note
+        let note = new ValidationNote()
+        note.message = message
+        note.validated = validated
+        note.date = TimeBL.getInstance().time
+        await ValidationNoteDAO.getInstance().add(note)
+
+        // Update User
+        let user = await BaseMemberDAO.getInstance().getById(userId)
+        user.validationNoteId = note.id
+        await BaseMemberDAO.getInstance().update(user)
+
+        // Notify User : send a message to a user that he has been validated by the admin
+        let msg = new Message()
+        msg.title = `Account validated`
+        msg.content = `Your account registration has been validated by the administrator`
+        msg.senderId = null // from the system
+        msg.receiverId = userId
+        msg.tags = "VALIDATION"
+        if(TimeBL.getInstance().time != null)
+            msg.date = TimeBL.getInstance().time
+        else
+            msg.date = new Date()
+        await MessageDAO.getInstance().add(msg)
+
+        return {
+            "object": msg
         }
     }
 }

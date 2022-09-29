@@ -13,6 +13,11 @@ class BaseMember extends BaseUser{
     #phone = null
     #email = null
 
+    #validationNoteId = null
+    #validationNoteValidated = null
+    #validationNoteMessage = null
+    #validationNoteDate = null
+
     get id() {
         return this.#id;
     }
@@ -86,6 +91,38 @@ class BaseMember extends BaseUser{
         this.#email = value;
     }
 
+    get validationNoteId() {
+        return this.#validationNoteId;
+    }
+
+    set validationNoteId(value) {
+        this.#validationNoteId = value;
+    }
+
+    get validationNoteValidated() {
+        return this.#validationNoteValidated;
+    }
+
+    set validationNoteValidated(value) {
+        this.#validationNoteValidated = value;
+    }
+
+    get validationNoteMessage() {
+        return this.#validationNoteMessage;
+    }
+
+    set validationNoteMessage(value) {
+        this.#validationNoteMessage = value;
+    }
+
+    get validationNoteDate() {
+        return this.#validationNoteDate;
+    }
+
+    set validationNoteDate(value) {
+        this.#validationNoteDate = value;
+    }
+
     serialize(){
         return {
             id: this.id,
@@ -96,7 +133,13 @@ class BaseMember extends BaseUser{
             name1: this.name1,
             name2: this.name2,
             phone: this.phone,
-            email: this.email
+            email: this.email,
+
+            validationNoteId: this.validationNoteId,
+            validationNoteValidated: this.validationNoteValidated,
+            validationNoteMessage: this.validationNoteMessage,
+            validationNoteDate: this.validationNoteDate,
+            validated: this.validationNoteValidated
         }
     }
 }

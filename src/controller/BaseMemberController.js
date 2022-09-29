@@ -42,6 +42,23 @@ class BaseMemberController extends BaseController {
                 ))
             }
         })
+
+        this.app.post("/validate/:memberId", async(req, res)=>{
+            let id = req.params.memberId
+            if(!await isAdminToken(req.decodedToken)) // ANd not sample owner
+                res.status(403).send("Unauthorized")
+            let d = req.body
+            d.userId = id
+            let u = await RegistrationBL.getInstance().submitValidationInfo(d)
+            res.setHeader('Content-Type', 'application/json')
+            if(u.hasOwnProperty("errors")){
+                res.send(JSON.stringify(u))
+            }else{
+                res.send({
+                    "object": u.object.serialize()
+                })
+            }
+        })
     }
 
     register(app, prefix){

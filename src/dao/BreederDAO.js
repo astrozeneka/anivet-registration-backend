@@ -40,29 +40,6 @@ class BreederDAO extends BaseMemberDAO{
     }
 
     async buildTable(){
-        /*await (()=>{
-            new Promise((resolve, reject)=>{
-                let o = this.connection.query("" +
-                    "CREATE TABLE `breeder` (" +
-                    "   breeder_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY," +
-                    "   breeder_username VARCHAR(255)," +
-                    "   breeder_password VARCHAR(255)," +
-                    "   breeder_subscribe BOOLEAN," +
-                    "   breeder_name1 VARCHAR(255)," +
-                    "   breeder_name2 VARCHAR(255)," +
-                    "   breeder_phone VARCHAR(255)," +
-                    "   breeder_email VARCHAR(255)" +
-                    ");",
-                    function(err, res){
-                        if(err){
-                            reject(err)
-                            throw(err)
-                        }
-                        resolve(res)
-                    }
-                )
-            })
-        })()*/
 
         await (()=>{
             new Promise((resolve, reject)=>{
@@ -199,7 +176,7 @@ class BreederDAO extends BaseMemberDAO{
     async getAll(){
         let breeders = await (()=>{
             return new Promise((resolve, reject)=>{
-                this.connection.query("SELECT * FROM `breeder` INNER JOIN `address` ON address_baseMemberId = baseMember_id", async (err, res) => {
+                this.connection.query("SELECT * FROM `breeder` INNER JOIN `address` ON address_baseMemberId = baseMember_id LEFT JOIN `validationNote` ON validationNote_id = baseMember_validationNoteId;", async (err, res) => {
                     if (err) {
                         throw err;
                         reject(err)
@@ -219,7 +196,7 @@ class BreederDAO extends BaseMemberDAO{
 
     async getById(id){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `breeder` INNER JOIN `address` ON address_baseMemberId = baseMember_id WHERE baseMember_id = ?",
+            this.connection.query("SELECT * FROM `breeder` INNER JOIN `address` ON address_baseMemberId = baseMember_id LEFT JOIN `validationNote` ON validationNote_id = baseMember_validationNoteId; WHERE baseMember_id = ?",
                 [id], async (err, res) => {
                 if (err) {
                     throw err;
@@ -249,10 +226,11 @@ class BreederDAO extends BaseMemberDAO{
                     "   baseMember_name1=?," +
                     "   baseMember_name2=?," +
                     "   baseMember_phone=?," +
-                    "   baseMember_email=?" +
+                    "   baseMember_email=?," +
+                    "   baseMember_validationNoteId=?" +
                     " WHERE baseMember_id=?",
                     [entity.username, entity.password, entity.subscribe, entity.name1, entity.name2, entity.phone, entity.email,
-                    entity.id],
+                        entity.validationNoteId, entity.id],
                     function(err, res){
                         if(err){
                             throw err;

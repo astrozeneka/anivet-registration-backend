@@ -19,7 +19,15 @@ class BaseMemberDAO extends BaseUserDAO {
 
     fromResultSet(r){
         let dao = this.getTypeDAO(r.baseMember_type)
-        return dao.fromResultSet(r)
+        let o = dao.fromResultSet(r)
+
+        // A subtle restructuration
+        o.validationNoteId = r.baseMember_validationNoteId
+        o.validationNoteValidated = r.validationNote_validated
+        o.validationNoteMessage = r.validationNote_message
+        o.validationNoteDate = r.validationNote_date
+
+        return o
     }
 
     getTypeDAO(type){
@@ -70,7 +78,9 @@ class BaseMemberDAO extends BaseUserDAO {
                     "   baseMember_phone VARCHAR(255)," +
                     "   baseMember_email VARCHAR(255)," +
                     "   baseMember_corp VARCHAR(255)," +
-                    "   baseMember_type ENUM('admin','breeder','owner','vet', 'scientist')" +
+                    "   baseMember_type ENUM('admin','breeder','owner','vet', 'scientist')," +
+                    "   baseMember_validationNoteId int(6) UNSIGNED," +
+                    "   CONSTRAINT `fk_baseMember_validationNote` FOREIGN KEY (baseMember_validationNoteId) REFERENCES validationNote (validationNote_id) ON DELETE CASCADE" +
                     "" +
                     ");",
                     function(err, res){
@@ -142,7 +152,7 @@ class BaseMemberDAO extends BaseUserDAO {
 
     async getById(id){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `baseMember` LEFT JOIN `address` ON address_baseMemberId=baseMember_id WHERE baseMember_id=?", [id], (err, res)=>{
+            this.connection.query("SELECT * FROM `baseMember` LEFT JOIN `address` ON address_baseMemberId=baseMember_id LEFT JOIN `validationNote` ON validationNote_id = baseMember_validationNoteId WHERE baseMember_id=?", [id], (err, res)=>{
                 if(err){
                     throw err;
                     reject(err)

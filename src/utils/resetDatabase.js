@@ -13,8 +13,11 @@ const SampleStatusDAO = require("../dao/SampleStatusDAO");
 const ScientistDAO = require("../dao/ScientistDAO");
 const PaymentReceipt = require("../model/PaymentReceipt");
 const PaymentReceiptDAO = require("../dao/PaymentReceiptDAO");
+const ValidationNoteDAO = require("../dao/ValidationNoteDAO");
 
 async function resetDatabase(){
+
+    let vnd = ValidationNoteDAO.getInstance()
     let ad = AddressDAO.getInstance()
     let bd = BreedDAO.getInstance()
     let od = OwnerDAO.getInstance()
@@ -44,7 +47,9 @@ async function resetDatabase(){
     await vd.destroyTable()
     await bmd.destroyTable()
     await bd.destroyTable()
+    await vnd.destroyTable()
 
+    await vnd.buildTable()
     await bd.buildTable() // Breed Table
     await bmd.buildTable() // Base Member Table
     await new Promise(r => setTimeout(r, 100)) // This code has been used in order to avoid some errors
