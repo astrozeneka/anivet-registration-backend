@@ -15,52 +15,7 @@ class OwnerDAO extends BaseMemberDAO{
         this.instance = null;
     }
 
-    fromResultSet(r){
-        let o = new Owner()
-
-        o.id = r.baseMember_id
-        o.username = r.baseMember_username
-        o.password = r.baseMember_password
-        o.website = r.baseMember_website
-        o.subscribe = r.baseMember_subscribe
-        o.name1 = r.baseMember_name1
-        o.name2 = r.baseMember_name2
-        o.phone = r.baseMember_phone
-        o.email = r.baseMember_email
-
-
-        // Very important thing for the methodology of DAO using relationship between tables
-        o.address = AddressDAO.getInstance().fromResultSet(r)
-
-        return o
-    }
-
     async buildTable(){
-        /*
-        return new Promise((resolve, reject)=>{
-            let o = this.connection.query("" +
-                "CREATE TABLE `owner` (" +
-                "   owner_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY," +
-                "   owner_username VARCHAR(255)," +
-                "   owner_password VARCHAR(255)," +
-                "   owner_website VARCHAR(255)," +
-                "   owner_subscribe VARCHAR(255)," +
-                "   owner_name1 VARCHAR(255)," +
-                "   owner_name2 VARCHAR(255)," +
-                "   owner_phone VARCHAR(255)," +
-                "   owner_email VARCHAR(255)" +
-                ");",
-                function(err, res){
-                    if(err){
-                        reject(err)
-                        throw(err)
-                    }
-                    resolve(res)
-                }
-            )
-        })
-
-         */
         await (()=>{
             new Promise((resolve, reject)=>{
                 let o = this.connection.query("" +
@@ -118,18 +73,8 @@ class OwnerDAO extends BaseMemberDAO{
     }
 
     async getAll(){
-        return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `owner` INNER JOIN `address` ON address_baseMemberId=baseMember_id", (err, res)=>{
-                if(err){
-                    throw err;
-                    reject(err)
-                }
-                let output = []
-                for(let rdp of res)
-                    output.push(this.fromResultSet(rdp))
-                resolve(output)
-            })
-        })
+        let output = await super.getAllByType('owner')
+        return output
     }
 
     async getById(id){
@@ -156,10 +101,11 @@ class OwnerDAO extends BaseMemberDAO{
                 "   baseMember_name1=?," +
                 "   baseMember_name2=?," +
                 "   baseMember_phone=?," +
-                "   baseMember_email=?" +
+                "   baseMember_email=?," +
+                "   baseMember_validationNoteId=?" +
                 " WHERE baseMember_id=?",
             [entity.username, entity.password, entity.website, entity.subscribe,
-            entity.name1, entity.name2, entity.phone, entity.email, entity.id],
+            entity.name1, entity.name2, entity.phone, entity.email, entity.validationNoteId, entity.id],
             function(err, res){
                 if(err){
                     throw err;

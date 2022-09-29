@@ -5,6 +5,7 @@ const Admin = require("../model/Admin");
 const Owner = require("../model/Owner");
 const Breeder = require("../model/Breeder");
 const Scientist = require("../model/Scientist");
+const Address = require("../model/Address");
 class BaseMemberDAO extends BaseUserDAO {
     static instance = null;
     static getInstance(){
@@ -19,13 +20,38 @@ class BaseMemberDAO extends BaseUserDAO {
 
     fromResultSet(r){
         let dao = this.getTypeDAO(r.baseMember_type)
-        let o = dao.fromResultSet(r)
+
+        let o = this.getTypeModel(r.baseMember_type)
+
+        // Entity-owned properties
+        o.id = r.baseMember_id
+        o.username = r.baseMember_username
+        o.password = r.baseMember_password
+        o.website = r.baseMember_website
+        o.subscribe = r.baseMember_subscribe
+        o.name1 = r.baseMember_name1
+        o.name2 = r.baseMember_name2
+        o.phone = r.baseMember_phone
+        o.email = r.baseMember_email
 
         // A subtle restructuration
         o.validationNoteId = r.baseMember_validationNoteId
         o.validationNoteValidated = r.validationNote_validated
         o.validationNoteMessage = r.validationNote_message
         o.validationNoteDate = r.validationNote_date
+
+        // Only if the entity has address
+        if(r.hasOwnProperty("address_id")){
+            let ad = new Address()
+            ad.id = r.address_id
+            ad.address1 = r.address_address1
+            ad.country = r.address_country
+            ad.changwat = r.address_changwat
+            ad.amphoe = r.address_amphoe
+            ad.tambon = r.address_tambon
+            ad.postcode = r.address_postcode
+            o.address = ad
+        }
 
         return o
     }
@@ -44,6 +70,20 @@ class BaseMemberDAO extends BaseUserDAO {
         throw("Entity is an unknown type")
     }
 
+    getTypeModel(type){
+        if(type == "admin")
+            return new (require("../model/Admin"))()
+        if(type == "owner")
+            return new (require("../model/Owner"))()
+        if(type == "breeder")
+            return new (require("../model/Breeder"))()
+        if(type == "vet")
+            return new (require('../model/Vet'))()
+        if(type == "scientist")
+            return new (require("../model/Scientist"))()
+        throw("Entity is an unknown type")
+    }
+
     getEntityDAO(entity){
         if(entity instanceof Admin)
             return require("./AdminDAO").getInstance()
@@ -57,6 +97,7 @@ class BaseMemberDAO extends BaseUserDAO {
             return require('./ScientistDAO').getInstance()
         throw("Entity is an unknown class")
     }
+
 
 
     // FromResultSet
@@ -126,7 +167,7 @@ class BaseMemberDAO extends BaseUserDAO {
 
     async getAll(){
         return new Promise((resolve, reject)=>{
-            this.connection.query("SELECT * FROM `baseMember` LEFT JOIN `address` ON address_baseMemberId=baseMember_id", (err, res)=>{
+            this.connection.query("SELECT * FROM `baseMember` LEFT JOIN `address` ON address_baseMemberId=baseMember_id LEFT JOIN `validationNote` ON validationNote_id = baseMember_validationNoteId;", (err, res)=>{
                 if(err){
                     throw err;
                     reject(err)
@@ -134,7 +175,21 @@ class BaseMemberDAO extends BaseUserDAO {
                 let output = []
                 for(let rdp of res)
                     output.push(this.fromResultSet(rdp))
+                resolve(output)
+            })
+        })
+    }
 
+    async getAllByType(type){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT * FROM `baseMember` LEFT JOIN `address` ON address_baseMemberId=baseMember_id LEFT JOIN `validationNote` ON validationNote_id = baseMember_validationNoteId WHERE baseMember_type=?;", [type,], (err, res)=>{
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                let output = []
+                for(let rdp of res)
+                    output.push(this.fromResultSet(rdp))
                 resolve(output)
             })
         })

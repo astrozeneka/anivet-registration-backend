@@ -130,10 +130,11 @@ class VetDAO extends BaseMemberDAO{
                 "   baseMember_name2=?," +
                 "   baseMember_phone=?," +
                 "   baseMember_email=?," +
-                "   baseMember_corp=?" +
+                "   baseMember_corp=?," +
+                "   baseMember_validationNoteId=?" +
                 " WHERE baseMember_id=?",
                 [entity.username, entity.password, entity.website, entity.subscribe,
-                    entity.name1, entity.name2, entity.phone, entity.email, entity.corp, entity.id],
+                    entity.name1, entity.name2, entity.phone, entity.email, entity.corp, entity.validationNoteId, entity.id],
                 function(err, res){
                     if(err){
                         throw err;
