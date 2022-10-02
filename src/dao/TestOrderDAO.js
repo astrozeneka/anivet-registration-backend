@@ -25,6 +25,12 @@ class TestOrderDAO extends BaseDAO {
         o.email = r.testOrder_email;
         o.memberId = r.testOrder_memberId;
 
+        o.validationNoteId = r.validationNote_id
+        o.validationNoteValidated = r.validationNote_validated
+        o.validationNoteMessage = r.validationNote_message
+        o.validationNoteDate = r.validationNote_date
+        o.validated = r.validationNote_validated
+
         return o
     }
 
@@ -37,9 +43,11 @@ class TestOrderDAO extends BaseDAO {
                 "   testOrder_name2 VARCHAR(255)," +
                 "   testOrder_website VARCHAR(255)," +
                 "   testOrder_email VARCHAR(255)," +
-                "   testOrder_memberId INT(6) UNSIGNED," + // NULLABLE
+                "   testOrder_memberId INT(6) UNSIGNED," +
+                "   testOrder_validationNoteId INT(6) UNSIGNED," + // NULLABLE
                 "" +
-                "   CONSTRAINT `fk_to_memberId` FOREIGN KEY (testOrder_memberId) REFERENCES baseMember (baseMember_id) ON DELETE CASCADE" +
+                "   CONSTRAINT `fk_to_memberId` FOREIGN KEY (testOrder_memberId) REFERENCES baseMember (baseMember_id) ON DELETE CASCADE," +
+                "   CONSTRAINT `fk_testOrder_validationNoteId` FOREIGN KEY (testOrder_validationNoteId) REFERENCES validationNote (validationNote_id) ON DELETE CASCADE" +
                 ");",
                 function(err, res){
                     if(err){
@@ -102,7 +110,8 @@ class TestOrderDAO extends BaseDAO {
          */
         let orders = await (()=>{
             return new Promise((resolve, reject)=>{
-                this.connection.query("SELECT * FROM `testOrder`", (err, res)=>{
+                this.connection.query("SELECT * FROM `testOrder` LEFT JOIN `validationNote` " +
+                    "ON validationNote_id=testOrder_validationNoteId ", (err, res)=>{
                     if(err){
                         throw err;
                         reject(err)
@@ -157,7 +166,9 @@ class TestOrderDAO extends BaseDAO {
     async getById(id){
         let output = await (()=>{
             return new Promise((resolve, reject)=>{
-                this.connection.query("SELECT * FROM `testOrder` WHERE testOrder_id=?", [id], (err, res)=>{
+                this.connection.query("SELECT * FROM `testOrder` LEFT JOIN `validationNote` " +
+                    "ON validationNote_id=testOrder_validationNoteId " +
+                    "WHERE testOrder_id=?;", [id], (err, res)=>{
                     if(err){
                         throw err;
                         reject(err)
@@ -180,9 +191,10 @@ class TestOrderDAO extends BaseDAO {
                     "   testOrder_name1=?," +
                     "   testOrder_name2=?," +
                     "   testOrder_website=?," +
-                    "   testOrder_email=?" +
+                    "   testOrder_email=?," +
+                    "   testOrder_validationNoteId=?"+
                     " WHERE testOrder_id=?",
-                    [entity.name1, entity.name2, entity.website, entity.email, entity.id],
+                    [entity.name1, entity.name2, entity.website, entity.email, entity.validationNoteId, entity.id],
                     function(err, res){
                         if(err){
                             throw err;

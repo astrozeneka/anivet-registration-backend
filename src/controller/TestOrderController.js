@@ -39,6 +39,21 @@ class TestOrderController extends BaseController{
             res.send(JSON.stringify(output))
         })
 
+        this.app.get("/:orderId", async(req, res)=>{
+            let id = req.params.orderId
+            if(!await isAdminToken(req.decodedToken)){
+                res.status(401).send("Unauthorized HTTP")
+                return
+            }
+            let u = await this.tod.getById(id)
+            if(u == null){
+                res.status(404).send("Not found")
+            }else{
+                res.setHeader('Content-Type', 'application/json')
+                res.send(JSON.stringify(u.serialize()))
+            }
+        })
+
         this.app.get("/test", async (req, res)=>{
             if(!await isAdminToken(req.decodedToken)){
                 res.status(401).send("Unauthorized HTTP")
@@ -49,6 +64,23 @@ class TestOrderController extends BaseController{
             list.forEach((item)=>output.push(item.serialize()))
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(output))
+        })
+
+        this.app.post("/validate/:orderId", async(req, res)=>{
+            let id = req.params.orderId
+            if(!await isAdminToken(req.decodedToken)) // ANd not sample owner
+                res.status(403).send("Unauthorized")
+            let d = req.body
+            d.orderId = id
+            let u = await TestOrderBL.getInstance().submitValidationInfo(d)
+            res.setHeader('Content-Type', 'application/json')
+            if(u.hasOwnProperty("errors")){
+                res.send(JSON.stringify(u))
+            }else{
+                res.send({
+                    "object": u.object.serialize()
+                })
+            }
         })
     }
 

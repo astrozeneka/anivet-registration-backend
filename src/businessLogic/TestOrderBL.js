@@ -8,6 +8,8 @@ const AdminDAO = require("../dao/AdminDAO");
 const MessageDAO = require("../dao/MessageDAO");
 const Message = require("../model/Message");
 const TimeBL = require("./TimeBL");
+const ValidationNote = require("../model/ValidationNote");
+const ValidationNoteDAO = require("../dao/ValidationNoteDAO");
 
 class TestOrderBL extends BaseBL{
     static instance = null;
@@ -101,6 +103,50 @@ class TestOrderBL extends BaseBL{
             msg.date = new Date()
 
         await MessageDAO.getInstance().add(msg)
+
+        return {
+            "object": order
+        }
+    }
+
+    async submitValidationInfo(
+        {validated, message, orderId}
+    ){
+
+        // Validation
+        let errors = {}
+        if(!validated)
+            if(message.trim().length == 0)
+                errors["message"] = "EMPTY_MESSAGE_WHEN_NOT_VALIDATED"
+        if(!_.isEmpty(errors))
+            return {"errors": errors}
+
+
+        // Insert Note
+        let note = new ValidationNote()
+        note.message = message
+        note.validated = validated
+        note.date = TimeBL.getInstance().time
+        await ValidationNoteDAO.getInstance().add(note)
+
+        // Update Test Order
+        let order = await TestOrderDAO.getInstance().getById(orderId)
+        order.validationNoteId = note.id
+        await TestOrderDAO.getInstance().update(order)
+
+        // Notify User : send a message to a user that the order has been validated by the admin
+        /*let msg = new Message()
+        msg.title = `Account validated`
+        msg.content = `Your order registration has been validated by the administrator`
+        msg.senderId = null // from the system
+        //msg.receiverId = order.
+        msg.tags = "VALIDATION"
+        if(TimeBL.getInstance().time != null)
+            msg.date = TimeBL.getInstance().time
+        else
+            msg.date = new Date()
+        await MessageDAO.getInstance().add(msg)*/
+
 
         return {
             "object": order
