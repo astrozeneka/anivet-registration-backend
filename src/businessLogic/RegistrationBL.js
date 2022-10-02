@@ -366,5 +366,47 @@ class RegistrationBL extends BaseBL {
             "object": msg
         }
     }
+
+    async validateReceipt(
+        {validated, message, receiptId}
+    ){
+        // Validation
+        let errors = {}
+        if(!validated)
+            if(message.trim().length == 0)
+                errors["message"] = "EMPTY_MESSAGE_WHEN_NOT_VALIDATED"
+        if(!_.isEmpty(errors))
+            return {"errors": errors}
+
+
+        // Insert Note
+        let note = new ValidationNote()
+        note.message = message
+        note.validated = validated
+        note.date = TimeBL.getInstance().time
+        await ValidationNoteDAO.getInstance().add(note)
+
+        // Update payment receipt
+        let receipt = await PaymentReceiptDAO.getInstance().getById(receiptId)
+        receipt.validationNoteId = note.id
+        await PaymentReceiptDAO.getInstance().update(receipt)
+
+        // Notify User : send a message to a user that the order has been validated by the admin
+        /*let msg = new Message()
+        msg.title = `Account validated`
+        msg.content = `Your order registration has been validated by the administrator`
+        msg.senderId = null // from the system
+        //msg.receiverId = order.
+        msg.tags = "VALIDATION"
+        if(TimeBL.getInstance().time != null)
+            msg.date = TimeBL.getInstance().time
+        else
+            msg.date = new Date()
+        await MessageDAO.getInstance().add(msg)*/
+
+        return {
+            "object": receipt
+        }
+    }
 }
 module.exports = RegistrationBL

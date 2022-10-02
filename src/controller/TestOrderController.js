@@ -41,7 +41,7 @@ class TestOrderController extends BaseController{
 
         this.app.get("/:orderId", async(req, res)=>{
             let id = req.params.orderId
-            if(!await isAdminToken(req.decodedToken)){
+            if(!await isAdminToken(req.decodedToken)){ // OR the owner
                 res.status(401).send("Unauthorized HTTP")
                 return
             }
@@ -68,7 +68,7 @@ class TestOrderController extends BaseController{
 
         this.app.post("/validate/:orderId", async(req, res)=>{
             let id = req.params.orderId
-            if(!await isAdminToken(req.decodedToken)) // ANd not sample owner
+            if(!await isAdminToken(req.decodedToken))
                 res.status(403).send("Unauthorized")
             let d = req.body
             d.orderId = id

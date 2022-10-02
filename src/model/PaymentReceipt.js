@@ -6,6 +6,11 @@ class PaymentReceipt {
     #linkReference = null
     #file = null
 
+    #validationNoteId = null
+    #validationNoteValidated = null
+    #validationNoteMessage = null
+    #validationNoteDate = null
+
     get id() {
         return this.#id;
     }
@@ -53,7 +58,13 @@ class PaymentReceipt {
             reference: this.reference,
             method: this.method,
             linkReference: this.linkReference,
-            file: this.file
+            file: this.file,
+
+            validationNoteId: this.validationNoteId,
+            validationNoteValidated: this.validationNoteValidated,
+            validationNoteMessage: this.validationNoteMessage,
+            validationNoteDate: this.validationNoteDate,
+            validated: this.validationNoteValidated
         }
     }
 }
