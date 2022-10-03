@@ -47,12 +47,14 @@ class PublicController extends BaseController{
         this.app.post('/register', async(req, res)=>{
             let d = req.body
             let u = await RegistrationBL.getInstance().register(d)
+            let accessToken = jwt.sign(u.object.serialize(), process.env.TOKEN_SECRET, {expiresIn: 1800})
             res.setHeader('Content-Type', 'application/json')
             if(u.hasOwnProperty("errors")){
                 res.send(JSON.stringify(u))
             }else{
                 res.send(JSON.stringify({
-                    "object": u.object.serialize()
+                    "object": u.object.serialize(),
+                    "accessToken": accessToken
                 }))
             }
         })
@@ -72,7 +74,14 @@ class PublicController extends BaseController{
         })
 
         this.app.post("/submit-orders", async(req, res)=>{
+            // Get who register the order
+            const token = req.headers.authorization.split(' ')[1]
+            const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET)
+            const userId = decodedToken.id
+
+
             let d = req.body
+            d.memberId = userId
             let order = new TestOrderWithSamples()
             let u = await TestOrderBL.getInstance().registerTest(d)
 

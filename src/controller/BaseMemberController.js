@@ -6,6 +6,7 @@ const RegistrationController = require("./RegistrationController");
 const RegistrationBL = require("../businessLogic/RegistrationBL");
 const express = require("express");
 const {isAdminToken} = require("../utils/token");
+const jwt = require("jsonwebtoken");
 
 class BaseMemberController extends BaseController {
     bmd = null
@@ -26,6 +27,23 @@ class BaseMemberController extends BaseController {
         this.bmd = BaseMemberDAO.getInstance()
 
         this.app = express.Router()
+
+        this.app.get("/active", async(req, res)=>{
+            // Get the active user by the token
+            const token = req.headers.authorization.split(' ')[1]
+            const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET)
+            const userId = decodedToken.id
+            let u = await RegistrationBL.getInstance().userDetails(userId)
+            u.object.password = "" // Never send password to the user
+            if(u == null) {
+                res.status(404).send("Not found")
+            }else {
+                res.setHeader('Content-Type', 'application/json')
+                res.send(JSON.stringify(
+                    Object.assign({}, u.object.address.serialize(), u.object.serialize())
+                ))
+            }
+        })
 
         this.app.get("/:memberId", async(req, res)=>{
             let id = req.params.memberId
@@ -59,6 +77,7 @@ class BaseMemberController extends BaseController {
                 })
             }
         })
+
     }
 
     register(app, prefix){
