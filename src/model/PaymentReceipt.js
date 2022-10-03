@@ -11,6 +11,8 @@ class PaymentReceipt {
     #validationNoteMessage = null
     #validationNoteDate = null
 
+    #testOrderId = null
+
     get id() {
         return this.#id;
     }
@@ -51,6 +53,13 @@ class PaymentReceipt {
         this.#file = value;
     }
 
+    get testOrderId() {
+        return this.#testOrderId;
+    }
+
+    set testOrderId(value) {
+        this.#testOrderId = value;
+    }
 
     serialize(){
         return {
@@ -64,7 +73,9 @@ class PaymentReceipt {
             validationNoteValidated: this.validationNoteValidated,
             validationNoteMessage: this.validationNoteMessage,
             validationNoteDate: this.validationNoteDate,
-            validated: this.validationNoteValidated
+            validated: this.validationNoteValidated,
+
+            testOrderId: this.testOrderId
         }
     }
 }

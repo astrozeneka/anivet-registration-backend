@@ -287,7 +287,8 @@ class RegistrationBL extends BaseBL {
             reference,
             method,
             linkReference,
-            file
+            file,
+            testOrderId
         }
     ){
 
@@ -297,8 +298,10 @@ class RegistrationBL extends BaseBL {
         let errors = {}
         if(reference == "")
             errors["reference"] = "EMPTY_REFERENCE"
-        if(linkReference == "")
-            errors["linkReference"] = "EMPTY_LINK_REFERENCE"
+        // Not used anymore, replaced by the Authentication token
+        // and session variables
+        //if(linkReference == "")
+        //    errors["linkReference"] = "EMPTY_LINK_REFERENCE"
         if(file.length == 0)
             errors["file"] = "EMPTY_FILE"
         if(file.length > 1000000)
@@ -312,6 +315,7 @@ class RegistrationBL extends BaseBL {
         model.method = method
         model.linkReference = linkReference
         model.file = file
+        model.testOrderId = testOrderId
         await PaymentReceiptDAO.getInstance().add(model)
 
         return {

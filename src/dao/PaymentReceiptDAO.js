@@ -29,6 +29,8 @@ class PaymentReceiptDAO extends BaseDAO{
         o.validationNoteDate = r.validationNote_date
         o.validated = r.validationNote_validated
 
+        o.testOrderId = r.testOrderId
+
         return o
     }
 
@@ -42,8 +44,10 @@ class PaymentReceiptDAO extends BaseDAO{
                 "   paymentReceipt_linkReference VARCHAR(255)," +
                 "   paymentReceipt_file LONGBLOB," +
                 "   paymentReceipt_validationNoteId INT(6) UNSIGNED," +
+                "   paymentReceipt_testOrderId INT(6) UNSIGNED," +
                 "" +
-                "   CONSTRAINT `fk_paymentReceipt_validationNoteId` FOREIGN KEY (paymentReceipt_validationNoteId) REFERENCES validationNote (validationNote_id) ON DELETE CASCADE" +
+                "   CONSTRAINT `fk_paymentReceipt_validationNoteId` FOREIGN KEY (paymentReceipt_validationNoteId) REFERENCES validationNote (validationNote_id) ON DELETE CASCADE," +
+                "   CONSTRAINT `fk_paymentReceipt_testOrderId` FOREIGN KEY (paymentReceipt_testOrderId) REFERENCES testOrder (testOrder_id) ON DELETE CASCADE" +
                 ")" +
                 "ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;;",
                 function(err, res){
@@ -76,9 +80,9 @@ class PaymentReceiptDAO extends BaseDAO{
         return new Promise((resolve, reject)=>{
             this.connection.query("INSERT INTO `paymentReceipt` (" +
                 "paymentReceipt_reference, paymentReceipt_method, paymentReceipt_linkReference," +
-                "paymentReceipt_file)" +
-                " VALUES (?, ?, ?, ?)", [
-                entity.reference, entity.method, entity.linkReference, entity.file
+                "paymentReceipt_file, paymentReceipt_testOrderId)" +
+                " VALUES (?, ?, ?, ?, ?)", [
+                entity.reference, entity.method, entity.linkReference, entity.file, entity.testOrderId
             ], function (err, res){
                 if(err){
                     throw err;
@@ -93,7 +97,7 @@ class PaymentReceiptDAO extends BaseDAO{
     async getAll(){
         return new Promise((resolve, reject)=>{
             this.connection.query("SELECT paymentReceipt_id, paymentReceipt_reference, paymentReceipt_method, paymentReceipt_linkReference," +
-                " validationNote_id, validationNote_message, validationNote_validated" +
+                " validationNote_id, validationNote_message, validationNote_validated, paymentReceipt_testOrderId" +
                 " FROM `paymentReceipt` " +
                 " LEFT JOIN `validationNote` ON validationNote_id=paymentReceipt_validationNoteId", (err, res)=>{
                 if(err){
@@ -130,7 +134,8 @@ class PaymentReceiptDAO extends BaseDAO{
                 "   paymentReceipt_reference=?," +
                 "   paymentReceipt_method=?," +
                 "   paymentReceipt_linkReference=?," +
-                "   paymentReceipt_validationNoteId=?" +
+                "   paymentReceipt_validationNoteId=?," +
+                "   paymentReceipt_testOrderId=?" +
                 " WHERE paymentReceipt_id=?",
                 [entity.reference, entity.method, entity.linkReference, entity.validationNoteId, entity.id],
                 function(err, res){
