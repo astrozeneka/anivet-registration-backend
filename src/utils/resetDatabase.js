@@ -14,6 +14,8 @@ const ScientistDAO = require("../dao/ScientistDAO");
 const PaymentReceipt = require("../model/PaymentReceipt");
 const PaymentReceiptDAO = require("../dao/PaymentReceiptDAO");
 const ValidationNoteDAO = require("../dao/ValidationNoteDAO");
+const SampleParcelDAO = require("../dao/SampleParcelDAO");
+const SciDocDAO = require("../dao/SciDocDAO");
 
 async function resetDatabase(){
 
@@ -32,7 +34,11 @@ async function resetDatabase(){
     let ttd = TrackingTypeDAO.getInstance();
     let ssd = SampleStatusDAO.getInstance();
     let prd = PaymentReceiptDAO.getInstance()
+    let spd = SampleParcelDAO.getInstance()
+    let scd = SciDocDAO.getInstance()
 
+    await scd.destroyTable()
+    await spd.destroyTable()
     await prd.destroyTable()
     await md.destroyTable()
     await ad.destroyTable()
@@ -65,7 +71,8 @@ async function resetDatabase(){
     await ad.buildTable() // Address Table
     await md.buildTable() // Message table (includes notification)
     await prd.buildTable() // Payment Receipt
-
+    await spd.buildTable() // Sample Barcel (depends on BaseMember and Sample)
+    await scd.buildTable() // Scientific Doc
 }
 
 module.exports = resetDatabase
