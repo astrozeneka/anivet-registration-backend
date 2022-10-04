@@ -1,4 +1,5 @@
 const BaseBL = require("./BaseBL");
+const _ = require('lodash')
 
 class FinanceBL extends BaseBL{
     static instance = null;

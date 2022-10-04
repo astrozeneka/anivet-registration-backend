@@ -1,4 +1,9 @@
 const BaseBL = require("./BaseBL");
+const _ = require('lodash')
+const SampleParcel = require("../model/SampleParcel");
+const SampleParcelDAO = require("../dao/SampleParcelDAO");
+const TimeBL = require("./TimeBL");
+const MessageDAO = require("../dao/MessageDAO");
 
 class ManagementBL extends BaseBL{
     static instance = null;
@@ -13,7 +18,8 @@ class ManagementBL extends BaseBL{
     }
 
     async listParcels(){
-
+        let output = await SampleParcelDAO.getInstance().getAll()
+        return output
     }
 
     async listDocuments(){
@@ -24,9 +30,31 @@ class ManagementBL extends BaseBL{
 
     }
 
-    async doAddParcel(){
+    async doAddParcel(
+        {
+            reference,
+            deliveryService,
+            testSampleId,
+            triggererId,
+            file
+        }
+    ){
         // The validation should be done by the Security BL
+        let model = new SampleParcel()
+        model.reference = reference
+        model.deliveryService = deliveryService
+        model.testSampleId = testSampleId
+        model.triggererId = triggererId
+        model.file = file
+        if(TimeBL.getInstance().time != null)
+            model.date = TimeBL.getInstance().time
+        else
+            model.date = new Date()
+        await SampleParcelDAO.getInstance().add(model)
 
+        return {
+            "object": model
+        }
     }
 
     async doUploadDocument(){

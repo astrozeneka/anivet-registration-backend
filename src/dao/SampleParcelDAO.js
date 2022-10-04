@@ -1,4 +1,5 @@
 const BaseDAO = require("./BaseDAO");
+const SampleParcel = require("../model/SampleParcel");
 
 class SampleParcelDAO extends BaseDAO{
     static instance = null;
@@ -10,6 +11,18 @@ class SampleParcelDAO extends BaseDAO{
     }
     static tearDown(){
         this.instance = null;
+    }
+
+    fromResultSet(r){
+        let o = new SampleParcel()
+        o.id = r.sampleParcel_id
+        o.reference = r.sampleParcel_reference
+        o.deliveryService = r.sampleParcel_deliveryService
+        o.testSampleId = r.sampleParcel_testSampleId
+        o.triggererId = r.sampleParcel_triggererId
+        o.date = r.sampleParcel_date
+        o.file = r.sampleParcel_file
+        return o
     }
 
     async buildTable(){
@@ -51,6 +64,42 @@ class SampleParcelDAO extends BaseDAO{
                     resolve(res)
                 }
             )
+        })
+    }
+
+
+
+    async add(entity){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("INSERT INTO `sampleParcel` (" +
+                "sampleParcel_reference, sampleParcel_deliveryService, sampleParcel_testSampleId," +
+                "sampleParcel_triggererId, sampleParcel_date, sampleParcel_file)" +
+                " VALUES (?, ?, ?, ?, ?, ?)", [
+                entity.reference, entity.deliveryService, entity.testSampleId, entity.triggererId, entity.date, entity.file
+            ], function (err, res){
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                entity.id = res.insertId
+                resolve(res)
+            })
+        })
+    }
+
+    async getAll(){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT sampleParcel_id, sampleParcel_reference, sampleParcel_deliveryService," +
+                "sampleParcel_testSampleId, sampleParcel_triggererId, sampleParcel_date FROM `sampleParcel`", (err, res)=>{
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                let output = []
+                for(let rdp of res)
+                    output.push(this.fromResultSet(rdp))
+                resolve(output)
+            })
         })
     }
 
