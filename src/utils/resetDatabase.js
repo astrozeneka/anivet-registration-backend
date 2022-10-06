@@ -3,7 +3,7 @@ const BreedDAO = require("../dao/BreedDAO");
 const OwnerDAO = require("../dao/OwnerDAO");
 const TestOrderDAO = require("../dao/TestOrderDAO");
 const TestSampleDAO = require("../dao/TestSampleDAO");
-const BreederDAO = require("../dao/BreederDAO");
+//const BreederDAO = require("../dao/BreederDAO");
 const BaseMemberDAO = require("../dao/BaseMemberDAO");
 const AdminDAO = require("../dao/AdminDAO");
 const VetDAO = require("../dao/VetDAO");
@@ -16,6 +16,8 @@ const PaymentReceiptDAO = require("../dao/PaymentReceiptDAO");
 const ValidationNoteDAO = require("../dao/ValidationNoteDAO");
 const SampleParcelDAO = require("../dao/SampleParcelDAO");
 const SciDocDAO = require("../dao/SciDocDAO");
+
+const BreederDAO = require('../dao/crud/BreederDAO')
 
 async function resetDatabase(){
 
