@@ -23,6 +23,14 @@ class OwnerDAO {
             "CREATE VIEW owner AS" +
             "   SELECT * FROM baseMember" +
             "   WHERE baseMember_type = 'owner'")
+
+        /**
+         * Views
+         */
+        await sqlExecute("DROP VIEW IF EXISTS `owner_`")
+        await sqlExecute("" +
+            "CREATE VIEW `owner_` AS" +
+            "   SELECT * from owner")
     }
 
     async destroyTable(){

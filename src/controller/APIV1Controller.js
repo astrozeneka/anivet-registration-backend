@@ -6,8 +6,8 @@ const MessageController = require("./MessageController");
 const TestOrderController = require("./TestOrderController");
 const TestSampleController = require("./TestSampleController");
 const SampleStatusController = require("./SampleStatusController");
-const VetController = require("./VetController");
-const ScientistController = require("./ScientistController");
+//const VetController = require("./VetController");
+//const ScientistController = require("./ScientistController");
 const RegistrationController = require("./RegistrationController");
 const BaseMemberController = require("./BaseMemberController");
 const PaymentReceiptController = require("./PaymentReceiptController");
@@ -18,6 +18,9 @@ const CertificationController = require("./CertificationController");
 
 const BreederController = require("./data/BreederController");
 const OwnerController = require("./data/OwnerController");
+const VetController = require("./data/VetController");
+const ScientistController = require("./data/ScientistController");
+const AdminController = require("./data/AdminController");
 
 class APIV1Controller extends BaseController{
     static instance = null;
@@ -55,6 +58,9 @@ class APIV1Controller extends BaseController{
 
         this.app.use("/data/breeder", BreederController.getInstance().app)
         this.app.use("/data/owner", OwnerController.getInstance().app)
+        this.app.use("/data/vet", VetController.getInstance().app)
+        this.app.use("/data/scientist", ScientistController.getInstance().app)
+        this.app.use("/data/admin", AdminController.getInstance().app)
     }
 
 }

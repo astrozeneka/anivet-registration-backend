@@ -1,12 +1,13 @@
 const sqlExecute = require("../../utils/sqlExecute");
-const sqlQueryMultiple = require("../../utils/sqlQueryMultiple");
 const Breeder = require("../../model/Breeder");
+const Vet = require("../../model/Vet");
+const sqlQueryMultiple = require("../../utils/sqlQueryMultiple");
 
-class BreederDAO {
+class VetDAO {
     static instance = null;
     static getInstance(){
         if(this.instance == null) {
-            this.instance = new BreederDAO()
+            this.instance = new VetDAO()
         }
         return this.instance
     }
@@ -14,43 +15,32 @@ class BreederDAO {
         this.instance = null;
     }
 
-    name = "breeder"
+    name = "vet"
 
     async buildTable(){
         await sqlExecute("" +
-            "CREATE VIEW breeder AS" +
+            "CREATE VIEW vet AS" +
             "   SELECT * FROM baseMember" +
-            "   WHERE baseMember_type='breeder'")
-
-        await sqlExecute("" +
-            "CREATE TABLE `assoc_breeder_breed` (" +
-            "   abb_breederId INT(6) UNSIGNED," +
-            "   abb_breedId INT(6) UNSIGNED," +
-            "" +
-            "   CONSTRAINT `fk_abb_breeder` FOREIGN KEY (abb_breederId) REFERENCES baseMember (baseMember_id) ON DELETE CASCADE," +
-            "   CONSTRAINT `fk_abb_breed` FOREIGN KEY (abb_breedId) REFERENCES breed (breed_id) ON DELETE CASCADE" +
-            ");")
+            "   WHERE baseMember_type = 'vet'")
 
         /**
          * Views
          */
-        await sqlExecute("DROP VIEW IF EXISTS `breeder_`")
         await sqlExecute("" +
-            "CREATE VIEW `breeder_` AS" +
-            "   SELECT * from breeder")
+            "CREATE VIEW `vet_` AS" +
+            "   SELECT * from vet")
     }
 
     async destroyTable(){
-        await sqlExecute("" +
-            "DROP TABLE IF EXISTS `assoc_breeder_breed`;")
+        await sqlExecute("DROP VIEW IF EXISTS `vet`")
 
-        await sqlExecute("" +
-            "DROP VIEW IF EXISTS `breeder`")
+        // Views
+        await sqlExecute("DROP VIEW IF EXISTS `vet_`")
     }
 
     sql_to_model={
         "": (r)=>{
-            let o = new Breeder()
+            let o = new Vet()
             o.type = r.baseMember_type
             o.id = r.baseMember_id
             o.username = r.baseMember_username
@@ -93,4 +83,4 @@ class BreederDAO {
         return await sqlQueryMultiple(`SELECT * FROM ${viewName}`, this.sql_to_model[view])
     }
 }
-module.exports = BreederDAO
+module.exports = VetDAO

@@ -1,12 +1,12 @@
 const sqlExecute = require("../../utils/sqlExecute");
-const sqlQueryMultiple = require("../../utils/sqlQueryMultiple");
 const Breeder = require("../../model/Breeder");
+const sqlQueryMultiple = require("../../utils/sqlQueryMultiple");
 
-class BreederDAO {
+class AdminDAO{
     static instance = null;
     static getInstance(){
         if(this.instance == null) {
-            this.instance = new BreederDAO()
+            this.instance = new AdminDAO()
         }
         return this.instance
     }
@@ -14,38 +14,29 @@ class BreederDAO {
         this.instance = null;
     }
 
-    name = "breeder"
+    name = "admin"
 
     async buildTable(){
         await sqlExecute("" +
-            "CREATE VIEW breeder AS" +
+            "CREATE VIEW admin AS" +
             "   SELECT * FROM baseMember" +
-            "   WHERE baseMember_type='breeder'")
-
-        await sqlExecute("" +
-            "CREATE TABLE `assoc_breeder_breed` (" +
-            "   abb_breederId INT(6) UNSIGNED," +
-            "   abb_breedId INT(6) UNSIGNED," +
-            "" +
-            "   CONSTRAINT `fk_abb_breeder` FOREIGN KEY (abb_breederId) REFERENCES baseMember (baseMember_id) ON DELETE CASCADE," +
-            "   CONSTRAINT `fk_abb_breed` FOREIGN KEY (abb_breedId) REFERENCES breed (breed_id) ON DELETE CASCADE" +
-            ");")
+            "   WHERE baseMember_type = 'admin'")
 
         /**
          * Views
          */
-        await sqlExecute("DROP VIEW IF EXISTS `breeder_`")
         await sqlExecute("" +
-            "CREATE VIEW `breeder_` AS" +
-            "   SELECT * from breeder")
+            "CREATE VIEW `admin_` AS" +
+            "   SELECT * from admin")
     }
 
     async destroyTable(){
+        // Views
         await sqlExecute("" +
-            "DROP TABLE IF EXISTS `assoc_breeder_breed`;")
+            "DROP VIEW IF EXISTS `admin_`")
 
         await sqlExecute("" +
-            "DROP VIEW IF EXISTS `breeder`")
+            "DROP VIEW IF EXISTS `admin`")
     }
 
     sql_to_model={
@@ -93,4 +84,4 @@ class BreederDAO {
         return await sqlQueryMultiple(`SELECT * FROM ${viewName}`, this.sql_to_model[view])
     }
 }
-module.exports = BreederDAO
+module.exports = AdminDAO
