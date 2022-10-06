@@ -47,8 +47,36 @@ class SecurityBL extends BaseBL{
 
     }
 
-    async uploadDocument(){
+    async uploadDocument(
+        {
+            reference,
+            type,
+            testSampleId,
+            triggererId,
+            file
+        }
+    ){
 
+        /** Handle exceptions */
+        let errors = {}
+        if(reference == "")
+            errors["reference"] = "EMPTY_REFERENCE"
+        if(type.length == 0)
+            errors["type"] = "EMPTY_TYPE"
+        if(file.length == 0)
+            errors["file"] = "EMPTY_FILE"
+        if(file.length > 1000000)
+            errors["file"] = "FILE_TOO_HEAVY"
+        if(!_.isEmpty(errors))
+            return {"errors": errors}
+
+        return await ManagementBL.getInstance().doUploadDocument({
+            reference,
+            type,
+            testSampleId,
+            triggererId,
+            file
+        })
     }
 
     async uploadCertification(){

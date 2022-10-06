@@ -4,6 +4,8 @@ const SampleParcel = require("../model/SampleParcel");
 const SampleParcelDAO = require("../dao/SampleParcelDAO");
 const TimeBL = require("./TimeBL");
 const MessageDAO = require("../dao/MessageDAO");
+const SciDoc = require("../model/SciDoc");
+const SciDocDAO = require("../dao/SciDocDAO");
 
 class ManagementBL extends BaseBL{
     static instance = null;
@@ -23,7 +25,8 @@ class ManagementBL extends BaseBL{
     }
 
     async listDocuments(){
-
+        let output = await SciDocDAO.getInstance().getAll()
+        return output
     }
 
     async listCertifications(){
@@ -57,9 +60,31 @@ class ManagementBL extends BaseBL{
         }
     }
 
-    async doUploadDocument(){
+    async doUploadDocument(
+        {
+            reference,
+            type,
+            testSampleId,
+            triggererId,
+            file
+        }
+    ){
         // The validation should be done by the Security BL
+        let model = new SciDoc()
+        model.reference = reference
+        model.type = type
+        model.testSampleId = testSampleId
+        model.triggererId = triggererId
+        model.file = file
+        if(TimeBL.getInstance().time != null)
+            model.date = TimeBL.getInstance().time
+        else
+            model.date = new Date()
+        await SciDocDAO.getInstance().add(model)
 
+        return {
+            "object": model
+        }
     }
 
     async doUploadCertification(){

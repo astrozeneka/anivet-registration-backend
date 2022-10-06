@@ -81,4 +81,4 @@ class SciDoc{
         }
     }
 }
-module.exports = Scidoc
+module.exports = SciDoc

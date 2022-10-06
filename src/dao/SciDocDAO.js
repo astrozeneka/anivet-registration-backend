@@ -1,4 +1,5 @@
 const BaseDAO = require("./BaseDAO");
+const SciDoc = require("../model/SciDoc");
 
 
 class SciDocDAO extends BaseDAO{
@@ -11,6 +12,18 @@ class SciDocDAO extends BaseDAO{
     }
     static tearDown(){
         this.instance = null;
+    }
+
+    fromResultSet(r){
+        let o = new SciDoc()
+        o.id = r.sciDoc_id
+        o.reference = r.sciDoc_reference
+        o.type = r.sciDoc_type
+        o.testSampleId = r.sciDoc_testSampleId
+        o.triggererId = r.sciDoc_triggererId
+        o.date = r.sciDoc_date
+        o.file = r.sciDoc_file
+        return o
     }
 
     async buildTable(){
@@ -52,6 +65,39 @@ class SciDocDAO extends BaseDAO{
                     resolve(res)
                 }
             )
+        })
+    }
+
+    async add(entity){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("INSERT INTO `sciDoc` (" +
+                "sciDoc_reference, sciDoc_type, sciDoc_testSampleId, sciDoc_triggererId, sciDoc_file, sciDoc_date)" +
+                " VALUES (?, ?, ?, ?, ?, ?)", [
+                entity.reference, entity.type, entity.testSampleId, entity.triggererId, entity.file, entity.date
+            ], function (err, res){
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                entity.id = res.insertId
+                resolve(res)
+            })
+        })
+    }
+
+    async getAll(){
+        return new Promise((resolve, reject)=>{
+            this.connection.query("SELECT sciDoc_id, sciDoc_reference, sciDoc_type, sciDoc_testSampleId, sciDoc_triggererId," +
+                "sciDoc_date FROM `sciDoc`", (err, res)=>{
+                if(err){
+                    throw err;
+                    reject(err)
+                }
+                let output = []
+                for(let rdp of res)
+                    output.push(this.fromResultSet(rdp))
+                resolve(output)
+            })
         })
     }
 }
