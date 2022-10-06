@@ -36,7 +36,7 @@ class PublicController extends BaseController{
             if(!(u instanceof Admin)){
                 res.send(u) // Return exception to the user
             }else{
-                let accessToken = jwt.sign(u.serialize(), process.env.TOKEN_SECRET, {expiresIn: 1800})
+                let accessToken = jwt.sign(u.serialize(), process.env.TOKEN_SECRET, {expiresIn: 18000})
                 res.send(JSON.stringify({
                     accessToken: accessToken,
                     userId: u.id
@@ -47,7 +47,7 @@ class PublicController extends BaseController{
         this.app.post('/register', async(req, res)=>{
             let d = req.body
             let u = await RegistrationBL.getInstance().register(d)
-            let accessToken = jwt.sign(u.object.serialize(), process.env.TOKEN_SECRET, {expiresIn: 1800})
+            let accessToken = jwt.sign(u.object.serialize(), process.env.TOKEN_SECRET, {expiresIn: 18000})
             res.setHeader('Content-Type', 'application/json')
             if(u.hasOwnProperty("errors")){
                 res.send(JSON.stringify(u))

@@ -6,7 +6,6 @@ const MessageController = require("./MessageController");
 const TestOrderController = require("./TestOrderController");
 const TestSampleController = require("./TestSampleController");
 const SampleStatusController = require("./SampleStatusController");
-const OwnerController = require("./OwnerController");
 const VetController = require("./VetController");
 const ScientistController = require("./ScientistController");
 const RegistrationController = require("./RegistrationController");
@@ -18,6 +17,7 @@ const CertificationController = require("./CertificationController");
 
 
 const BreederController = require("./data/BreederController");
+const OwnerController = require("./data/OwnerController");
 
 class APIV1Controller extends BaseController{
     static instance = null;
@@ -41,7 +41,7 @@ class APIV1Controller extends BaseController{
         this.app.use("/testOrder", TestOrderController.getInstance().app)
         this.app.use("/testSample", TestSampleController.getInstance().app)
         this.app.use("/sampleStatus", SampleStatusController.getInstance().app)
-        this.app.use("/owner", OwnerController.getInstance().app)
+        //this.app.use("/owner", OwnerController.getInstance().app)
         this.app.use("/vet", VetController.getInstance().app)
         //this.app.use("/breeder", BreederController.getInstance().app)
         this.app.use("/scientist", ScientistController.getInstance().app)
@@ -54,6 +54,7 @@ class APIV1Controller extends BaseController{
         this.app.use("/certification", CertificationController.getInstance().app)
 
         this.app.use("/data/breeder", BreederController.getInstance().app)
+        this.app.use("/data/owner", OwnerController.getInstance().app)
     }
 
 }

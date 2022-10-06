@@ -40,7 +40,7 @@ class ProfileController extends BaseController {
                 res.send(u) // return the error from the business logic layer
             else{
                 // Provide the access token
-                let accessToken = jwt.sign(u.serialize(), process.env.TOKEN_SECRET, {expiresIn: 1800})
+                let accessToken = jwt.sign(u.serialize(), process.env.TOKEN_SECRET, {expiresIn: 18000})
                 res.send(JSON.stringify({
                     accessToken: accessToken,
                     userId: u.id
