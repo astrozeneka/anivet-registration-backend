@@ -42,7 +42,22 @@ class BaseDataController{
             const token = req.headers.authorization.split(' ')[1]
             const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET)
             req.body.triggererId = decodedToken.id
+            // Password encryption will be performed here
             let u = await CRUDBL.getInstance()[this.name].insert(req.body)
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(u))
+        })
+
+        this.app.put('/:id', async(req, res)=>{
+            if(!await isAdminToken(req.decodedToken))
+                res.status(403).send("Unauthorized")
+            let id = req.params.id
+            const token = req.headers.authorization.split(' ')[1]
+            const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET)
+            req.body.triggererId = decodedToken.id
+            req.body.id = id
+            // Password encryption will be performed here
+            let u = await CRUDBL.getInstance()[this.name].update(req.body)
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(u))
         })

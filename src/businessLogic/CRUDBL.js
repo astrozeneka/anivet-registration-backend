@@ -6,6 +6,7 @@ const lodash = require("lodash")
 const OwnerDAO = require("../dao/crud/OwnerDAO");
 const assertValidPassword = require("../utils/validator/assertValidPassword");
 const AddressDAO = require("../dao/crud/AddressDAO");
+const assertValidBaseMemberEntry = require("../utils/validator/assertValidBaseMemberEntry");
 
 class CRUDBL {
     static instance = null;
@@ -20,7 +21,11 @@ class CRUDBL {
     }
 
     async loadOne(dao, view, id){
-        return await dao.getOne(view, id)
+        let o = await dao.getOne(view, id)
+        // For security reason
+        if(o.password)
+            o.password = ""
+        return o
     }
 
     async loadView(dao, view){ // use loadAll instead
@@ -63,8 +68,37 @@ class CRUDBL {
             await AddressDAO.getInstance().add(a)
             return {object: m}
         },
-        update(raw){
+        async update(raw){
+            let e = {}
+            assertValidBaseMemberEntry(raw, e)
+            if(raw["password"].trim().length != 0) // Only for updates, not for insertion
+                assertValidPassword(raw, "password", "passwordCheck", e)
+            if(!lodash.isEmpty(e))
+                return {errors: e}
 
+            // Update entity
+            let old = OwnerDAO.getInstance().model_to_raw[""](
+                await OwnerDAO.getInstance().getOne("", raw.id)
+            )
+            for(const key in raw) old[key] = raw[key] || old[key]
+            let m = OwnerDAO.getInstance().raw_to_model(old)
+            await OwnerDAO.getInstance().update(m)
+
+            // UPDATE ADDRESS
+            let old_a = AddressDAO.getInstance().model_to_raw[""](
+                await AddressDAO.getInstance().getOneByBaseMemberId("", raw.id)
+            )
+            let tmp_id = old_a.id
+            for(const key in raw) old_a[key] = raw[key] || old[key]
+            let m_a = AddressDAO.getInstance().raw_to_model(old_a)
+            m_a.id = tmp_id // Secondary entity adjustment (VERY IMPORTANT)
+            await AddressDAO.getInstance().update(m_a)
+
+            /**
+             * In the next architecture iteration,
+             * it is preferable to not to merge two entities
+             */
+            return {object: null}
         },
         delete(raw){
 

@@ -1,5 +1,4 @@
 const sqlExecute = require("../../utils/sqlExecute");
-const Breeder = require("../../model/Breeder");
 const Owner = require("../../model/Owner");
 const sqlQueryMultiple = require("../../utils/sqlQueryMultiple");
 const AddressDAO = require("./AddressDAO");
@@ -47,7 +46,7 @@ class OwnerDAO {
 
     sql_to_model={
         "": (r)=>{
-            let o = new Breeder()
+            let o = new Owner()
             o.type = r.baseMember_type
             o.id = r.baseMember_id
             o.username = r.baseMember_username
@@ -74,6 +73,7 @@ class OwnerDAO {
                 id: m.id,
                 type: m.type,
                 username: m.username,
+                password: m.password,
                 website: m.website,
                 subscribe: m.subscribe,
                 name1: m.name1,
@@ -95,6 +95,7 @@ class OwnerDAO {
         o.id = raw.id
         o.username = raw.username
         o.website = raw.website
+        o.password = raw.password
         o.subscribe = raw.subscribe
         o.name1 = raw.name1
         o.name2 = raw.name2
@@ -132,6 +133,23 @@ class OwnerDAO {
         )
         m.id = d.insertId
         return m
+    }
+
+    async update(m){
+        await sqlExecute("" +
+            "UPDATE `baseMember` SET" +
+            "   baseMember_username=?," +
+            "   baseMember_password=?," +
+            "   baseMember_website=?," +
+            "   baseMember_subscribe=?," +
+            "   baseMember_name1=?," +
+            "   baseMember_name2=?," +
+            "   baseMember_phone=?," +
+            "   baseMember_email=?," +
+            "   baseMember_validationNoteId=?" +
+            " WHERE baseMember_id=?",
+            [m.username, m.password, m.website, m.subscribe, m.name1, m.name2, m.phone, m.email, m.validationNoteId, m.id]
+        )
     }
 }
 module.exports = OwnerDAO

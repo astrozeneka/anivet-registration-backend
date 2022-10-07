@@ -1,5 +1,6 @@
 const sqlExecute = require("../../utils/sqlExecute");
 const Address = require("../../model/Address");
+const sqlQueryOne = require("../../utils/sqlQueryOne");
 
 
 class AddressDAO {
@@ -92,6 +93,11 @@ class AddressDAO {
         return o
     }
 
+    async getOneByBaseMemberId(view, baseMemberId){
+        let viewName = "address_" + view
+        return await sqlQueryOne(`SELECT * FROM ${viewName} INNER JOIN baseMember ON baseMember_id = address_baseMemberId WHERE baseMember_id=?;`, [baseMemberId], this.sql_to_model[view])
+    }
+
     async add(m){
         let d = await sqlExecute("" +
             "INSERT INTO `address` (" +
@@ -103,6 +109,23 @@ class AddressDAO {
         ])
         m.id = d.insertId
         return m
+    }
+
+    async update(m){
+        return await sqlExecute("" +
+            "UPDATE `address` SET" +
+            "   address_address1=?," +
+            "   address_country=?," +
+            "   address_changwat=?," +
+            "   address_amphoe=?," +
+            "   address_tambon=?," +
+            "   address_postcode=?," +
+            "   address_ownerId=?," +
+            "   address_breederId=?," +
+            "   address_vetId=?" +
+            " WHERE address_id=?",
+            [m.address1, m.country, m.changwat, m.amphoe, m.tambon, m.postcode,
+                m.ownerId, m.breederId, m.vetId, m.id])
     }
 }
 module.exports = AddressDAO
