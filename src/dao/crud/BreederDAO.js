@@ -92,5 +92,12 @@ class BreederDAO {
         let viewName = this.name + "_" + view
         return await sqlQueryMultiple(`SELECT * FROM ${viewName}`, this.sql_to_model[view])
     }
+
+    async get(view){
+        if(view == undefined)
+            view = "" // The default view
+        let viewName = this.name + "_" + view
+        return await sqlQueryMultiple(`SELECT * FROM ${viewName} WHERE baseMember_id=${id}`, this.sql_to_model[view])
+    }
 }
 module.exports = BreederDAO

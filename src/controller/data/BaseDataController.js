@@ -25,6 +25,17 @@ class BaseDataController{
             res.send(JSON.stringify(output))
         })
 
+        this.app.get('/:id', async(req, res)=>{
+            if(!await isAdminToken(req.decodedToken))
+                res.status(403).send("Unauthorized")
+            let id = req.params.id
+            let view = "edit"
+            let item = await CRUDBL.getInstance().loadOne(this.dao, view, id)
+            let output = await this.dao.model_to_raw[view](item)
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(output))
+        })
+
         this.app.post('/', async(req, res)=>{
             if(!await isAdminToken(req.decodedToken))
                 res.status(403).send("Unauthorized")

@@ -1,4 +1,4 @@
-const AddressDAO = require("../dao/AddressDAO");
+
 const BreedDAO = require("../dao/BreedDAO");
 //const OwnerDAO = require("../dao/OwnerDAO");
 const TestOrderDAO = require("../dao/TestOrderDAO");
@@ -23,6 +23,7 @@ const OwnerDAO = require('../dao/crud/OwnerDAO')
 const VetDAO = require('../dao/crud/VetDAO')
 const ScientistDAO = require('../dao/crud/ScientistDAO')
 const AdminDAO = require('../dao/crud/AdminDAO')
+const AddressDAO = require('../dao/crud/AddressDAO')
 
 async function resetDatabase(){
 
@@ -48,8 +49,8 @@ async function resetDatabase(){
     await spd.destroyTable()
     await prd.destroyTable()
     await md.destroyTable()
-    await ad.destroyTable()
     await od.destroyTable()
+    await ad.destroyTable()
     await tsd.destroyTable()
     await tod.destroyTable()
     await ssd.destroyTable()
@@ -74,8 +75,8 @@ async function resetDatabase(){
     await ssd.buildTable()
     await tod.buildTable() // TestOrder Table
     await tsd.buildTable() // TestSample Table
-    await od.buildTable() // Owner Table
     await ad.buildTable() // Address Table
+    await od.buildTable() // Owner Table
     await md.buildTable() // Message table (includes notification)
     await prd.buildTable() // Payment Receipt
     await spd.buildTable() // Sample Barcel (depends on BaseMember and Sample)

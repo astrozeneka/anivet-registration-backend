@@ -4,6 +4,8 @@ const assertValidPhone = require("../utils/validator/assertValidPhone");
 const assertValidEmail = require("../utils/validator/assertValidEmail");
 const lodash = require("lodash")
 const OwnerDAO = require("../dao/crud/OwnerDAO");
+const assertValidPassword = require("../utils/validator/assertValidPassword");
+const AddressDAO = require("../dao/crud/AddressDAO");
 
 class CRUDBL {
     static instance = null;
@@ -17,9 +19,12 @@ class CRUDBL {
         this.instance = null;
     }
 
-    async loadView(dao, view){
+    async loadOne(dao, view, id){
+        return await dao.getOne(view, id)
+    }
+
+    async loadView(dao, view){ // use loadAll instead
         return await dao.getAll(view)
-        // USE DAO
     }
 
     breeder={
@@ -43,11 +48,19 @@ class CRUDBL {
             assertNotEmpty(raw, "name2", e)
             assertValidPhone(raw, "phone", e)
             assertValidEmail(raw, "email", e)
+            assertNotEmpty(raw, "address1", e)
+            assertNotEmpty(raw, "country", e)
+            assertNotEmpty(raw, "postcode", e)
+            assertNotEmpty(raw, "username", e)
+            assertValidPassword(raw, "password", "passwordCheck", e)
             if(!lodash.isEmpty(e))
                 return {errors: e}
 
             let m = OwnerDAO.getInstance().raw_to_model(raw)
             await OwnerDAO.getInstance().add(m);
+            let a = AddressDAO.getInstance().raw_to_model(raw)
+            a.baseMemberId = m.id
+            await AddressDAO.getInstance().add(a)
             return {object: m}
         },
         update(raw){
