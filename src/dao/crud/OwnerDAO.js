@@ -6,7 +6,7 @@ const sqlQueryOne = require("../../utils/sqlQueryOne");
 const BaseCrudDAO = require("./BaseCrudDAO");
 
 
-class OwnerDAO extends BaseCrudDAO{
+class OwnerDAO extends BaseCrudDAO{  // Two level of inheritence BaseCrudDAO and BaseMember
     static instance = null;
     static getInstance(){
         if(this.instance == null) {
@@ -35,14 +35,23 @@ class OwnerDAO extends BaseCrudDAO{
         await sqlExecute("" +
             "CREATE VIEW owner_edit AS" +
             "   SELECT * FROM `owner` LEFT JOIN `address` ON address_baseMemberId=baseMember_id")
+        await sqlExecute("" +
+            "CREATE VIEW owner_$search AS" +
+            "   SELECT *, CONCAT(baseMember_username,' ',baseMember_email,' ',baseMember_name1,' ',baseMember_name2,' ',baseMember_phone) AS s FROM `owner`"
+        )
     }
 
     async destroyTable(){
         // Views
+        await sqlExecute("DROP VIEW IF EXISTS `owner_$search1`") // Pseudo view
         await sqlExecute("DROP VIEW IF EXISTS `owner_edit`")
         await sqlExecute("DROP VIEW IF EXISTS `owner_`")
 
         await sqlExecute("DROP VIEW IF EXISTS `owner`")
+    }
+
+    sql_search_string= { // Should be inherited
+        "": "LOWER(CONCAT(baseMember_username,' ',baseMember_email,' ',baseMember_name1,' ',baseMember_name2,' ',baseMember_phone))"
     }
 
     sql_to_model={
@@ -110,12 +119,20 @@ class OwnerDAO extends BaseCrudDAO{
      * @param {''} view
      * @returns {Promise<void>}
      */
-    async getAll(view, offset, limit){
+    async getAll(view, offset, limit){ // TO BE INHERITED
         if(view == undefined)
             view = "" // The default view
         let viewName = this.name + "_" + view // Il est préférable de le superclasser
         let suffix = (offset!=undefined&&limit!=undefined)?` LIMIT ${limit} OFFSET ${offset}`:``
         return await sqlQueryMultiple(`SELECT * FROM ${viewName} ${suffix}`, this.sql_to_model[view])
+    }
+
+    async searchAll(view, offset, limit, searchQuery){ // TO BE INHERITED
+        if(view == undefined)
+            view = "" // The default view
+        let viewName = this.name + "_" + view // Il est préférable de le superclasser
+        let range = (offset!=undefined&&limit!=undefined)?` LIMIT ${limit} OFFSET ${offset}`:``
+        return await sqlQueryMultiple(`SELECT *, ${this.sql_search_string[""]} AS s FROM ${viewName} HAVING s LIKE ? ${range}`, [`%${searchQuery.q.toLowerCase()}%`], this.sql_to_model[view])
     }
 
     async getOne(view, id){

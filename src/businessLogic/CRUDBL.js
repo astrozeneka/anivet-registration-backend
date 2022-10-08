@@ -32,6 +32,10 @@ class CRUDBL {
         return await dao.getAll(view, offset, limit)
     }
 
+    async searchView(dao, view, offset, limit, searchQuery){
+        return await dao.searchAll(view, offset, limit, searchQuery)
+    }
+
     async loadProps(dao){
         return await dao.getProps()
     }

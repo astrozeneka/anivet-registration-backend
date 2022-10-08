@@ -17,10 +17,25 @@ class BaseDataController{
                 res.status(403).send("Unauthorized")
             let view = ""
             let list = []
-            if(req.query.hasOwnProperty('offset') && req.query.hasOwnProperty('limit'))
+            list = await CRUDBL.getInstance().loadView(this.dao, view, req.query.offset, req.query.limit)
+            /*if(req.query.hasOwnProperty('offset') && req.query.hasOwnProperty('limit'))
                 list = await CRUDBL.getInstance().loadView(this.dao, view, req.query.offset, req.query.limit)
             else
-                list = await CRUDBL.getInstance().loadView(this.dao, view)
+                list = await CRUDBL.getInstance().loadView(this.dao, view)*/
+            let output = []
+            list.forEach((item)=>output.push(
+                this.dao.model_to_raw[view](item)
+            ))
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(output))
+        })
+
+        this.app.post('/search', async(req, res)=>{
+            if(!await isAdminToken(req.decodedToken))
+                res.status(403).send("Unauthorized")
+            let view = ""
+            let list = []
+            list = await CRUDBL.getInstance().searchView(this.dao, view, req.query.offset, req.query.limit, req.query)
             let output = []
             list.forEach((item)=>output.push(
                 this.dao.model_to_raw[view](item)
