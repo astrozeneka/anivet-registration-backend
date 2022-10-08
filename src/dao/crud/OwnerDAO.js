@@ -110,11 +110,12 @@ class OwnerDAO extends BaseCrudDAO{
      * @param {''} view
      * @returns {Promise<void>}
      */
-    async getAll(view){
+    async getAll(view, offset, limit){
         if(view == undefined)
             view = "" // The default view
         let viewName = this.name + "_" + view // Il est préférable de le superclasser
-        return await sqlQueryMultiple(`SELECT * FROM ${viewName}`, this.sql_to_model[view])
+        let suffix = (offset!=undefined&&limit!=undefined)?` LIMIT ${limit} OFFSET ${offset}`:``
+        return await sqlQueryMultiple(`SELECT * FROM ${viewName} ${suffix}`, this.sql_to_model[view])
     }
 
     async getOne(view, id){

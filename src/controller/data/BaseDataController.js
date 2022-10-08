@@ -16,7 +16,11 @@ class BaseDataController{
             if(!await isAdminToken(req.decodedToken))
                 res.status(403).send("Unauthorized")
             let view = ""
-            let list = await CRUDBL.getInstance().loadView(this.dao, view)
+            let list = []
+            if(req.query.hasOwnProperty('offset') && req.query.hasOwnProperty('limit'))
+                list = await CRUDBL.getInstance().loadView(this.dao, view, req.query.offset, req.query.limit)
+            else
+                list = await CRUDBL.getInstance().loadView(this.dao, view)
             let output = []
             list.forEach((item)=>output.push(
                 this.dao.model_to_raw[view](item)

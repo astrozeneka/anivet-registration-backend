@@ -28,8 +28,8 @@ class CRUDBL {
         return o
     }
 
-    async loadView(dao, view){ // use loadAll instead
-        return await dao.getAll(view)
+    async loadView(dao, view, offset, limit){ // use loadAll instead
+        return await dao.getAll(view, offset, limit)
     }
 
     async loadProps(dao){
