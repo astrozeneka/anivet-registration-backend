@@ -32,6 +32,10 @@ class CRUDBL {
         return await dao.getAll(view)
     }
 
+    async loadProps(dao){
+        return await dao.getProps()
+    }
+
     breeder={
         insert(raw){
             let e = {}

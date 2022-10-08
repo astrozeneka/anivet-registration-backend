@@ -3,9 +3,10 @@ const Owner = require("../../model/Owner");
 const sqlQueryMultiple = require("../../utils/sqlQueryMultiple");
 const AddressDAO = require("./AddressDAO");
 const sqlQueryOne = require("../../utils/sqlQueryOne");
+const BaseCrudDAO = require("./BaseCrudDAO");
 
 
-class OwnerDAO {
+class OwnerDAO extends BaseCrudDAO{
     static instance = null;
     static getInstance(){
         if(this.instance == null) {

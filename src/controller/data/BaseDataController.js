@@ -25,6 +25,14 @@ class BaseDataController{
             res.send(JSON.stringify(output))
         })
 
+        this.app.get('/props', async(req, res)=>{
+            if(!await isAdminToken(req.decodedToken))
+                res.status(403).send("Unauthorized")
+            let props = await CRUDBL.getInstance().loadProps(this.dao)
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(props))
+        })
+
         this.app.get('/:id', async(req, res)=>{
             if(!await isAdminToken(req.decodedToken))
                 res.status(403).send("Unauthorized")
