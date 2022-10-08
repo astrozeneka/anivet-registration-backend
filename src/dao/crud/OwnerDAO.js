@@ -151,5 +151,10 @@ class OwnerDAO {
             [m.username, m.password, m.website, m.subscribe, m.name1, m.name2, m.phone, m.email, m.validationNoteId, m.id]
         )
     }
+
+    async delete(m){
+        let d = await sqlExecute("DELETE FROM `baseMember` WHERE baseMember_id=?", [m.id])
+        return d.affectedRows
+    }
 }
 module.exports = OwnerDAO

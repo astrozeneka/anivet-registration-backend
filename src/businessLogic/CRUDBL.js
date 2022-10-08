@@ -100,8 +100,13 @@ class CRUDBL {
              */
             return {object: null}
         },
-        delete(raw){
-
+        async delete(raw){
+            let m = OwnerDAO.getInstance().raw_to_model(raw)
+            let u = await OwnerDAO.getInstance().delete(m)
+            if(u > 0)
+                return {affectedRows: u}
+            else
+                return {errors: {"form": "DELETION_ERROR"}}
         }
     }
 }

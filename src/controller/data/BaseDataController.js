@@ -61,6 +61,20 @@ class BaseDataController{
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(u))
         })
+
+        // To be moved downward
+        this.app.delete('/:ids', async(req, res)=>{
+            if(!await isAdminToken(req.decodedToken))
+                res.status(403).send("Unauthorized")
+            let idList = req.params.ids.split(",")
+            let o = {affectedRows: 0}
+            for(const id of idList) {
+                let u = await CRUDBL.getInstance()[this.name].delete({id: id})
+                o.affectedRows+= u.affectedRows
+            }
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(o))
+        })
     }
 }
 module.exports = BaseDataController
