@@ -6,7 +6,7 @@ const sqlQueryOne = require("../../utils/sqlQueryOne");
 const BaseCrudDAO = require("./BaseCrudDAO");
 
 
-class OwnerDAO extends BaseCrudDAO{  // Two level of inheritence BaseCrudDAO and BaseMember
+class OwnerDAO extends BaseCrudDAO {  // Two level of inheritence BaseCrudDAO and BaseMember
     static instance = null;
     static getInstance(){
         if(this.instance == null) {
@@ -43,7 +43,7 @@ class OwnerDAO extends BaseCrudDAO{  // Two level of inheritence BaseCrudDAO and
 
     async destroyTable(){
         // Views
-        await sqlExecute("DROP VIEW IF EXISTS `owner_$search1`") // Pseudo view
+        await sqlExecute("DROP VIEW IF EXISTS `owner_$search`") // Pseudo view
         await sqlExecute("DROP VIEW IF EXISTS `owner_edit`")
         await sqlExecute("DROP VIEW IF EXISTS `owner_`")
 

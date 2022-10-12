@@ -7,6 +7,10 @@ const OwnerDAO = require("../dao/crud/OwnerDAO");
 const assertValidPassword = require("../utils/validator/assertValidPassword");
 const AddressDAO = require("../dao/crud/AddressDAO");
 const assertValidBaseMemberEntry = require("../utils/validator/assertValidBaseMemberEntry");
+const BreederDAO = require("../dao/crud/BreederDAO");
+const VetDAO = require("../dao/crud/VetDAO");
+const ScientistDAO = require("../dao/crud/ScientistDAO");
+const AdminDAO = require("../dao/crud/AdminDAO");
 
 class CRUDBL {
     static instance = null;
@@ -41,16 +45,58 @@ class CRUDBL {
     }
 
     breeder={
-        insert(raw){
+        async insert(raw){
             let e = {}
-            super.assertNotEmpty(raw, "name1", e)
-            console.log()
-        },
-        update(raw){
+            // To be tested
+            assertValidBaseMemberEntry(raw, e)
+            assertValidPassword(raw, "password", "passwordCheck", e)
+            if(!lodash.isEmpty(e))
+                return {errors: e}
 
+            let m = BreederDAO.getInstance().raw_to_model(raw)
+            await BreederDAO.getInstance().add(m)
+            let a = AddressDAO.getInstance().raw_to_model(raw)
+            a.baseMemberId = m.id
+            await AddressDAO.getInstance().add(a)
+            return {object: m}
         },
-        delete(raw){
+        async update(raw){
+            let e = {}
+            assertValidBaseMemberEntry(raw, e)
+            if(raw["password"])
+                if(raw["password"].trim().length != 0) // Only for updates, not for insertion
+                    assertValidPassword(raw, "password", "passwordCheck", e)
+            if(!lodash.isEmpty(e))
+                return {errors: e}
 
+            // Update entity
+            let old = BreederDAO.getInstance().model_to_raw[""](
+                await BreederDAO.getInstance().getOne("", raw.id)
+            )
+
+            for(const key in raw) old[key] = raw[key] || old[key]
+            let m = BreederDAO.getInstance().raw_to_model(old)
+            await BreederDAO.getInstance().update(m)
+
+            // UPDATE ADDRESS
+            let old_a = AddressDAO.getInstance().model_to_raw[""](
+                await AddressDAO.getInstance().getOneByBaseMemberId("", raw.id)
+            )
+            let tmp_id = old_a.id
+            for(const key in raw) old_a[key] = raw[key] || old[key]
+            let m_a = AddressDAO.getInstance().raw_to_model(old_a)
+            m_a.id = tmp_id // Secondary entity adjustment (VERY IMPORTANT)
+            await AddressDAO.getInstance().update(m_a)
+
+            return {object: null}
+        },
+        async delete(raw){
+            let m = BreederDAO.getInstance().raw_to_model(raw)
+            let u = await BreederDAO.getInstance().delete(m)
+            if(u > 0)
+                return {affectedRows: u}
+            else
+                return {errors: {"form": "DELETION_ERROR"}}
         }
     }
 
@@ -79,8 +125,9 @@ class CRUDBL {
         async update(raw){
             let e = {}
             assertValidBaseMemberEntry(raw, e)
-            if(raw["password"].trim().length != 0) // Only for updates, not for insertion
-                assertValidPassword(raw, "password", "passwordCheck", e)
+            if(raw["password"])
+                if(raw["password"].trim().length != 0) // Only for updates, not for insertion
+                    assertValidPassword(raw, "password", "passwordCheck", e)
             if(!lodash.isEmpty(e))
                 return {errors: e}
 
@@ -111,6 +158,144 @@ class CRUDBL {
         async delete(raw){
             let m = OwnerDAO.getInstance().raw_to_model(raw)
             let u = await OwnerDAO.getInstance().delete(m)
+            if(u > 0)
+                return {affectedRows: u}
+            else
+                return {errors: {"form": "DELETION_ERROR"}}
+        }
+    }
+
+    vet = {
+        async insert(raw){
+            let e = {}
+            // To be tested
+            assertValidBaseMemberEntry(raw, e)
+            assertValidPassword(raw, "password", "passwordCheck", e)
+            if(!lodash.isEmpty(e))
+                return {errors: e}
+
+            let m = VetDAO.getInstance().raw_to_model(raw)
+            await VetDAO.getInstance().add(m)
+            let a = AddressDAO.getInstance().raw_to_model(raw)
+            a.baseMemberId = m.id
+            await AddressDAO.getInstance().add(a)
+            return {object: m}
+        },
+        async update(raw){
+            let e = {}
+            assertValidBaseMemberEntry(raw, e)
+
+            if(raw["password"])
+                if(raw["password"].trim().length != 0) // Only for updates, not for insertion
+                    assertValidPassword(raw, "password", "passwordCheck", e)
+            if(!lodash.isEmpty(e))
+                return {errors: e}
+
+            // Update entity
+            let old = VetDAO.getInstance().model_to_raw[""](
+                await VetDAO.getInstance().getOne("", raw.id)
+            )
+
+            for(const key in raw) old[key] = raw[key] || old[key]
+            let m = VetDAO.getInstance().raw_to_model(old)
+            await VetDAO.getInstance().update(m)
+
+            // UPDATE ADDRESS
+            let old_a = AddressDAO.getInstance().model_to_raw[""](
+                await AddressDAO.getInstance().getOneByBaseMemberId("", raw.id)
+            )
+            let tmp_id = old_a.id
+            for(const key in raw) old_a[key] = raw[key] || old[key]
+            let m_a = AddressDAO.getInstance().raw_to_model(old_a)
+            m_a.id = tmp_id // Secondary entity adjustment (VERY IMPORTANT)
+            await AddressDAO.getInstance().update(m_a)
+
+            return {object: null}
+        },
+        async delete(raw){
+            let m = VetDAO.getInstance().raw_to_model(raw)
+            let u = await VetDAO.getInstance().delete(m)
+            if(u > 0)
+                return {affectedRows: u}
+            else
+                return {errors: {"form": "DELETION_ERROR"}}
+        }
+    }
+
+    scientist = {
+        async insert(raw){
+            let e = {}
+            assertValidBaseMemberEntry(raw, e, true)
+            assertValidPassword(raw, "password", "passwordCheck", e)
+            if(!lodash.isEmpty(e))
+                return {errors: e}
+
+            let m = ScientistDAO.getInstance().raw_to_model(raw)
+            await ScientistDAO.getInstance().add(m)
+            return {object: m}
+        },
+        async update(raw){
+            let e = {}
+            assertValidBaseMemberEntry(raw, e, true)
+            if(raw["password"])
+                if(raw["password"].trim().length != 0) // Only for updates, not for insertion
+                    assertValidPassword(raw, "password", "passwordCheck", e)
+            if(!lodash.isEmpty(e))
+                return {errors: e}
+
+            // Update entity
+            let old = ScientistDAO.getInstance().model_to_raw[""](
+                await ScientistDAO.getInstance().getOne("", raw.id)
+            )
+            for(const key in raw) old[key] = raw[key] || old[key]
+            let m = ScientistDAO.getInstance().raw_to_model(old)
+            await ScientistDAO.getInstance().update(m)
+
+            return {object: null}
+        },
+        async delete(raw){
+            let m = ScientistDAO.getInstance().raw_to_model(raw)
+            let u = await ScientistDAO.getInstance().delete(m)
+            if(u > 0)
+                return {affectedRows: u}
+            else
+                return {errors: {"form": "DELETION_ERROR"}}
+        }
+    }
+
+    admin = {
+        async insert(raw){
+            let e = {} // เหมือนนักวีท
+            assertValidBaseMemberEntry(raw, e, true)
+            assertValidPassword(raw, "password", "passwordCheck", e)
+            if(!lodash.isEmpty(e))
+                return {errors: e}
+
+            let m = AdminDAO.getInstance().raw_to_model(raw)
+            await AdminDAO.getInstance().add(m)
+            return {object: m}
+        },
+        async update(raw){
+            let e = {}
+            assertValidBaseMemberEntry(raw, e, true)
+            if(raw["password"])
+                if(raw["password"].trim().length != 0)
+                    assertValidPassword(raw, "password", "passwordCheck", e)
+            if(!lodash.isEmpty(e))
+                return {errors: e}
+
+            let old = AdminDAO.getInstance().model_to_raw[""](
+                await AdminDAO.getInstance().getOne("", raw.id)
+            )
+            for(const key in raw) old[key] = raw[key] || old[key]
+            let m = AdminDAO.getInstance().raw_to_model(old)
+            await AdminDAO.getInstance().update(m)
+
+            return {object: null}
+        },
+        async delete(raw){
+            let m = AdminDAO.getInstance().raw_to_model(raw)
+            let u = await AdminDAO.getInstance().delete(m)
             if(u > 0)
                 return {affectedRows: u}
             else

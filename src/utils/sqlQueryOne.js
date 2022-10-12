@@ -11,7 +11,8 @@ async function sqlQueryOne(...params){
             }
             if(res.length == 0)
                 resolve(null)
-            resolve(factory(res[0]))
+            else
+                resolve(factory(res[0]))
         })
     })
 }

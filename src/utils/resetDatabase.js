@@ -50,7 +50,6 @@ async function resetDatabase(){
     await prd.destroyTable()
     await md.destroyTable()
     await od.destroyTable()
-    await ad.destroyTable()
     await tsd.destroyTable()
     await tod.destroyTable()
     await ssd.destroyTable()
@@ -59,6 +58,7 @@ async function resetDatabase(){
     await add.destroyTable()
     await sd.destroyTable()
     await vd.destroyTable()
+    await ad.destroyTable()
     await bmd.destroyTable()
     await bd.destroyTable()
     await vnd.destroyTable()
@@ -67,6 +67,7 @@ async function resetDatabase(){
     await bd.buildTable() // Breed Table
     await bmd.buildTable() // Base Member Table
     await new Promise(r => setTimeout(r, 100)) // This code has been used in order to avoid some errors
+    await ad.buildTable() // Address Table
     await vd.buildTable() // Vet Table
     await sd.buildTable()
     await add.buildTable() // Admin Tabld
@@ -75,7 +76,6 @@ async function resetDatabase(){
     await ssd.buildTable()
     await tod.buildTable() // TestOrder Table
     await tsd.buildTable() // TestSample Table
-    await ad.buildTable() // Address Table
     await od.buildTable() // Owner Table
     await md.buildTable() // Message table (includes notification)
     await prd.buildTable() // Payment Receipt
