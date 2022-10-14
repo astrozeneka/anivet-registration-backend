@@ -3,9 +3,9 @@ const Vet = require("../../model/Vet");
 const sqlQueryMultiple = require("../../utils/sqlQueryMultiple");
 const AddressDAO = require("./AddressDAO");
 const sqlQueryOne = require("../../utils/sqlQueryOne");
-const BaseCrudDAO = require("./BaseCrudDAO");
+const BaseMemberDAO = require("./BaseMemberDAO");
 
-class VetDAO extends BaseCrudDAO {
+class VetDAO extends BaseMemberDAO {
     static instance = null;
     static getInstance(){
         if(this.instance == null) {

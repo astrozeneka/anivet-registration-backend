@@ -9,18 +9,19 @@ const SampleStatusController = require("./SampleStatusController");
 //const VetController = require("./VetController");
 //const ScientistController = require("./ScientistController");
 const RegistrationController = require("./RegistrationController");
-const BaseMemberController = require("./BaseMemberController");
+const BaseMemberControllerOld = require("./BaseMemberController");
 const PaymentReceiptController = require("./PaymentReceiptController");
 const ParcelController = require("./ParcelController");
 const DocumentController = require("./DocumentController");
 const CertificationController = require("./CertificationController");
 
-
+// New Generation Controller
 const BreederController = require("./data/BreederController");
 const OwnerController = require("./data/OwnerController");
 const VetController = require("./data/VetController");
 const ScientistController = require("./data/ScientistController");
 const AdminController = require("./data/AdminController");
+const RegistrationValidationController = require("./validation/RegistrationValidationController")
 
 class APIV1Controller extends BaseController{
     static instance = null;
@@ -49,7 +50,7 @@ class APIV1Controller extends BaseController{
         //this.app.use("/breeder", BreederController.getInstance().app)
         this.app.use("/scientist", ScientistController.getInstance().app)
         this.app.use("/registration", RegistrationController.getInstance().app)
-        this.app.use("/baseMember", BaseMemberController.getInstance().app)
+        this.app.use("/baseMember", BaseMemberControllerOld.getInstance().app)
         this.app.use("/paymentReceipt", PaymentReceiptController.getInstance().app)
 
         this.app.use("/parcel", ParcelController.getInstance().app)
@@ -61,6 +62,8 @@ class APIV1Controller extends BaseController{
         this.app.use("/data/vet", VetController.getInstance().app)
         this.app.use("/data/scientist", ScientistController.getInstance().app)
         this.app.use("/data/admin", AdminController.getInstance().app)
+
+        this.app.use("/validation/registration", RegistrationValidationController.getInstance().app)
     }
 
 }

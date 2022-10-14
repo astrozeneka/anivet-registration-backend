@@ -13,18 +13,23 @@ class TimeBL extends BaseBL {
         this.instance = null;
     }
 
+    #manual = false
     #time = null
 
     get time(){
+        if(!this.#manual)
+            this.#time = new Date()
         return this.#time;
     }
 
     set time(value){
+        this.#manual = true
         this.#time = value;
     }
 
     destroy(){
         this.time = null;
+        this.manual = false;
     }
 }
 module.exports = TimeBL

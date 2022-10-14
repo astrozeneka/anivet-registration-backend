@@ -32,8 +32,8 @@ class AddressDAO {
             "   address_breederId INT(6) UNSIGNED," +
             "   address_vetId INT(6) UNSIGNED," +
             "" +
-            "   address_baseMemberId INT(6) UNSIGNED," +
-            "   CONSTRAINT `fk_baseMemberId` FOREIGN KEY (address_baseMemberId) REFERENCES baseMember (baseMember_id) ON DELETE CASCADE" +
+            "   address_baseMemberId INT(6) UNSIGNED" +
+            //"   CONSTRAINT `fk_baseMemberId` FOREIGN KEY (address_baseMemberId) REFERENCES baseMember (baseMember_id) ON DELETE CASCADE" +
             ") " +
             "ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;")
 

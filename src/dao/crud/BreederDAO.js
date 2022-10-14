@@ -3,9 +3,9 @@ const sqlQueryMultiple = require("../../utils/sqlQueryMultiple");
 const Breeder = require("../../model/Breeder");
 const AddressDAO = require("./AddressDAO");
 const sqlQueryOne = require("../../utils/sqlQueryOne");
-const BaseCrudDAO = require("./BaseCrudDAO");
+const BaseMemberDAO = require("./BaseMemberDAO");
 
-class BreederDAO extends BaseCrudDAO {
+class BreederDAO extends BaseMemberDAO {
     static instance = null;
     static getInstance(){
         if(this.instance == null) {

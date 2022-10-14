@@ -3,8 +3,9 @@ const sqlQueryMultiple = require("../../utils/sqlQueryMultiple");
 const Admin = require("../../model/Admin");
 const sqlQueryOne = require("../../utils/sqlQueryOne");
 const BaseCrudDAO = require("./BaseCrudDAO");
+const BaseMemberDAO = require("./BaseMemberDAO");
 
-class AdminDAO extends BaseCrudDAO{
+class AdminDAO extends BaseMemberDAO{
     static instance = null;
     static getInstance(){
         if(this.instance == null) {
@@ -41,8 +42,8 @@ class AdminDAO extends BaseCrudDAO{
 
     async destroyTable(){
         // Views
-        await sqlExecute("DROP VIEW IF EXISTS `scientist_$search`") // Pseudo view
-        await sqlExecute("DROP VIEW IF EXISTS `scientist_edit`")
+        await sqlExecute("DROP VIEW IF EXISTS `admin_$search`") // Pseudo view
+        await sqlExecute("DROP VIEW IF EXISTS `admin_edit`")
         await sqlExecute("" +
             "DROP VIEW IF EXISTS `admin_`")
 

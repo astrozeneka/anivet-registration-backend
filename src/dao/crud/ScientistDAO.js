@@ -2,9 +2,9 @@ const sqlExecute = require("../../utils/sqlExecute");
 const sqlQueryMultiple = require("../../utils/sqlQueryMultiple");
 const Scientist = require("../../model/Scientist");
 const sqlQueryOne = require("../../utils/sqlQueryOne");
-const BaseCrudDAO = require("./BaseCrudDAO");
+const BaseMemberDAO = require("./BaseMemberDAO");
 
-class ScientistDAO extends BaseCrudDAO {
+class ScientistDAO extends BaseMemberDAO {
     static instance = null;
     static getInstance(){
         if(this.instance == null) {

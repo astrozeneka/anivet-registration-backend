@@ -3,10 +3,10 @@ const Owner = require("../../model/Owner");
 const sqlQueryMultiple = require("../../utils/sqlQueryMultiple");
 const AddressDAO = require("./AddressDAO");
 const sqlQueryOne = require("../../utils/sqlQueryOne");
-const BaseCrudDAO = require("./BaseCrudDAO");
+const BaseMemberDAO = require("./BaseMemberDAO");
 
 
-class OwnerDAO extends BaseCrudDAO {  // Two level of inheritence BaseCrudDAO and BaseMember
+class OwnerDAO extends BaseMemberDAO {  // Two level of inheritence BaseCrudDAO and BaseMember
     static instance = null;
     static getInstance(){
         if(this.instance == null) {

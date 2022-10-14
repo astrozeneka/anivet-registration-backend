@@ -4,7 +4,7 @@ const BreedDAO = require("../dao/BreedDAO");
 const TestOrderDAO = require("../dao/TestOrderDAO");
 const TestSampleDAO = require("../dao/TestSampleDAO");
 //const BreederDAO = require("../dao/BreederDAO");
-const BaseMemberDAO = require("../dao/BaseMemberDAO");
+//const BaseMemberDAO = require("../dao/BaseMemberDAO");
 //const AdminDAO = require("../dao/AdminDAO");
 //const VetDAO = require("../dao/VetDAO");
 const MessageDAO = require("../dao/MessageDAO");
@@ -13,7 +13,7 @@ const SampleStatusDAO = require("../dao/SampleStatusDAO");
 //const ScientistDAO = require("../dao/ScientistDAO");
 const PaymentReceipt = require("../model/PaymentReceipt");
 const PaymentReceiptDAO = require("../dao/PaymentReceiptDAO");
-const ValidationNoteDAO = require("../dao/ValidationNoteDAO");
+//const ValidationNoteDAO = require("../dao/ValidationNoteDAO");
 const SampleParcelDAO = require("../dao/SampleParcelDAO");
 const SciDocDAO = require("../dao/SciDocDAO");
 
@@ -24,6 +24,8 @@ const VetDAO = require('../dao/crud/VetDAO')
 const ScientistDAO = require('../dao/crud/ScientistDAO')
 const AdminDAO = require('../dao/crud/AdminDAO')
 const AddressDAO = require('../dao/crud/AddressDAO')
+const BaseMemberDAO = require('../dao/crud/BaseMemberDAO')
+const ValidationNoteDAO = require('../dao/crud/ValidationNoteDAO')
 
 async function resetDatabase(){
 
@@ -58,16 +60,16 @@ async function resetDatabase(){
     await add.destroyTable()
     await sd.destroyTable()
     await vd.destroyTable()
-    await ad.destroyTable()
     await bmd.destroyTable()
+    await ad.destroyTable()
     await bd.destroyTable()
     await vnd.destroyTable()
 
     await vnd.buildTable()
     await bd.buildTable() // Breed Table
-    await bmd.buildTable() // Base Member Table
     await new Promise(r => setTimeout(r, 100)) // This code has been used in order to avoid some errors
     await ad.buildTable() // Address Table
+    await bmd.buildTable() // Base Member Table
     await vd.buildTable() // Vet Table
     await sd.buildTable()
     await add.buildTable() // Admin Tabld
