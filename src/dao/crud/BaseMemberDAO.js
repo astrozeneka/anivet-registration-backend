@@ -75,6 +75,20 @@ class BaseMemberDAO extends BaseCrudDAO{
     }
 
     sql_to_model={
+        "": (r)=>{
+            let o = new BaseMember()
+            o.type = r.baseMember_type
+            o.id = r.baseMember_id
+            o.username = r.baseMember_username
+            o.password = r.baseMember_password
+            o.website = r.baseMember_website
+            o.subscribe = r.baseMember_subscribe
+            o.name1 = r.baseMember_name1
+            o.name2 = r.baseMember_name2
+            o.phone = r.baseMember_phone
+            o.email = r.baseMember_email
+            return o
+        },
         "validation": (r)=>{ // Build model from SQL row
             let o = new BaseMember()
             o.id = r.baseMember_id
@@ -113,6 +127,20 @@ class BaseMemberDAO extends BaseCrudDAO{
     // raw_to_model is defined in the subclasses
 
     model_to_raw={
+        "": (m)=>{
+            return {
+                id: m.id,
+                type: m.type,
+                username: m.username,
+                password: m.password,
+                website: m.website,
+                subscribe: m.subscribe,
+                name1: m.name1,
+                name2: m.name2,
+                phone: m.phone,
+                email: m.email
+            }
+        },
         "validation": (m)=>{ // To be sent via JSON
             return {
                 id: m.id, // The most important property

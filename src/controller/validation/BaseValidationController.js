@@ -5,6 +5,12 @@ const jwt = require("jsonwebtoken");
 
 class BaseValidationController {
 
+    get name(){
+        let name = this.dao.name
+        if(name == "baseMember") return "registration"
+        return name
+    }
+
     constructor(){
         this.app = express.Router()
 
@@ -39,7 +45,8 @@ class BaseValidationController {
             const token = req.headers.authorization.split(' ')[1]
             const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET)
             req.body.triggererId = decodedToken.id
-            let u = await ValidationBL.getInstance().validateRegistration(req.body)
+            //let u = await ValidationBL.getInstance().validateRegistration(req.body)
+            let u = await ValidationBL.getInstance().validate[this.name](req.body)
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(u))
         })

@@ -22,6 +22,9 @@ const VetController = require("./data/VetController");
 const ScientistController = require("./data/ScientistController");
 const AdminController = require("./data/AdminController");
 const RegistrationValidationController = require("./validation/RegistrationValidationController")
+const TestOrderValidationController = require("./validation/TestOrderValidationController");
+const TestSampleValidationController = require("./validation/TestSampleValidationController");
+const PaymentReceiptValidationController = require("./validation/PaymentReceiptValidationController");
 
 class APIV1Controller extends BaseController{
     static instance = null;
@@ -57,6 +60,7 @@ class APIV1Controller extends BaseController{
         this.app.use("/document", DocumentController.getInstance().app)
         this.app.use("/certification", CertificationController.getInstance().app)
 
+        // New generation controller
         this.app.use("/data/breeder", BreederController.getInstance().app)
         this.app.use("/data/owner", OwnerController.getInstance().app)
         this.app.use("/data/vet", VetController.getInstance().app)
@@ -64,6 +68,9 @@ class APIV1Controller extends BaseController{
         this.app.use("/data/admin", AdminController.getInstance().app)
 
         this.app.use("/validation/registration", RegistrationValidationController.getInstance().app)
+        this.app.use("/validation/testOrder", TestOrderValidationController.getInstance().app)
+        this.app.use("/validation/testSample", TestSampleValidationController.getInstance().app)
+        this.app.use("/validation/paymentReceipt", PaymentReceiptValidationController.getInstance().app)
     }
 
 }

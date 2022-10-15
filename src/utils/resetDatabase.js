@@ -1,18 +1,18 @@
 
 const BreedDAO = require("../dao/BreedDAO");
 //const OwnerDAO = require("../dao/OwnerDAO");
-const TestOrderDAO = require("../dao/TestOrderDAO");
-const TestSampleDAO = require("../dao/TestSampleDAO");
+//const TestOrderDAO = require("../dao/TestOrderDAO");
+//const TestSampleDAO = require("../dao/TestSampleDAO");
 //const BreederDAO = require("../dao/BreederDAO");
 //const BaseMemberDAO = require("../dao/BaseMemberDAO");
 //const AdminDAO = require("../dao/AdminDAO");
 //const VetDAO = require("../dao/VetDAO");
-const MessageDAO = require("../dao/MessageDAO");
+//const MessageDAO = require("../dao/MessageDAO");
 const TrackingTypeDAO = require("../dao/TrackingTypeDAO");
 const SampleStatusDAO = require("../dao/SampleStatusDAO");
 //const ScientistDAO = require("../dao/ScientistDAO");
 const PaymentReceipt = require("../model/PaymentReceipt");
-const PaymentReceiptDAO = require("../dao/PaymentReceiptDAO");
+//const PaymentReceiptDAO = require("../dao/PaymentReceiptDAO");
 //const ValidationNoteDAO = require("../dao/ValidationNoteDAO");
 const SampleParcelDAO = require("../dao/SampleParcelDAO");
 const SciDocDAO = require("../dao/SciDocDAO");
@@ -26,6 +26,11 @@ const AdminDAO = require('../dao/crud/AdminDAO')
 const AddressDAO = require('../dao/crud/AddressDAO')
 const BaseMemberDAO = require('../dao/crud/BaseMemberDAO')
 const ValidationNoteDAO = require('../dao/crud/ValidationNoteDAO')
+const PaymentReceiptDAO = require("../dao/crud/PaymentReceiptDAO");
+const MessageDAO = require("../dao/crud/MessageDAO");
+const TestSampleDAO = require("../dao/crud/TestSampleDAO")
+const TestOrderDAO = require("../dao/crud/TestOrderDAO")
+
 
 async function resetDatabase(){
 

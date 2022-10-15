@@ -25,7 +25,7 @@ class ValidationNoteDAO extends BaseCrudDAO{
             "   validationNote_validated BOOLEAN," +
             "   validationNote_message TEXT," +
             "   validationNote_date DATETIME" +
-            ")")
+            ")ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;;")
 
         // Views
         await sqlExecute("" +
@@ -96,8 +96,6 @@ class ValidationNoteDAO extends BaseCrudDAO{
     }
 
     async update(m){
-        if(m.date)
-            m.date = m.date.toMysqlFormat()
         await sqlExecute("" +
             "UPDATE `validationNote` set" +
             "   validationNote_validated=?," +

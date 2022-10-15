@@ -6,6 +6,8 @@ class PaymentReceipt {
     #linkReference = null
     #file = null
 
+    #validationNote = null
+
     #validationNoteId = null
     #validationNoteValidated = null
     #validationNoteMessage = null
@@ -59,6 +61,14 @@ class PaymentReceipt {
 
     set testOrderId(value) {
         this.#testOrderId = value;
+    }
+
+    get validationNote() {
+        return this.#validationNote;
+    }
+
+    set validationNote(value) {
+        this.#validationNote = value;
     }
 
     serialize(){
