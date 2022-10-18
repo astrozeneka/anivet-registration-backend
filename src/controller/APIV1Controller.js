@@ -25,6 +25,10 @@ const RegistrationValidationController = require("./validation/RegistrationValid
 const TestOrderValidationController = require("./validation/TestOrderValidationController");
 const TestSampleValidationController = require("./validation/TestSampleValidationController");
 const PaymentReceiptValidationController = require("./validation/PaymentReceiptValidationController");
+const FeedRegistrationController = require("./feed/FeedRegistrationController");
+const FeedProcessController = require("./feed/FeedProcessController");
+const FeedMessageController = require("./feed/FeedMessageController");
+const FeedSiteController = require("./feed/FeedSiteController");
 
 class APIV1Controller extends BaseController{
     static instance = null;
@@ -71,6 +75,11 @@ class APIV1Controller extends BaseController{
         this.app.use("/validation/testOrder", TestOrderValidationController.getInstance().app)
         this.app.use("/validation/testSample", TestSampleValidationController.getInstance().app)
         this.app.use("/validation/paymentReceipt", PaymentReceiptValidationController.getInstance().app)
+
+        this.app.use("/feed/registration", FeedRegistrationController.getInstance().app)
+        this.app.use("/feed/message", FeedMessageController.getInstance().app)
+        this.app.use("/feed/process", FeedProcessController.getInstance().app)
+        this.app.use("/feed/site", FeedSiteController.getInstance().app)
     }
 
 }

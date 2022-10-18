@@ -2,6 +2,7 @@ const BaseCrudDAO = require("./BaseCrudDAO");
 const sqlExecute = require("../../utils/sqlExecute");
 const Message = require("../../model/Message");
 const sqlQueryOne = require("../../utils/sqlQueryOne");
+const BaseMemberDAO = require("./BaseMemberDAO");
 
 class MessageDAO extends BaseCrudDAO{
     static instance = null;
@@ -14,6 +15,8 @@ class MessageDAO extends BaseCrudDAO{
     static tearDown(){
         this.instance = null;
     }
+
+    name = "message"
 
     async buildTable(){
         await sqlExecute("" +
@@ -35,10 +38,38 @@ class MessageDAO extends BaseCrudDAO{
         await sqlExecute("" +
             "CREATE VIEW `message_` AS" +
             "   SELECT * FROM message")
+        await sqlExecute("" +
+            "CREATE VIEW `message_registration` AS " +
+            "SELECT message.*,\n" +
+            "\t  sender.baseMember_id as sender_id," +
+            "    sender.baseMember_username as sender_username,\n" +
+            "    sender.baseMember_website as sender_website,\n" +
+            "    sender.baseMember_subscribe as sender_subscribe,\n" +
+            "    sender.baseMember_name1 as sender_name1,\n" +
+            "    sender.baseMember_name2 as sender_name2,\n" +
+            "    sender.baseMember_phone as sender_phone,\n" +
+            "    sender.baseMember_email as sender_email,\n" +
+            "    sender.baseMember_corp as sender_corp,\n" +
+            "    sender.baseMember_type as sender_type," +
+            "    receiver.baseMember_id as receiver_id,\n" +
+            "    receiver.baseMember_username as receiver_username,\n" +
+            "    receiver.baseMember_website as receiver_website,\n" +
+            "    receiver.baseMember_subscribe as receiver_subscribe,\n" +
+            "    receiver.baseMember_name1 as receiver_name1,\n" +
+            "    receiver.baseMember_name2 as receiver_name2,\n" +
+            "    receiver.baseMember_phone as receiver_phone,\n" +
+            "    receiver.baseMember_email as receiver_email,\n" +
+            "    receiver.baseMember_corp as receiver_corp,\n" +
+            "    receiver.baseMember_type as receiver_type\n" +
+            "FROM message\n" +
+            "\tLEFT JOIN baseMember sender ON sender.baseMember_id=message_senderId\n" +
+            "    LEFT JOIN baseMember receiver ON receiver.baseMember_id=message_receiverId\n" +
+            "WHERE `message_tags` LIKE '%REGISTRATION%'")
     }
 
     async destroyTable(){
         // Views
+        await sqlExecute("DROP VIEW IF EXISTS `message_registration`")
         await sqlExecute("DROP VIEW IF EXISTS `message_`")
 
         await sqlExecute("DROP TABLE IF EXISTS `message`")
@@ -56,6 +87,23 @@ class MessageDAO extends BaseCrudDAO{
             o.date = r.message_date
             o.read = r.message_read
             return o
+        },
+        "registration": (r)=>{
+            let o = MessageDAO.getInstance().sql_to_model[""](r)
+            let rp1 = {}, rp2 = {}
+            if(r.message_receiverId != null) {
+                for (const key in r)
+                    if (key.includes("receiver"))
+                        rp1[key.replace("receiver", "baseMember")] = r[key]
+                o.receiver = BaseMemberDAO.getInstance().sql_to_model[""](rp1)
+            }
+            if(r.message_senderId != null) {
+                for (const key in r)
+                    if (key.includes("sender"))
+                        rp2[key.replace("receiver", "baseMember")] = r[key]
+                o.sender = BaseMemberDAO.getInstance().sql_to_model[""](rp2)
+            }
+            return o
         }
     }
 
@@ -71,6 +119,14 @@ class MessageDAO extends BaseCrudDAO{
                 date: m.date,
                 read: m.read
             }
+        },
+        "registration": (m)=>{
+            let o = {
+                ...MessageDAO.getInstance().model_to_raw[""](m),
+                sender: !m.sender?null:BaseMemberDAO.getInstance().model_to_raw[""](m.sender),
+                receiver: !m.receiver?null:BaseMemberDAO.getInstance().model_to_raw[""](m.receiver)
+            }
+            return o
         }
     }
 

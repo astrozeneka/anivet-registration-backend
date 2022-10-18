@@ -150,7 +150,7 @@ class RegistrationBL extends BaseBL {
         msg.content = `${name1} ${name2} &lt;${email}&gt; has registered a new account.`
         msg.senderId = null
         msg.receiverId = admin.id
-        msg.tags = "NEW_MEMBER"
+        msg.tags = "REGISTRATION, NEW_MEMBER"
         if(TimeBL.getInstance().time != null)
             msg.date = TimeBL.getInstance().time
         else
