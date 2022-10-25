@@ -3,17 +3,13 @@ const express = require("express");
 const DashboardController = require("./DashboardController");
 const auth = require("./middleware/auth")
 const MessageController = require("./MessageController");
-const TestOrderController = require("./TestOrderController");
-const TestSampleController = require("./TestSampleController");
 const SampleStatusController = require("./SampleStatusController");
 //const VetController = require("./VetController");
 //const ScientistController = require("./ScientistController");
 const RegistrationController = require("./RegistrationController");
 const BaseMemberControllerOld = require("./BaseMemberController");
-const PaymentReceiptController = require("./PaymentReceiptController");
 const ParcelController = require("./ParcelController");
 const DocumentController = require("./DocumentController");
-const CertificationController = require("./CertificationController");
 
 // New Generation Controller
 const BreederController = require("./data/BreederController");
@@ -21,6 +17,13 @@ const OwnerController = require("./data/OwnerController");
 const VetController = require("./data/VetController");
 const ScientistController = require("./data/ScientistController");
 const AdminController = require("./data/AdminController");
+const CertificationController = require("./data/CertificationController")
+const PaymentReceiptController = require("./data/PaymentReceiptController")
+const SampleParcelController = require("./data/SampleParcelController")
+const SciDocController = require("./data/SciDocController")
+const TestOrderController = require("./data/TestOrderController")
+const TestSampleController = require("./data/TestSampleController")
+const TestResultController = require("./data/TestResultController")
 const RegistrationValidationController = require("./validation/RegistrationValidationController")
 const TestOrderValidationController = require("./validation/TestOrderValidationController");
 const TestSampleValidationController = require("./validation/TestSampleValidationController");
@@ -70,6 +73,13 @@ class APIV1Controller extends BaseController{
         this.app.use("/data/vet", VetController.getInstance().app)
         this.app.use("/data/scientist", ScientistController.getInstance().app)
         this.app.use("/data/admin", AdminController.getInstance().app)
+        this.app.use("/data/certification", CertificationController.getInstance().app)
+        this.app.use("/data/paymentReceipt", PaymentReceiptController.getInstance().app)
+        this.app.use("/data/sampleParcel", SampleParcelController.getInstance().app)
+        this.app.use("/data/sciDoc", SciDocController.getInstance().app)
+        this.app.use("/data/testOrder", TestOrderController.getInstance().app)
+        this.app.use("/data/testSample", TestSampleController.getInstance().app)
+        this.app.use("/data/testResult", TestResultController.getInstance().app)
 
         this.app.use("/validation/registration", RegistrationValidationController.getInstance().app)
         this.app.use("/validation/testOrder", TestOrderValidationController.getInstance().app)

@@ -1,4 +1,6 @@
-import BaseCrudDAO from "./BaseCrudDAO";
+const BaseCrudDAO = require("./BaseCrudDAO");
+const sqlExecute = require("../../utils/sqlExecute");
+
 
 class SampleParcelDAO extends BaseCrudDAO{
     static instance = null;

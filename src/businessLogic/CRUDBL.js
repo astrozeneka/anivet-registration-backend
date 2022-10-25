@@ -11,6 +11,8 @@ const BreederDAO = require("../dao/crud/BreederDAO");
 const VetDAO = require("../dao/crud/VetDAO");
 const ScientistDAO = require("../dao/crud/ScientistDAO");
 const AdminDAO = require("../dao/crud/AdminDAO");
+const SciDocDAO = require("../dao/crud/SciDocDAO");
+const FileDAO = require("../dao/crud/FileDAO");
 
 class CRUDBL {
     static instance = null;
@@ -300,6 +302,137 @@ class CRUDBL {
                 return {affectedRows: u}
             else
                 return {errors: {"form": "DELETION_ERROR"}}
+        }
+    }
+
+    sciDoc = {
+        async insert(raw){
+            let e = {}
+            assertNotEmpty(raw, "reference", e)
+            assertNotEmpty(raw, "type", e)
+            // TO be fixed
+            assertNotEmpty(raw.file, "content", e)
+            if(!lodash.isEmpty(e))
+                return {errors: e}
+
+            // Add file first
+            let f = FileDAO.getInstance().raw_to_model(raw.file)
+            await FileDAO.getInstance().add(f)
+
+            // And after add entity
+            let m = SciDocDAO.getInstance().raw_to_model(raw)
+            m.fileId = f.id
+            await SciDocDAO.getInstance().add(m)
+            return {object: m}
+        },
+        async update(raw){
+            let e = {}
+            assertNotEmpty(raw, "reference", e)
+            assertNotEmpty(raw, "type", e)
+            if(!lodash.isEmpty(e)) return {errors: e}
+
+            // Update entity
+            let old = SciDocDAO.getInstance().model_to_raw[""](
+                await SciDocDAO.getInstance().getOne("", raw.id)
+            )
+            for(const key in raw) old[key] = raw[key] || old[key]
+            let m = SciDocDAO.getInstance().raw_to_model(old)
+
+            // Update file
+            if(raw.file){
+                // Delete the previous one
+                await FileDAO.getInstance().delete({id: m.fileId})
+
+                // Add the new one
+                let f = await FileDAO.getInstance().raw_to_model(raw.file)
+                await FileDAO.getInstance().add(f)
+
+                // Update ID
+                m.fileId = f.id
+            }
+
+            await SciDocDAO.getInstance().update(m)
+            return {object: m}
+        },
+        async delete(raw){
+            let m = SciDocDAO.getInstance().raw_to_model(raw)
+            let u = await SciDocDAO.getInstance().delete(m)
+            if(u > 0)
+                return {affectedRows: u}
+            else
+                return {errors: {"form": "DELETION_ERROR"}}
+        }
+    }
+
+    paymentReceipt = {
+        async insert(raw){
+
+        },
+        async update(raw){
+
+        },
+        async delete(raw){
+
+        }
+    }
+
+    sampleParcel = {
+        async insert(raw){
+
+        },
+        async update(raw){
+
+        },
+        async delete(raw){
+
+        }
+    }
+
+    testOrder = {
+        async insert(raw){
+
+        },
+        async update(raw){
+
+        },
+        async delete(raw){
+
+        }
+    }
+
+    testSample = {
+        async insert(raw){
+
+        },
+        async update(raw){
+
+        },
+        async delete(raw){
+
+        }
+    }
+
+    testResult = {
+        async insert(raw){
+
+        },
+        async update(raw){
+
+        },
+        async delete(raw){
+
+        }
+    }
+
+    certification = {
+        async insert(raw){
+
+        },
+        async update(raw){
+
+        },
+        async delete(raw){
+
         }
     }
 }

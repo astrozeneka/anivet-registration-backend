@@ -15,7 +15,7 @@ const PaymentReceipt = require("../model/PaymentReceipt");
 //const PaymentReceiptDAO = require("../dao/PaymentReceiptDAO");
 //const ValidationNoteDAO = require("../dao/ValidationNoteDAO");
 const SampleParcelDAO = require("../dao/SampleParcelDAO");
-const SciDocDAO = require("../dao/SciDocDAO");
+//const SciDocDAO = require("../dao/SciDocDAO");
 
 // New Generation DAO
 const BreederDAO = require('../dao/crud/BreederDAO')
@@ -30,10 +30,13 @@ const PaymentReceiptDAO = require("../dao/crud/PaymentReceiptDAO");
 const MessageDAO = require("../dao/crud/MessageDAO");
 const TestSampleDAO = require("../dao/crud/TestSampleDAO")
 const TestOrderDAO = require("../dao/crud/TestOrderDAO")
+const SciDocDAO = require("../dao/crud/SciDocDAO")
+const FileDAO = require("../dao/crud/FileDAO");
 
 
 async function resetDatabase(){
 
+    let fd = FileDAO.getInstance()
     let vnd = ValidationNoteDAO.getInstance()
     let ad = AddressDAO.getInstance()
     let bd = BreedDAO.getInstance()
@@ -69,7 +72,9 @@ async function resetDatabase(){
     await ad.destroyTable()
     await bd.destroyTable()
     await vnd.destroyTable()
+    await fd.destroyTable()
 
+    await fd.buildTable()
     await vnd.buildTable()
     await bd.buildTable() // Breed Table
     await new Promise(r => setTimeout(r, 100)) // This code has been used in order to avoid some errors
