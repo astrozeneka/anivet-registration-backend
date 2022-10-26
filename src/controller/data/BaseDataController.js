@@ -85,36 +85,6 @@ class BaseDataController{
             res.send(JSON.stringify(output))
         })
 
-
-        /*
-         * TO BE SOLVED
-         */
-        this.app.get("/_file/:id", async(req, res)=>{
-            if(!await isAdminToken(req.decodedToken))
-                res.status(403).send("Unauthorized")
-            let id = req.params.id
-            let view = "file"
-            let item = await CRUDBL.getInstance().loadOne(this.dao, view, id)
-
-            /*
-            let buffer = new Buffer(item.file, 'base64')
-            let readStream = new stream.PassThrough();
-            readStream.end(buffer)
-            res.set('Content-disposition', 'attachment; filename=file.pdf')
-            res.set('Content-type', 'application/pdf')
-            readStream.pipe(res)
-
-             */
-
-            res.writeHead(200, {
-                'Content-Type': 'application/pdf',
-                'Content-disposition': 'attachment; filename=file.pdf'
-            })
-            res.end(Buffer.from(item.file, 'base64'))
-
-            console.log()
-        })
-
         this.app.post('/', async(req, res)=>{
             if(!await isAdminToken(req.decodedToken))
                 res.status(403).send("Unauthorized")

@@ -15,6 +15,7 @@ const SciDocDAO = require("../dao/crud/SciDocDAO");
 const FileDAO = require("../dao/crud/FileDAO");
 const assertNotEmptyFile = require("../utils/validator/assertNotEmptyFile");
 const PaymentReceiptDAO = require("../dao/crud/PaymentReceiptDAO");
+const TestSampleDAO = require("../dao/crud/TestSampleDAO");
 
 class CRUDBL {
     static instance = null;
@@ -442,13 +443,53 @@ class CRUDBL {
 
     testSample = {
         async insert(raw){
+            let e = {}
+            assertNotEmpty(raw, "type", e)
+            assertNotEmpty(raw, "animal", e)
+            assertNotEmpty(raw, "petSpecie", e)
+            assertNotEmptyFile(raw, "image", e)
+            if(!lodash.isEmpty(e)) return {errors: e}
 
+            // Add file first
+            let f = FileDAO.getInstance().raw_to_model(raw.image)
+            await FileDAO.getInstance().add(f)
+
+            // Add entity
+            let m = TestSampleDAO.getInstance().raw_to_model(raw)
+            m.imageId = f.id
+            await TestSampleDAO.getInstance().add(m)
+            return {object: m}
         },
-        async update(raw){
+        async update(raw) {
+            let e = {}
+            assertNotEmpty(raw, "type", e)
+            assertNotEmpty(raw, "animal", e)
+            assertNotEmpty(raw, "petSpecie", e)
+            if(!lodash.isEmpty(e)) return {errors: e}
 
+            // Update entity
+            let old = TestSampleDAO.getInstance().model_to_raw[""](
+                await TestSampleDAO.getInstance().getOne("", raw.id)
+            )
+            for (const key in raw) old[key] = raw[key] || old[key]
+            let m = TestSampleDAO.getInstance().raw_to_model(old)
+
+            if(raw.image){ // raw.image == raw.file
+                await FileDAO.getInstance().delete({id: old.imageId})
+                let f = await FileDAO.getInstance().raw_to_model(raw.image)
+                await FileDAO.getInstance().add(f)
+                m.imageId = f.id
+            }
+            await TestSampleDAO.getInstance().update(m)
+            return {object: m}
         },
         async delete(raw){
-
+            let m = TestSampleDAO.getInstance().raw_to_model(raw)
+            let u = await TestSampleDAO.getInstance().delete(m)
+            if(u > 0)
+                return {affectedRows: u}
+            else
+                return {errors: {"form": "DELETION_ERROR"}}
         }
     }
 
