@@ -1,5 +1,5 @@
 const BaseDataController = require("./BaseDataController");
-const SampleParcelDAO = require("../../dao/SampleParcelDAO");
+const SampleParcelDAO = require("../../dao/crud/SampleParcelDAO");
 
 class SampleParcelController extends BaseDataController{
     static instance = null;

@@ -70,6 +70,7 @@ class FileDAO extends BaseCrudDAO {
             // A very specific portion of code
             // @deprecated
             //let _buffer = new Buffer(m.content, 'base64')
+            if(!m.content) return null
             let buffer = new Buffer.from(m.content, 'base64')
             let o = {
                 ...FileDAO.getInstance().model_to_raw[""](m),

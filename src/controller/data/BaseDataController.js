@@ -69,7 +69,7 @@ class BaseDataController{
         // Be careful, id of entity, not of file
         // Only for a restricted number of controllers
         this.app.get("/file/:id", async(req, res)=>{
-            if(!["sciDoc", "paymentReceipt", "testResult", "parcel", "testResult", "certififcation"].includes(this.dao.name)) {
+            if(!["sciDoc", "paymentReceipt", "testResult", "sampleParcel", "testResult", "certification"].includes(this.dao.name)) {
                 res.status(403).send("Unauthorized")
                 return
             }

@@ -11,10 +11,10 @@ const BreedDAO = require("../dao/BreedDAO");
 const TrackingTypeDAO = require("../dao/TrackingTypeDAO");
 const SampleStatusDAO = require("../dao/SampleStatusDAO");
 //const ScientistDAO = require("../dao/ScientistDAO");
-const PaymentReceipt = require("../model/PaymentReceipt");
+//const PaymentReceipt = require("../model/PaymentReceipt");
 //const PaymentReceiptDAO = require("../dao/PaymentReceiptDAO");
 //const ValidationNoteDAO = require("../dao/ValidationNoteDAO");
-const SampleParcelDAO = require("../dao/SampleParcelDAO");
+//const SampleParcelDAO = require("../dao/SampleParcelDAO");
 //const SciDocDAO = require("../dao/SciDocDAO");
 
 // New Generation DAO
@@ -32,6 +32,7 @@ const TestSampleDAO = require("../dao/crud/TestSampleDAO")
 const TestOrderDAO = require("../dao/crud/TestOrderDAO")
 const SciDocDAO = require("../dao/crud/SciDocDAO")
 const FileDAO = require("../dao/crud/FileDAO");
+const SampleParcelDAO = require("../dao/crud/SampleParcelDAO")
 
 
 async function resetDatabase(){
