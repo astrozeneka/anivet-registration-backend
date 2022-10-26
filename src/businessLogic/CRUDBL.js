@@ -13,6 +13,8 @@ const ScientistDAO = require("../dao/crud/ScientistDAO");
 const AdminDAO = require("../dao/crud/AdminDAO");
 const SciDocDAO = require("../dao/crud/SciDocDAO");
 const FileDAO = require("../dao/crud/FileDAO");
+const assertNotEmptyFile = require("../utils/validator/assertNotEmptyFile");
+const PaymentReceiptDAO = require("../dao/crud/PaymentReceiptDAO");
 
 class CRUDBL {
     static instance = null;
@@ -341,7 +343,7 @@ class CRUDBL {
             // Update file
             if(raw.file){
                 // Delete the previous one
-                await FileDAO.getInstance().delete({id: m.fileId})
+                await FileDAO.getInstance().delete({id: m.fileId}) // IMPORTANT, update code on the next iteration
 
                 // Add the new one
                 let f = await FileDAO.getInstance().raw_to_model(raw.file)
@@ -366,13 +368,51 @@ class CRUDBL {
 
     paymentReceipt = {
         async insert(raw){
+            let e = {}
+            assertNotEmpty(raw, "reference", e)
+            assertNotEmpty(raw, "method", e)
+            assertNotEmptyFile(raw, "file", e)
+            if(!lodash.isEmpty(e)) return {errors: e}
 
+            // Add file first
+            let f = FileDAO.getInstance().raw_to_model(raw.file)
+            await FileDAO.getInstance().add(f)
+
+            // And after add entity
+            let m = PaymentReceiptDAO.getInstance().raw_to_model(raw)
+            m.fileId = f.id
+            await PaymentReceiptDAO.getInstance().add(m)
+            return {object: m}
         },
         async update(raw){
+            let e = {}
+            assertNotEmpty(raw, "reference", e)
+            assertNotEmpty(raw, "method", e)
+            if(!lodash.isEmpty(e)) return {errors: e}
 
+            // Update entity
+            let old = PaymentReceiptDAO.getInstance().model_to_raw[""](
+                await PaymentReceiptDAO.getInstance().getOne("", raw.id)
+            )
+            for (const key in raw) old[key] = raw[key] || old[key]
+            let m = PaymentReceiptDAO.getInstance().raw_to_model(old)
+
+            if(raw.file){
+                await FileDAO.getInstance().delete({id: old.fileId})
+                let f = await FileDAO.getInstance().raw_to_model(raw.file)
+                await FileDAO.getInstance().add(f)
+                m.fileId = f.id
+            }
+            await PaymentReceiptDAO.getInstance().update(m)
+            return {object: m}
         },
         async delete(raw){
-
+            let m = PaymentReceiptDAO.getInstance().raw_to_model(raw)
+            let u = await PaymentReceiptDAO.getInstance().delete(m)
+            if(u > 0)
+                return {affectedRows: u}
+            else
+                return {errors: {"form": "DELETION_ERROR"}}
         }
     }
 

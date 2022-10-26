@@ -69,10 +69,14 @@ class BaseDataController{
         // Be careful, id of entity, not of file
         // Only for a restricted number of controllers
         this.app.get("/file/:id", async(req, res)=>{
-            if(!["sciDoc"].includes(this.dao.name))
+            if(!["sciDoc", "paymentReceipt", "testResult", "parcel", "testResult", "certififcation"].includes(this.dao.name)) {
                 res.status(403).send("Unauthorized")
-            if(!await isAdminToken(req.decodedToken))
+                return
+            }
+            if(!await isAdminToken(req.decodedToken)) {
                 res.status(403).send("Unauthorized")
+                return
+            }
             let id = req.params.id
             let view = "file"
             let item = await CRUDBL.getInstance().loadOne(this.dao, view, id)
