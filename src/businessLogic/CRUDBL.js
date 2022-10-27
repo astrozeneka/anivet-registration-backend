@@ -18,6 +18,7 @@ const PaymentReceiptDAO = require("../dao/crud/PaymentReceiptDAO");
 const TestSampleDAO = require("../dao/crud/TestSampleDAO");
 const SampleParcelDAO = require("../dao/crud/SampleParcelDAO");
 const assertNotNull = require("../utils/validator/assertNotNull");
+const TestResultDAO = require("../dao/crud/TestResultDAO");
 
 class CRUDBL {
     static instance = null;
@@ -538,13 +539,60 @@ class CRUDBL {
 
     testResult = {
         async insert(raw){
+            // A little trick (will be probably be deprecated later
+            raw.sciDoc.file = raw.file // Image will be ok too
+            raw.sciDoc.triggererId = raw.triggererId // Triggerer should be passed to the related class
 
+            let e = {}
+            assertNotEmpty(raw.sciDoc, "reference", e)
+            assertNotNull(raw.sciDoc, "testSampleId", e)
+            assertNotEmptyFile(raw, "file", e)
+            if(!lodash.isEmpty(e)) return {errors: e}
+
+            // Upload document
+            raw.sciDoc.type = "test-result"
+            let doc = (await CRUDBL.getInstance().sciDoc.insert(raw.sciDoc))
+            if(doc.hasOwnProperty('errors')) return {errors: doc.errors}
+            else doc = doc.object
+
+            // As usual, patch values
+            let d = TestResultDAO.getInstance().raw_to_model(raw)
+            d.sciDocId = doc.id
+            await TestResultDAO.getInstance().add(d)
+
+            return {object: d}
         },
         async update(raw){
+            raw.sciDoc.file = raw.file
 
+            // Update doc
+            let doc = await CRUDBL.getInstance().sciDoc.update(raw.sciDoc)
+            if(doc.hasOwnProperty('errors')) return {errors: doc.errors}
+            else doc = doc.object
+
+            // Patch values
+            let old = TestResultDAO.getInstance().model_to_raw[""](
+                await TestResultDAO.getInstance().getOne("", raw.id)
+            )
+            for (const key in raw) old[key] = raw[key] || old[key]
+            let m = TestResultDAO.getInstance().raw_to_model(old)
+            await TestResultDAO.getInstance().update(m)
+
+            return {object: m}
         },
-        async delete(raw){
+        async delete(raw){ // Second generation deletion BL function
+            // Fetch item data
+            let m = await TestResultDAO.getInstance().getOne("", raw.id)
 
+            // delete related
+            await CRUDBL.getInstance().sciDoc.delete({id: m.sciDocId})
+
+            // Delete item
+            let u = await TestResultDAO.getInstance().delete(m)
+            if(u > 0)
+                return {affectedRows: u}
+            else
+                return {errors: {"form": "DELETION_ERROR"}}
         }
     }
 

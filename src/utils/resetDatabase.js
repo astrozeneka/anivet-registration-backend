@@ -33,6 +33,7 @@ const TestOrderDAO = require("../dao/crud/TestOrderDAO")
 const SciDocDAO = require("../dao/crud/SciDocDAO")
 const FileDAO = require("../dao/crud/FileDAO");
 const SampleParcelDAO = require("../dao/crud/SampleParcelDAO")
+const TestResultDAO = require("../dao/crud/TestResultDAO");
 
 
 async function resetDatabase(){
@@ -55,7 +56,9 @@ async function resetDatabase(){
     let prd = PaymentReceiptDAO.getInstance()
     let spd = SampleParcelDAO.getInstance()
     let scd = SciDocDAO.getInstance()
+    let trd = TestResultDAO.getInstance()
 
+    await trd.destroyTable()
     await scd.destroyTable()
     await spd.destroyTable()
     await prd.destroyTable()
@@ -94,6 +97,7 @@ async function resetDatabase(){
     await prd.buildTable() // Payment Receipt
     await spd.buildTable() // Sample Barcel (depends on BaseMember and Sample)
     await scd.buildTable() // Scientific Doc
+    await trd.buildTable() // TestResult documents (related to sci-doc)
 }
 
 module.exports = resetDatabase

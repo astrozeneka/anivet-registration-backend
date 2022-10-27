@@ -143,6 +143,7 @@ class SciDocDAO extends BaseCrudDAO{
         o.id = raw.id // or update (important)
         o.reference = raw.reference
         o.type = raw.type
+        o.testSampleId = raw.testSampleId
         o.triggererId = raw.triggererId
         o.date = raw.date
         o.fileId = raw.fileId

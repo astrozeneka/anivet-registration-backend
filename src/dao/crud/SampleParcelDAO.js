@@ -144,7 +144,7 @@ class SampleParcelDAO extends BaseCrudDAO{
                 m.reference, m.deliveryService, m.testSampleId, m.triggererId, m.date, m.fileId
             ]
         )
-        m.d = d.insertId
+        m.id = d.insertId
         return m
     }
 
