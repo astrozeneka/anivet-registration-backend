@@ -28,7 +28,29 @@ class BaseCrudDAO {
             view = "" // The default view
         let viewName = this.name + "_" + view
         let range = (offset!=undefined&&limit!=undefined)?` LIMIT ${limit} OFFSET ${offset}`:``
-        return await sqlQueryMultiple(`SELECT *, ${this.sql_search_string[""]} AS s FROM ${viewName} HAVING s LIKE ? ${range}`, [`%${searchQuery.q.toLowerCase()}%`], this.sql_to_model[view])
+
+
+        // To recheck again, should be ok
+        let searchString, sql, p0
+        if(searchQuery.q instanceof Object){
+            for (const key in searchQuery.q){
+                searchString = this.sql_search_string[key]
+                searchQuery.q = searchQuery.q[key]
+                break
+            }
+            sql = `SELECT *, ${searchString} AS s FROM ${viewName} HAVING s=? ${range}`
+            p0 = `${searchQuery.q}`
+            if(searchQuery.q == null)
+                sql = `SELECT *, ${searchString} AS s FROM ${viewName} HAVING s IS NULL ${range}`
+
+        }else{
+            searchString = this.sql_search_string[""]
+            sql = `SELECT *, ${searchString} AS s FROM ${viewName} HAVING s LIKE ? ${range}`
+            p0 = `%${searchQuery.q.toLowerCase()}%`
+        }
+
+
+        return await sqlQueryMultiple(sql, [p0], this.sql_to_model[view])
     }
 
     async getOne(view, id){

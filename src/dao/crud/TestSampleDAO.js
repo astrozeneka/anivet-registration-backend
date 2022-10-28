@@ -37,9 +37,9 @@ class TestSampleDAO extends BaseCrudDAO{
             "   testSample_progress INT(6) UNSIGNED DEFAULT 0," +
             "   testSample_validationNoteId INT(6) UNSIGNED," +
             "   testSample_imageId INT(6) UNSIGNED NULL,"+ // The step used for tracking
-            "   CONSTRAINT `fk_testOrderId` FOREIGN KEY (testSample_testOrderId) REFERENCES testOrder (testOrder_id) ON DELETE CASCADE," +
-            "   CONSTRAINT `fk_trackingTypeId_ts` FOREIGN KEY (testSample_trackingTypeId) REFERENCES trackingType (trackingType_id) ON DELETE CASCADE," +
-            "   CONSTRAINT `fk_testSample_validationNoteId` FOREIGN KEY (testSample_validationNoteId) REFERENCES validationNote (validationNote_id) ON DELETE CASCADE," +
+            "   CONSTRAINT `fk_testOrderId` FOREIGN KEY (testSample_testOrderId) REFERENCES testOrder (testOrder_id) ON DELETE SET NULL," +
+            "   CONSTRAINT `fk_trackingTypeId_ts` FOREIGN KEY (testSample_trackingTypeId) REFERENCES trackingType (trackingType_id) ON DELETE SET NULL," +
+            "   CONSTRAINT `fk_testSample_validationNoteId` FOREIGN KEY (testSample_validationNoteId) REFERENCES validationNote (validationNote_id) ON DELETE SET NULL," +
             "   CONSTRAINT `fk_testSample_imageId` FOREIGN KEY (testSample_imageId) REFERENCES file (file_id) ON DELETE SET NULL" +
             ")ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;")
 
@@ -65,29 +65,13 @@ class TestSampleDAO extends BaseCrudDAO{
             "   SELECT * FROM testSample_")
 
         // TestOrderDAO
-        await sqlExecute("" +
-            "CREATE VIEW `testOrder_validation` AS" +
-            "   SELECT  *, " +
-            "           COUNT(testSample_id) AS testOrder_sampleCount" +
-            "   FROM testOrder" +
-            "   LEFT JOIN `baseMember` ON baseMember_id=testOrder_memberId" +
-            "   LEFT JOIN `validationNote` ON testOrder_validationNoteId=validationNote_id" +
-            "   LEFT JOIN testSample ON testSample_testOrderId=testOrder_id" +
-            "       GROUP BY testOrder_id")
-        await sqlExecute("" +
-            "CREATE VIEW `testOrder_validation_details` AS" +
-            "   SELECT * FROM testOrder_validation")
+        await TestOrderDAO.getInstance()._buildTable()
     }
 
     async destroyTable(){
 
         // Views for TestOrder
-        await sqlExecute("" +
-            "DROP VIEW IF EXISTS `testOrder_validation_details`")
-        await sqlExecute("" +
-            "DROP VIEW IF EXISTS `testOrder_validation`")
-        await sqlExecute("" +
-            "DROP VIEW IF EXISTS `testOrder_`")
+        await TestOrderDAO.getInstance()._destroyTable()
 
         // Views
         await sqlExecute("DROP VIEW IF EXISTS `testSample_edit`")
@@ -100,7 +84,8 @@ class TestSampleDAO extends BaseCrudDAO{
     }
 
     sql_search_string={
-        "":"LOWER(CONCAT(testSample_animal, ' ', testSample_type, ' ', testSample_petId, ' ', testSample_petSpecie, ' '))"
+        "":"LOWER(CONCAT(testSample_animal, ' ', testSample_type, ' ', testSample_petId, ' ', testSample_petSpecie, ' '))",
+        "testOrderId":"testSample_testOrderId"
     }
 
     sql_to_model={

@@ -19,6 +19,7 @@ const TestSampleDAO = require("../dao/crud/TestSampleDAO");
 const SampleParcelDAO = require("../dao/crud/SampleParcelDAO");
 const assertNotNull = require("../utils/validator/assertNotNull");
 const TestResultDAO = require("../dao/crud/TestResultDAO");
+const TestOrderDAO = require("../dao/crud/TestOrderDAO");
 
 class CRUDBL {
     static instance = null;
@@ -475,13 +476,57 @@ class CRUDBL {
 
     testOrder = {
         async insert(raw){
+            let e = {}
+            raw.memberId = raw.triggererId
+            // ไม่มี validation
 
+            // First, create entity
+            let d = TestOrderDAO.getInstance().raw_to_model(raw)
+            await TestOrderDAO.getInstance().add(d)
+
+            // Update test sample then
+            for (const sampleId of raw.samples){
+                let s = await TestSampleDAO.getInstance().getOne("", sampleId)
+                s.testOrderId = d.id
+                await TestSampleDAO.getInstance().update(s)
+            }
+
+            return {object: d}
         },
         async update(raw){
+            console.log()
 
+            // Update entity first
+            let old = TestOrderDAO.getInstance().model_to_raw[""](
+                await TestOrderDAO.getInstance().getOne("", raw.id)
+            )
+            for (const key in raw) old[key] = raw[key] || old[key]
+            let m = TestOrderDAO.getInstance().raw_to_model(old)
+            await TestOrderDAO.getInstance().update(m)
+
+            // Dissociate some testSamples
+            for(const sampleId of raw.dissociatedSamples){
+                let s = await TestSampleDAO.getInstance().getOne("", sampleId)
+                s.testOrderId = null
+                await TestSampleDAO.getInstance().update(s)
+            }
+
+            // Associate some testSamples
+            for(const sampleId of raw.associatedSamples){
+                let s = await TestSampleDAO.getInstance().getOne("", sampleId)
+                s.testOrderId = m.id
+                await TestSampleDAO.getInstance().update(s)
+            }
+
+            return {object: m}
         },
         async delete(raw){
-
+            let m = TestOrderDAO.getInstance().raw_to_model(raw)
+            let u = await TestOrderDAO.getInstance().delete(m)
+            if(u > 0)
+                return {affectedRows: u}
+            else
+                return {errors: {"form": "DELETION_ERROR"}}
         }
     }
 
@@ -542,6 +587,7 @@ class CRUDBL {
             // A little trick (will be probably be deprecated later
             raw.sciDoc.file = raw.file // Image will be ok too
             raw.sciDoc.triggererId = raw.triggererId // Triggerer should be passed to the related class
+            raw.sciDoc.date = raw.date
 
             let e = {}
             assertNotEmpty(raw.sciDoc, "reference", e)
