@@ -20,6 +20,8 @@ const SampleParcelDAO = require("../dao/crud/SampleParcelDAO");
 const assertNotNull = require("../utils/validator/assertNotNull");
 const TestResultDAO = require("../dao/crud/TestResultDAO");
 const TestOrderDAO = require("../dao/crud/TestOrderDAO");
+const ValidationNoteDAO = require("../dao/crud/ValidationNoteDAO");
+const CertificationDAO = require("../dao/crud/CertificationDAO");
 
 class CRUDBL {
     static instance = null;
@@ -644,13 +646,71 @@ class CRUDBL {
 
     certification = {
         async insert(raw){
+            console.log()
+            raw.validationNote.triggererId = raw.triggererId
+            raw.validationNote.date = raw.date
 
+            let e = {}
+            assertNotNull(raw, "testResultId", e)
+            assertNotEmptyFile(raw, "file")
+            if(!lodash.isEmpty(e)) return {errors: e}
+
+            // First add the validation note
+            let v = ValidationNoteDAO.getInstance().raw_to_model(raw.validationNote)
+            await ValidationNoteDAO.getInstance().add(v)
+            raw.validationNoteId = v.id
+
+            // Save file to DB
+            let f = FileDAO.getInstance().raw_to_model(raw.file)
+            await FileDAO.getInstance().add(f)
+            raw.fileId = f.id
+
+            // Add Entity
+            let c = CertificationDAO.getInstance().raw_to_model(raw)
+            await CertificationDAO.getInstance().add(c)
+
+            return {object: c}
         },
         async update(raw){
+            console.log()
+            raw.validationNote.triggererId = raw.triggererId
+            raw.validationNote.date = raw.date
 
+            let e = {}
+            assertNotNull(raw, "testResultId", e)
+            if(!lodash.isEmpty(e)) return {errors: e}
+
+            // Update validation note
+            let old_v = ValidationNoteDAO.getInstance().model_to_raw[""](
+                await ValidationNoteDAO.getInstance().getOne("", raw.validationNote.id))
+            for (const key in raw.validationNote) old_v[key] = raw.validationNote[key] || old_v[key]
+            let v = ValidationNoteDAO.getInstance().raw_to_model(old_v)
+            await ValidationNoteDAO.getInstance().update(v)
+            raw.validationNoteId = v.id // Very important
+
+            // Update entity
+            let old = CertificationDAO.getInstance().model_to_raw[""](
+                await CertificationDAO.getInstance().getOne("", raw.id))
+            for (const key in raw) old[key] = raw[key] || old[key]
+            let m = CertificationDAO.getInstance().raw_to_model(old)
+
+            // Update file
+            if(raw.file){
+                await FileDAO.getInstance().delete({id: old.fileId})
+                let f = await FileDAO.getInstance().raw_to_model(raw.file)
+                await FileDAO.getInstance().add(f)
+                m.fileId = f.id // Very important
+            }
+            await CertificationDAO.getInstance().update(m)
+            return {object: m}
         },
         async delete(raw){
-
+            let m = CertificationDAO.getInstance().raw_to_model(raw)
+            let u = await CertificationDAO.getInstance().delete(m)
+            if(u > 0)
+                return {affectedRows: u}
+            else
+                return {errors: {"form": "DELETION_ERROR"}}
         }
     }
 }

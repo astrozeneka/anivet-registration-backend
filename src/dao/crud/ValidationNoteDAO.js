@@ -16,7 +16,7 @@ class ValidationNoteDAO extends BaseCrudDAO{
         this.instance = null;
     }
 
-    name = "baseMember"
+    name = "validationNote"
 
     async buildTable(){
         await sqlExecute("" +
@@ -24,7 +24,8 @@ class ValidationNoteDAO extends BaseCrudDAO{
             "   validationNote_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY," +
             "   validationNote_validated BOOLEAN," +
             "   validationNote_message TEXT," +
-            "   validationNote_date DATETIME" +
+            "   validationNote_date DATETIME," +
+            "   validationNote_triggererId INT(6) UNSIGNED" +
             ")ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;;")
 
         // Views
@@ -72,6 +73,7 @@ class ValidationNoteDAO extends BaseCrudDAO{
         o.validated = raw.validated
         o.message = raw.message
         o.date = raw.date
+        o.triggererId = raw.triggererId
         return o
     }
 
@@ -87,9 +89,9 @@ class ValidationNoteDAO extends BaseCrudDAO{
             m.date = m.date.toMysqlFormat()
         let d = await sqlExecute("" +
             "INSERT INTO `validationNote` (" +
-            "validationNote_validated, validationNote_message, validationNote_date)" +
-            " VALUES (?, ?, ?)", [
-            m.validated, m.message, m.date
+            "validationNote_validated, validationNote_message, validationNote_date, validationNote_triggererId)" +
+            " VALUES (?, ?, ?, ?)", [
+            m.validated, m.message, m.date, m.triggererId
         ])
         m.id = d.insertId
         return d
@@ -100,9 +102,10 @@ class ValidationNoteDAO extends BaseCrudDAO{
             "UPDATE `validationNote` set" +
             "   validationNote_validated=?," +
             "   validationNote_message=?," +
-            "   validationNote_date=?" +
+            "   validationNote_date=?," +
+            "   validationNote_triggererId=?" +
             " WHERE validationNote_id=?",
-            [m.validated, m.message, m.date, m.id])
+            [m.validated, m.message, m.date, m.triggererId, m.id])
     }
 }
 module.exports = ValidationNoteDAO

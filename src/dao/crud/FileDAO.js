@@ -43,11 +43,16 @@ class FileDAO extends BaseCrudDAO {
     }
 
     sql_to_model = {
-        "": (r)=>{
+        "": (r, prefix='file')=>{
             let o = new File()
+            o.id = r[`${prefix}_id`]
+            o.type = r[`${prefix}_type`]
+            o.name = r[`${prefix}_name`]
+            /*
             o.id = r.file_id
             o.type = r.file_type
             o.name = r.file_name
+            */
             return o
         },
         "content": (r)=>{

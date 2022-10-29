@@ -75,8 +75,19 @@ class BaseMemberDAO extends BaseCrudDAO{
     }
 
     sql_to_model={
-        "": (r)=>{
-            let o = new BaseMember()
+        "": (r, prefix='baseMember')=>{
+            let o = new BaseMember() // TO RECHECK, should work
+            o.type = r[`${prefix}_type`]
+            o.id = r[`${prefix}_id`]
+            o.username = r[`${prefix}_username`]
+            o.password = r[`${prefix}_password`]
+            o.website = r[`${prefix}_website`]
+            o.subscribe = r[`${prefix}_subscribe`]
+            o.name1 = r[`${prefix}_name1`]
+            o.name2 = r[`${prefix}_name2`]
+            o.phone = r[`${prefix}_phone`]
+            o.email = r[`${prefix}_email`]
+            /*
             o.type = r.baseMember_type
             o.id = r.baseMember_id
             o.username = r.baseMember_username
@@ -87,6 +98,7 @@ class BaseMemberDAO extends BaseCrudDAO{
             o.name2 = r.baseMember_name2
             o.phone = r.baseMember_phone
             o.email = r.baseMember_email
+            */
             return o
         },
         "validation": (r)=>{ // Build model from SQL row
