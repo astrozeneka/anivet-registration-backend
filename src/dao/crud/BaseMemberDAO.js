@@ -5,6 +5,7 @@ const BaseMember = require("../../model/BaseMember");
 const Address = require("../../model/Address");
 const sqlQueryOne = require("../../utils/sqlQueryOne");
 const Breeder = require("../../model/Breeder");
+const AddressDAO = require("./AddressDAO");
 
 class BaseMemberDAO extends BaseCrudDAO{
     static instance = null;
@@ -53,6 +54,10 @@ class BaseMemberDAO extends BaseCrudDAO{
         await sqlExecute("" +
             "CREATE VIEW `baseMember_validation_details` AS" +
             "   SELECT * FROM `baseMember_validation`")
+        await sqlExecute("" +
+            "CREATE VIEW `baseMember_edit` AS" +
+            "   SELECT * FROM `baseMember`" +
+            "   LEFT JOIN `address` ON address_baseMemberId=baseMember_id")
 
         // Constraint
         await sqlExecute("" +
@@ -64,6 +69,7 @@ class BaseMemberDAO extends BaseCrudDAO{
         await sqlExecute("ALTER TABLE `address` DROP FOREIGN KEY `fk_baseMemberId`")
 
         // Views
+        await sqlExecute("DROP VIEW IF EXISTS `baseMember_edit`")
         await sqlExecute("DROP VIEW IF EXISTS `baseMember_validation_details`")
         await sqlExecute("DROP VIEW IF EXISTS  `baseMember_validation`")
         await sqlExecute("DROP VIEW IF EXISTS  `baseMember_`")
@@ -133,6 +139,10 @@ class BaseMemberDAO extends BaseCrudDAO{
             o.validationNoteValidated = r.validationNote_validated
             o.validated = o.validationNoteValidated
             return o
+        },
+        "edit": (r)=>{
+            let o = this.sql_to_model["validation_details"](r)
+            return o
         }
     }
 
@@ -141,7 +151,7 @@ class BaseMemberDAO extends BaseCrudDAO{
 
     model_to_raw={
         "": (m)=>{
-            return {
+            let o = {
                 id: m.id,
                 type: m.type,
                 username: m.username,
@@ -153,6 +163,7 @@ class BaseMemberDAO extends BaseCrudDAO{
                 phone: m.phone,
                 email: m.email
             }
+            return o
         },
         "validation": (m)=>{ // To be sent via JSON
             return {
@@ -183,6 +194,13 @@ class BaseMemberDAO extends BaseCrudDAO{
                 validationNoteValidated: m.validated,
                 validated: m.validated
             }
+        },
+        edit: (m)=>{
+            let o = {
+                ...this.model_to_raw["validation_details"](m),
+                address: AddressDAO.getInstance().model_to_raw[""](m.address)
+            }
+            return o
         }
     }
 

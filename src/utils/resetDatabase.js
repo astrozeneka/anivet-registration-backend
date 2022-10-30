@@ -35,7 +35,7 @@ const FileDAO = require("../dao/crud/FileDAO");
 const SampleParcelDAO = require("../dao/crud/SampleParcelDAO")
 const TestResultDAO = require("../dao/crud/TestResultDAO");
 const CertificationDAO = require("../dao/crud/CertificationDAO");
-
+const TestTypeDAO = require("../dao/crud/TestTypeDAO")
 
 async function resetDatabase(){
 
@@ -59,6 +59,7 @@ async function resetDatabase(){
     let scd = SciDocDAO.getInstance()
     let trd = TestResultDAO.getInstance()
     let ced = CertificationDAO.getInstance()
+    let tstd = TestTypeDAO.getInstance()
 
     await ced.destroyTable()
     await trd.destroyTable()
@@ -68,6 +69,7 @@ async function resetDatabase(){
     await md.destroyTable()
     await od.destroyTable()
     await tsd.destroyTable()
+    await tstd.destroyTable()
     await tod.destroyTable()
     await ssd.destroyTable()
     await ttd.destroyTable()
@@ -94,6 +96,7 @@ async function resetDatabase(){
     await ttd.buildTable()
     await ssd.buildTable()
     await tod.buildTable() // TestOrder Table
+    await tstd.buildTable() // TestType Table
     await tsd.buildTable() // TestSample Table
     await od.buildTable() // Owner Table
     await md.buildTable() // Message table (includes notification)

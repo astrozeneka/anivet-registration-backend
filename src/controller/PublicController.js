@@ -11,6 +11,7 @@ const TimeBL = require("../businessLogic/TimeBL");
 const BaseMemberDAO = require("../dao/crud/BaseMemberDAO");
 const TestSampleDAO = require("../dao/crud/TestSampleDAO");
 const CRUDBL = require("../businessLogic/CRUDBL");
+const TestTypeDAO = require("../dao/crud/TestTypeDAO");
 
 /**
  * The public controller does not require authentication
@@ -116,8 +117,10 @@ class PublicController extends BaseController{
             req.body.date = TimeBL.getInstance().time
             let output = await RegistrationBL.getInstance().post_account(req.body)
             res.setHeader('Content-Type', 'application/json')
-            if(!output.hasOwnProperty("object"))
-                res.send(JSON.stringify(u)) // Have errors
+            if(!output.hasOwnProperty("object")) {
+                res.send(JSON.stringify(output)) // Have errors
+                return
+            }
             let u = output.object
             // After, the system give a token to the user
             let accessToken = jwt.sign(BaseMemberDAO.getInstance().model_to_raw[""](u), process.env.TOKEN_SECRET, {expiresIn: 3600})
@@ -159,6 +162,36 @@ class PublicController extends BaseController{
             res.send(JSON.stringify(output))
         })
 
+        // Relatively easy script
+        // But with a good security system
+        this.app.get("/registration/test-type", async(req, res)=>{
+            // The first four lines should be inserted in a middleware script
+            const token = req.headers.authorization.split(' ')[1]
+            const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET)
+            req.body.triggererId = decodedToken.id
+            req.body.date = TimeBL.getInstance().time
+            // Relatively easy script
+            let list = await CRUDBL.getInstance().loadView(TestTypeDAO.getInstance(), "", undefined, undefined)
+            let output = []
+            list.forEach((item)=>output.push(
+                TestTypeDAO.getInstance().model_to_raw[""](item)
+            ))
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(output))
+        })
+
+        this.app.get("/registration/base-member", async(req, res)=>{
+            // The first four lines should be inserted in a middleware script
+            const token = req.headers.authorization.split(' ')[1]
+            const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET)
+            req.body.triggererId = decodedToken.id
+            req.body.date = TimeBL.getInstance().time
+            let item = await CRUDBL.getInstance().loadOne(BaseMemberDAO.getInstance(), "edit", req.body.triggererId)
+            let output = await BaseMemberDAO.getInstance().model_to_raw["edit"](item)
+            res.setHeader('Content-Type', 'application/json')
+            res.send(JSON.stringify(output))
+        })
+
         this.app.get("/registration/test-sample/:id", async(req, res)=>{
             const token = req.headers.authorization.split(' ')[1]
             const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET)
@@ -196,6 +229,22 @@ class PublicController extends BaseController{
             }
             res.setHeader('Content-Type', 'application/json')
             res.send(JSON.stringify(o))
+        })
+
+        this.app.post("/registration/payment-receipt", async(req, res)=>{
+            // The first four lines should be inserted in a middleware script
+            const token = req.headers.authorization.split(' ')[1]
+            const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET)
+            req.body.triggererId = decodedToken.id
+            req.body.date = TimeBL.getInstance().time
+            let u = await RegistrationBL.getInstance().post_paymentReceipt(req.body)
+            res.setHeader('Content-Type', 'application/json')
+            if(!u.hasOwnProperty("entity"))
+                res.send(JSON.stringify(u)) // Have errors
+            else
+                res.send(JSON.stringify({
+                    entity: BaseMemberDAO.getInstance().model_to_raw[""](u.entity)
+                }))
         })
     }
 

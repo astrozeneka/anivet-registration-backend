@@ -7,6 +7,7 @@ const TrackingTypeDAO = require("../dao/TrackingTypeDAO");
 const SampleStatus = require("../model/SampleStatus");
 const SampleStatusDAO = require("../dao/SampleStatusDAO");
 const DatabaseManager = require("../service/DatabaseManager");
+const TestTypeDAO = require("../dao/crud/TestTypeDAO");
 
 /**
  * This class is used to install all tables of the database
@@ -88,6 +89,17 @@ class InstallationBL extends BaseBL {
         })()
     }
 
+    async initSampleType(){
+        let d = TestTypeDAO.getInstance()
+
+        await d.add(d.raw_to_model({label: "Sexing", slug: "sexing", description: "Lorem ipsum", price: 100, imageId: null}))
+        await d.add(d.raw_to_model({label: "Blood Test (Type A)", slug: "blood-a", description: "Lorem ipsum", price: 110, imageId: null}))
+        await d.add(d.raw_to_model({label: "Blood Test (Type B)", slug: "blood-b", description: "Lorem ipsum", price: 110, imageId: null}))
+        await d.add(d.raw_to_model({label: "Feather Test", slug: "feather", description: "Lorem ipsum", price: 90, imageId: null}))
+        await d.add(d.raw_to_model({label: "Saliva Test", slug: "saliva", description: "Lorem ipsum", price: 80, imageId: null}))
+
+    }
+
     /**
      * All DAO used for all businessLogicLayers will be instatiated
      * via this function
@@ -105,6 +117,7 @@ class InstallationBL extends BaseBL {
 
         // Add data that will be used
         await this.initSampleState();
+        await this.initSampleType()
     }
 }
 module.exports = InstallationBL

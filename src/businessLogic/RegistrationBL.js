@@ -30,6 +30,7 @@ const assertNotEmptyFile = require("../utils/validator/assertNotEmptyFile");
 const TestOrderDAO = require("../dao/crud/TestOrderDAO");
 const TestSampleDAO = require("../dao/crud/TestSampleDAO");
 const CRUDBL = require("./CRUDBL");
+const AddressDAO = require("../dao/crud/AddressDAO");
 
 class RegistrationBL extends BaseBL {
     static instance = null;
@@ -435,20 +436,24 @@ class RegistrationBL extends BaseBL {
         assertNotEmpty(raw, "name2", e)
         assertValidPhone(raw, "phone", e)
         assertValidEmail(raw, "email", e)
-        assertNotEmpty(raw, "address1", e)
-        assertNotEmpty(raw, "country", e)
-        assertNotEmpty(raw, "postcode", e)
+        assertNotEmpty(raw.address, "address1", e)
+        assertNotEmpty(raw.address, "country", e)
+        assertNotEmpty(raw.address, "postcode", e)
         if(!lodash.isEmpty(e)) return {errors: e}
 
         let m = BaseMemberDAO.getInstance().raw_to_model(raw)
         await BaseMemberDAO.getInstance().add(m)
+
+        raw.address.baseMemberId = m.id
+        let a = AddressDAO.getInstance().raw_to_model(raw.address)
+        await AddressDAO.getInstance().add(a)
 
         return {object: m}
     }
 
     async post_testSample(raw){
         let e = {}
-        assertNotEmpty(raw, "type", e)
+        //assertNotEmpty(raw, "type", e)
         assertNotEmpty(raw, "animal", e)
         assertNotEmpty(raw, "petSpecie", e)
         assertNotEmptyFile(raw, "image", e)
@@ -505,6 +510,13 @@ class RegistrationBL extends BaseBL {
 
     async put_testSample(raw){
         let o = await CRUDBL.getInstance().testSample.update(raw)
+        return {entity: o.object}
+    }
+
+    async post_paymentReceipt(raw){
+        let o = await CRUDBL.getInstance().paymentReceipt.insert(raw)
+        if(o.hasOwnProperty('errors')) return o
+
         return {entity: o.object}
     }
 }

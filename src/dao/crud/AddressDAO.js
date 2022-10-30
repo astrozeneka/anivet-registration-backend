@@ -90,6 +90,7 @@ class AddressDAO {
         o.amphoe = raw.amphoe
         o.tambon = raw.tambon
         o.postcode = raw.postcode
+        o.baseMemberId = raw.baseMemberId
         return o
     }
 

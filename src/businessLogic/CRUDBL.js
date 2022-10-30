@@ -535,7 +535,7 @@ class CRUDBL {
     testSample = {
         async insert(raw){
             let e = {}
-            assertNotEmpty(raw, "type", e)
+            //assertNotEmpty(raw, "type", e)
             assertNotEmpty(raw, "animal", e)
             assertNotEmpty(raw, "petSpecie", e)
             assertNotEmptyFile(raw, "image", e)

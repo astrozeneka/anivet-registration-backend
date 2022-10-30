@@ -6,6 +6,7 @@ const TestOrderDAO = require("./TestOrderDAO");
 const ValidationNoteDAO = require("./ValidationNoteDAO");
 const sqlQueryMultiple = require("../../utils/sqlQueryMultiple");
 const FileDAO = require("./FileDAO");
+const TestTypeDAO = require("./TestTypeDAO");
 
 class TestSampleDAO extends BaseCrudDAO{
     static instance = null;
@@ -36,30 +37,35 @@ class TestSampleDAO extends BaseCrudDAO{
             "   testSample_trackingTypeId INT(6) UNSIGNED," +
             "   testSample_progress INT(6) UNSIGNED DEFAULT 0," +
             "   testSample_validationNoteId INT(6) UNSIGNED," +
-            "   testSample_imageId INT(6) UNSIGNED NULL,"+ // The step used for tracking
+            "   testSample_imageId INT(6) UNSIGNED NULL," +
+            "   testSample_testTypeId INT(6) UNSIGNED NULL,"+ // The step used for tracking
             "   CONSTRAINT `fk_testOrderId` FOREIGN KEY (testSample_testOrderId) REFERENCES testOrder (testOrder_id) ON DELETE SET NULL," +
             "   CONSTRAINT `fk_trackingTypeId_ts` FOREIGN KEY (testSample_trackingTypeId) REFERENCES trackingType (trackingType_id) ON DELETE SET NULL," +
             "   CONSTRAINT `fk_testSample_validationNoteId` FOREIGN KEY (testSample_validationNoteId) REFERENCES validationNote (validationNote_id) ON DELETE SET NULL," +
-            "   CONSTRAINT `fk_testSample_imageId` FOREIGN KEY (testSample_imageId) REFERENCES file (file_id) ON DELETE SET NULL" +
+            "   CONSTRAINT `fk_testSample_imageId` FOREIGN KEY (testSample_imageId) REFERENCES file (file_id) ON DELETE SET NULL," +
+            "   CONSTRAINT `fk_testSample_testTypeId` FOREIGN KEY (testSample_testTypeId) REFERENCES testType (testType_id) ON DELETE SET NULL" +
             ")ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;")
 
         // View
         await sqlExecute("" +
             "CREATE VIEW `testSample_` AS" +
             "   SELECT * FROM testSample" +
-            "   LEFT JOIN `file` ON file_id=testSample_imageId")
+            "   LEFT JOIN `file` ON file_id=testSample_imageId" +
+            "   LEFT JOIN `testType` ON testType_id=testSample_testTypeId")
         await sqlExecute("" +
             "CREATE VIEW `testSample_validation` AS" +
             "   SELECT * FROM testSample" +
             "   LEFT JOIN `testOrder` ON testOrder_id=testSample_testOrderId" +
             "   LEFT JOIN `baseMember` ON baseMember_id=testOrder_memberId" +
-            "   LEFT JOIN `validationNote` ON validationNote_id=testSample_validationNoteId")
+            "   LEFT JOIN `validationNote` ON validationNote_id=testSample_validationNoteId" +
+            "   LEFT JOIN `testType` ON testType_id=testSample_testTypeId")
         await sqlExecute("" +
             "CREATE VIEW `testSample_validation_details` AS" +
             "   SELECT * FROM testSample" +
             "   LEFT JOIN `testOrder` ON testOrder_id=testSample_testOrderId" +
             "   LEFT JOIN `baseMember` ON baseMember_id=testOrder_memberId" +
-            "   LEFT JOIN `validationNote` ON validationNote_id=testSample_validationNoteId")
+            "   LEFT JOIN `validationNote` ON validationNote_id=testSample_validationNoteId" +
+            "   LEFT JOIN `testType` ON testType_id=testSample_testTypeId")
         await sqlExecute("" +
             "CREATE VIEW `testSample_edit` AS" +
             "   SELECT * FROM testSample_")
@@ -105,6 +111,7 @@ class TestSampleDAO extends BaseCrudDAO{
             o.validationNoteId = r.testSample_validationNoteId
             o.imageId = r.testSample_imageId
             o.image = FileDAO.getInstance().sql_to_model["content"](r)
+            o.testType = TestTypeDAO.getInstance().sql_to_model[""](r)
             return o
         },
         "validation": (r)=>{
@@ -140,7 +147,8 @@ class TestSampleDAO extends BaseCrudDAO{
                 progress: m.progress,
                 validationNoteId: m.validationNoteId,
                 imageId: m.imageId,
-                image: FileDAO.getInstance().model_to_raw["content"](m.image)
+                image: FileDAO.getInstance().model_to_raw["content"](m.image),
+                testType: TestTypeDAO.getInstance().model_to_raw[""](m.testType)
             }
             return o
         },
@@ -181,14 +189,15 @@ class TestSampleDAO extends BaseCrudDAO{
         o.trackingTypeId = raw.trackingTypeId
         o.progress = raw.trackingTypeId
         o.validationNoteId = raw.validationNoteId
+        o.testTypeId = raw.testTypeId
         return o
     }
 
     async add(m){
         let d = await sqlExecute("" +
             "INSERT INTO `testSample` (testSample_animal, testSample_type, testSample_petId, " +
-            "testSample_petSpecie, testSample_test, testSample_sampleType, testSample_image, testSample_testOrderId, testSample_imageId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [
-            m.animal, m.type, m.petId, m.petSpecie, m.test, m.sampleType, null, m.testOrderId, m.imageId
+            "testSample_petSpecie, testSample_test, testSample_sampleType, testSample_image, testSample_testOrderId, testSample_imageId, testSample_testTypeId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+            m.animal, m.type, m.petId, m.petSpecie, m.test, m.sampleType, null, m.testOrderId, m.imageId, m.testTypeId
         ])
         m.id = d.insertId
         return m
@@ -207,10 +216,11 @@ class TestSampleDAO extends BaseCrudDAO{
             "   testSample_testOrderId=?," +
             "   testSample_progress=?," +
             "   testSample_validationNoteId=?," +
-            "   testSample_imageId=?" +
+            "   testSample_imageId=?," +
+            "   testSample_testTypeId=?" +
             " WHERE testSample_id=?",
             [m.animal, m.type, m.petId, m.petSpecie, m.test, m.sampleType, null,
-                m.testOrderId, m.progress, m.validationNoteId, m.imageId, m.id])
+                m.testOrderId, m.progress, m.validationNoteId, m.imageId, m.testTypeId, m.id])
     }
 
     async getAllByTestOrderId(view, offset, limit, testOrderId){
