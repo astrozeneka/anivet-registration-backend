@@ -4,6 +4,7 @@ const sqlQueryMultiple = require("../../utils/sqlQueryMultiple");
 const BaseMember = require("../../model/BaseMember");
 const Address = require("../../model/Address");
 const sqlQueryOne = require("../../utils/sqlQueryOne");
+const Breeder = require("../../model/Breeder");
 
 class BaseMemberDAO extends BaseCrudDAO{
     static instance = null;
@@ -185,6 +186,21 @@ class BaseMemberDAO extends BaseCrudDAO{
         }
     }
 
+    raw_to_model(raw){
+        let o = new BaseMember()
+        o.type = raw.type
+        o.id = raw.id
+        o.username = raw.username
+        o.website = raw.website
+        o.password = raw.password
+        o.subscribe = raw.subscribe
+        o.name1 = raw.name1
+        o.name2 = raw.name2
+        o.phone = raw.phone
+        o.email = raw.email
+        return o
+    }
+
     // To be inherited (make testset first)
     async getAll(view, offset, limit, searchQuery){
         if(view == undefined)
@@ -199,6 +215,18 @@ class BaseMemberDAO extends BaseCrudDAO{
             view = "" // The default view
         let viewName = this.name + "_" + view
         return await sqlQueryOne(`SELECT * FROM ${viewName} WHERE baseMember_id=?`, [id], this.sql_to_model[view])
+    }
+
+    async add(m){
+        let d = await sqlExecute(
+            "INSERT INTO `baseMember` (baseMember_username, baseMember_password, baseMember_website, baseMember_subscribe," +
+            "baseMember_name1, baseMember_name2, baseMember_phone, baseMember_email, baseMember_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+                m.username, m.password, m.website, m.subscribe,
+                m.name1, m.name2, m.phone, m.email, m.type
+            ]
+        )
+        m.id = d.insertId
+        return m
     }
 
     async update(m){

@@ -87,7 +87,8 @@ class TestOrderDAO extends BaseCrudDAO{
     }
 
     sql_search_string={
-        "": "LOWER(CONCAT(testOrder_id))"
+        "": "LOWER(CONCAT(testOrder_id))",
+        "memberId": "testOrder_memberId"
     }
 
     sql_to_model={

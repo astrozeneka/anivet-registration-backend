@@ -11,7 +11,6 @@ const Owner = require("../model/Owner");
 const OwnerDAO = require("../dao/OwnerDAO");
 const VetDAO = require("../dao/VetDAO");
 const Vet = require("../model/Vet");
-const BaseMemberDAO = require("../dao/BaseMemberDAO");
 const AdminDAO = require("../dao/AdminDAO");
 const Message = require("../model/Message");
 const MessageDAO = require("../dao/MessageDAO");
@@ -22,6 +21,15 @@ const PaymentReceipt = require("../model/PaymentReceipt");
 const PaymentReceiptDAO = require("../dao/PaymentReceiptDAO");
 const ValidationNote = require("../model/ValidationNote");
 const ValidationNoteDAO = require("../dao/ValidationNoteDAO");
+const assertNotEmpty = require("../utils/validator/assertNotEmpty");
+const assertValidPhone = require("../utils/validator/assertValidPhone");
+const assertValidEmail = require("../utils/validator/assertValidEmail");
+const lodash = require("lodash");
+const BaseMemberDAO = require("../dao/crud/BaseMemberDAO");
+const assertNotEmptyFile = require("../utils/validator/assertNotEmptyFile");
+const TestOrderDAO = require("../dao/crud/TestOrderDAO");
+const TestSampleDAO = require("../dao/crud/TestSampleDAO");
+const CRUDBL = require("./CRUDBL");
 
 class RegistrationBL extends BaseBL {
     static instance = null;
@@ -411,6 +419,93 @@ class RegistrationBL extends BaseBL {
         return {
             "object": receipt
         }
+    }
+
+
+    /**
+     *
+     *  NEW GENEERATION FUNCTIONS ARE HERE
+     *  ALL DEFINED ABOVE ARE NOT USED ANYMORE
+     *  THEY SHOULD BE REMOVED FROM HERE
+     *
+     */
+    async post_account(raw){
+        let e = {}
+        assertNotEmpty(raw, "name1", e)
+        assertNotEmpty(raw, "name2", e)
+        assertValidPhone(raw, "phone", e)
+        assertValidEmail(raw, "email", e)
+        assertNotEmpty(raw, "address1", e)
+        assertNotEmpty(raw, "country", e)
+        assertNotEmpty(raw, "postcode", e)
+        if(!lodash.isEmpty(e)) return {errors: e}
+
+        let m = BaseMemberDAO.getInstance().raw_to_model(raw)
+        await BaseMemberDAO.getInstance().add(m)
+
+        return {object: m}
+    }
+
+    async post_testSample(raw){
+        let e = {}
+        assertNotEmpty(raw, "type", e)
+        assertNotEmpty(raw, "animal", e)
+        assertNotEmpty(raw, "petSpecie", e)
+        assertNotEmptyFile(raw, "image", e)
+        if(!lodash.isEmpty(e)) return {errors: e}
+
+        // First, check if that person has testOrder
+        let query = {q: {memberId: raw.triggererId}}
+        let testOrders = await TestOrderDAO.getInstance().searchAll("", undefined, undefined, query)
+        if(testOrders.length > 1)
+            console.error("Error, user can have at maximum one registered testOrder")
+
+        let testOrder
+        if(testOrders.length == 0){
+            // First time
+            raw.testOrder = {
+                memberId: raw.triggererId,
+                date: raw.date
+            }
+            testOrder = TestOrderDAO.getInstance().raw_to_model(raw.testOrder)
+            await TestOrderDAO.getInstance().add(testOrder)
+        }else
+            testOrder = testOrders[0]
+        raw.testOrderId = testOrder.id // Not null
+
+
+        // Add testSample (using Internal BL Layer)
+        let o = await CRUDBL.getInstance().testSample.insert(raw)
+        if(o.hasOwnProperty('errors')) return o
+
+        return {entity: o.object}
+    }
+
+    async get_testSample(raw){
+        console.log()
+        // triggererData
+        let baseMember = await BaseMemberDAO.getInstance().getOne("", raw.triggererId)
+
+        let query = {q: {memberId: raw.triggererId}}
+        let testOrders = await TestOrderDAO.getInstance().searchAll("", undefined, undefined, query)
+        if(testOrders.length != 1)
+            console.error("INTERNAL ERROR : User should have registered exactly one order")
+
+        let testOrder = testOrders[0]
+        let query2 = {q: {testOrderId: testOrder.id}}
+        let testSamples = await TestSampleDAO.getInstance().searchAll("", undefined, undefined, query2)
+
+        return testSamples
+    }
+
+    async getOne_testSample(raw){
+        let testSample = await CRUDBL.getInstance().loadOne(TestSampleDAO.getInstance(), "edit", raw.id)
+        return testSample
+    }
+
+    async put_testSample(raw){
+        let o = await CRUDBL.getInstance().testSample.update(raw)
+        return {entity: o.object}
     }
 }
 module.exports = RegistrationBL
