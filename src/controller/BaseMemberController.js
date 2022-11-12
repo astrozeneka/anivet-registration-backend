@@ -39,8 +39,13 @@ class BaseMemberController extends BaseController {
                 res.status(404).send("Not found")
             }else {
                 res.setHeader('Content-Type', 'application/json')
-                res.send(JSON.stringify(
+                // This old code doesn't work anymore
+                /*res.send(JSON.stringify(
                     Object.assign({}, u.object.address.serialize(), u.object.serialize())
+                ))*/
+                let Dao = require("../dao/crud/BaseMemberDAO")
+                res.send(JSON.stringify(
+                    Dao.getInstance().model_to_raw[""](u.object)
                 ))
             }
         })

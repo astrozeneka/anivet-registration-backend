@@ -6,6 +6,7 @@ const APIV1Controller = require("./controller/APIV1Controller");
 const InstallationController = require("./controller/InstallationController");
 const app = express()
 let bodyParser = require("body-parser")
+const morgan = require("morgan");
 app.use(bodyParser({limit: '50mb'}));
 app.use(express.json());
 const port = process.env.PORT || 3001
@@ -37,6 +38,13 @@ app.get('/', (req, res) => {
 })
 
 //APIController.getInstance().register(app, "/api/v1")
+
+
+app.use(require('morgan')('dev'))
+app.use((req, res, next)=>{
+    morgan(':method :url :status :res[content-length] - :response-time ms')
+    next()
+})
 
 // Main API
 app.use('/api/v1', APIV1Controller.getInstance().app)

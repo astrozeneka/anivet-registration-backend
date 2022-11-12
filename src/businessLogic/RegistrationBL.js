@@ -284,10 +284,9 @@ class RegistrationBL extends BaseBL {
     }
 
     async userDetails(id){
-        let model = await BaseMemberDAO.getInstance().getById(id)
-        // No error expected
+        let m = await BaseMemberDAO.getInstance().getOne("", id)
         return {
-            "object": model
+            "object": m
         }
     }
 
@@ -516,7 +515,6 @@ class RegistrationBL extends BaseBL {
     async post_paymentReceipt(raw){
         let o = await CRUDBL.getInstance().paymentReceipt.insert(raw)
         if(o.hasOwnProperty('errors')) return o
-
         return {entity: o.object}
     }
 }
